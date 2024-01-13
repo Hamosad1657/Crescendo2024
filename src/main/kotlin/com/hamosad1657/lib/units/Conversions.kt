@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj.DriverStation
 const val INCHES_IN_METER = 39.3700787402
 const val CANCODER_TICKS_PER_ROTATION = 4096.0
 const val FALCON_TICKS_PER_ROTATION = 2048.0
-val CHARGED_UP_FIELD_LENGTH = Length.fromMeters(16.7) // TODO: Update to current field's length.
+val CRESCENDO_FIELD_LENGTH = Length.fromMeters(16.54)
+val CRESCENDO_FIELD_WIDTH = Length.fromMeters(8.21)
 
 /// --- Angles to Angles Conversions ---
 
@@ -208,7 +209,7 @@ fun matchPoseToAlliance(position: Pose2d): Pose2d {
 		DriverStation.Alliance.Blue -> position
 		DriverStation.Alliance.Red ->
 			Pose2d(
-				CHARGED_UP_FIELD_LENGTH.meters - position.x,
+				CRESCENDO_FIELD_LENGTH.meters - position.x,
 				position.y,
 				position.rotation.rotateBy(180.degrees)
 			)
