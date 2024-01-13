@@ -11,6 +11,10 @@ object RobotMap {
 
 	}
 
+	object Climber {
+		
+	}
+
 	object Grabber {
 
 	}
