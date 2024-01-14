@@ -24,7 +24,9 @@ object RobotMap {
 	}
 
 	object Shooter {
-
+		const val ANGLE_MOTOR_ID = 0
+		const val SHOOTER_MOTOR_1_ID = 0
+		const val SHOOTER_MOTOR_2_ID = 0
 	}
 
 	object Swerve {
