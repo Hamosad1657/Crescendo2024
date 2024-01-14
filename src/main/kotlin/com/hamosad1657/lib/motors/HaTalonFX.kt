@@ -28,7 +28,6 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 
     private var speed = 0.0
 
-
     fun configPIDGains(gains: PIDGains, slotIndex: Int = 0) {
         require(slotIndex in 0..2)
 
@@ -58,14 +57,12 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 
     override fun get() = speed
 
-
     var positionWrapEnabled = false
         set(value) {
             closedLoopGeneralConfigs.ContinuousWrap = value
             configurator.apply(closedLoopGeneralConfigs)
             field = value
         }
-
 
     /**
      * For use with set(percentOutput: Double)
@@ -85,7 +82,6 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 
     val isTempSafe: Boolean
         get() = deviceTemp.value < FalconSafeTempC
-
 
     override fun set(percentOutput: Double) {
         require(maxPercentOutput >= minPercentOutput)
