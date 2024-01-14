@@ -18,32 +18,32 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
  */
 object Robot : TimedRobot() {
 
-    private var autonomousCommand: Command? = null
-    private var commandScheduler = CommandScheduler.getInstance()
+	private var autonomousCommand: Command? = null
+	private var commandScheduler = CommandScheduler.getInstance()
 
-    override fun robotInit() {
-        // Report the use of the Kotlin Language for "FRC Usage Report" statistics
-        HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
-        // Access the RobotContainer object so that it is initialized. This will perform all our
-        // button bindings, set default commands, and put our autonomous chooser on the dashboard.
-        RobotContainer
-    }
+	override fun robotInit() {
+		// Report the use of the Kotlin Language for "FRC Usage Report" statistics
+		HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
+		// Access the RobotContainer object so that it is initialized. This will perform all our
+		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
+		RobotContainer
+	}
 
-    override fun robotPeriodic() {
-        commandScheduler.run()
-    }
+	override fun robotPeriodic() {
+		commandScheduler.run()
+	}
 
-    override fun autonomousInit() {
-        autonomousCommand = RobotContainer.getAutonomousCommand()
-        autonomousCommand?.schedule()
-    }
+	override fun autonomousInit() {
+		autonomousCommand = RobotContainer.getAutonomousCommand()
+		autonomousCommand?.schedule()
+	}
 
-    override fun teleopInit() {
-        autonomousCommand?.cancel()
-    }
+	override fun teleopInit() {
+		autonomousCommand?.cancel()
+	}
 
-    override fun testInit() {
-        // Cancels all running commands at the start of test mode.
-        commandScheduler.cancelAll()
-    }
+	override fun testInit() {
+		// Cancels all running commands at the start of test mode.
+		commandScheduler.cancelAll()
+	}
 }
