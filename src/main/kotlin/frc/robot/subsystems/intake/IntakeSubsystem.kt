@@ -10,14 +10,15 @@ object IntakeSubsystem : SubsystemBase() {
 	private val motor = WPI_TalonSRX(RobotMap.Intake.MOTOR_ID)
 
 	// TODO: Change default neutral mode
-	var neutralMode: NeutralMode = NeutralMode.Coast
+	var neutralMode = NeutralMode.Coast
 		set(value) {
 			motor.setNeutralMode(value)
 			field = value
 		}
 
 	init {
-		motor.inverted = false // TODO: Verify positive output intakes
+		// TODO: Verify positive output intakes
+		motor.inverted = false
 		motor.configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
 		motor.isSafetyEnabled = true
 	}
