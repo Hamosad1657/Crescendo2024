@@ -1,11 +1,15 @@
 package frc.robot.subsystems.shooter
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
+import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.toIdleMode
+import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel.MotorType
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 
@@ -36,9 +40,23 @@ object ShooterSubsystem : SubsystemBase() {
     init {
         // TODO: Verify positive output shoots
         shooterMotor1.inverted = false
-        shooterMotor2.inverted = false
 
         // TODO: Verify positive output raises angle
         angleMotor.inverted = false
     }
+
+    private fun setVelocity(velocity: AngularVelocity) {
+        shooterMotor1.pidController.setReference(velocity.rpm, CANSparkBase.ControlType.kSmartVelocity)
+    }
+
+    private fun setAngle(angle: Rotation2d) {
+        angleMotor.setControl(PositionVoltage(angle.rotations))
+    }
+
+    fun set(state: ShooterState) {
+        setAngle(state.angle)
+        setVelocity(state.velocity)
+    }
 }
+
+data class ShooterState(val velocity: AngularVelocity, val angle: Rotation2d)
