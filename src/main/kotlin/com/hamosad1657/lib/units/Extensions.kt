@@ -61,5 +61,5 @@ fun NeutralMode.toIdleMode(): IdleMode =
     when (this) {
         NeutralMode.Coast -> IdleMode.kCoast
         NeutralMode.Brake -> IdleMode.kBrake
-        NeutralMode.EEPROMSetting -> throw IllegalArgumentException("can't convert `NeutralMode.EEPROMSetting` to IdleMode")
+        NeutralMode.EEPROMSetting -> throw IllegalStateException("can't convert `NeutralMode.EEPROMSetting` to IdleMode")
     }
