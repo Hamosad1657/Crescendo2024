@@ -49,6 +49,12 @@ object ClimbingSubsystem : SubsystemBase() {
             leftMotor1.setControl(PositionVoltage(rotations))
             rightMotor1.setControl(PositionVoltage(rotations))
         }
+
+    }
+
+    fun setSpeed(percentOutput: Double) {
+        leftMotor1.set(percentOutput)
+        rightMotor1.set(percentOutput)
     }
 
 }
