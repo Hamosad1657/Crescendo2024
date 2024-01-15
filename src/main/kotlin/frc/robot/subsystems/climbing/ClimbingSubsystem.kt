@@ -1,19 +1,21 @@
 package frc.robot.subsystems.climbing
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.controls.MotionMagicVoltage
-import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.motors.HaTalonFX
+import com.hamosad1657.lib.units.AngularVelocity
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Climber as ClimberMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
+    private val motionMagicConfig = MotionMagicConfigs()
     private val leftMotor1 = HaTalonFX(ClimberMap.LEFT_MOTOR_1_ID).apply {
         configPIDGains(Constants.PID_GAINS)
         configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
-        configurator.apply(Constants.MOTION_MAGIC_CONFIG)
+        configurator.apply(motionMagicConfig)
 
     }
     private val leftMotor2 = HaTalonFX(ClimberMap.LEFT_MOTOR_2_ID).apply {
@@ -24,7 +26,7 @@ object ClimbingSubsystem : SubsystemBase() {
     private val rightMotor1 = HaTalonFX(ClimberMap.RIGHT_MOTOR_1_ID).apply {
         configPIDGains(Constants.PID_GAINS)
         configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
-        configurator.apply(Constants.MOTION_MAGIC_CONFIG)
+        configurator.apply(motionMagicConfig)
     }
     private val rightMotor2 = HaTalonFX(ClimberMap.RIGHT_MOTOR_2_ID).apply {
         // TODO: Check if follower motor should oppose master motor or not
@@ -41,15 +43,15 @@ object ClimbingSubsystem : SubsystemBase() {
             field = value
         }
 
-    fun setRotationSetpoint(rotations: Double, limitSpeed: Boolean) {
-        if (limitSpeed) {
-            leftMotor1.setControl(MotionMagicVoltage(rotations))
-            rightMotor1.setControl(MotionMagicVoltage(rotations))
-        } else {
-            leftMotor1.setControl(PositionVoltage(rotations))
-            rightMotor1.setControl(PositionVoltage(rotations))
-        }
+    fun setRotationSetpoint(rotations: Double) {
+        leftMotor1.setControl(MotionMagicVoltage(rotations))
+        rightMotor1.setControl(MotionMagicVoltage(rotations))
+    }
 
+    fun setMaxVelocity(velocity: AngularVelocity) {
+        motionMagicConfig.MotionMagicCruiseVelocity = velocity.rps
+        leftMotor1.configurator.apply(motionMagicConfig)
+        leftMotor2.configurator.apply(motionMagicConfig)
     }
 
     fun setSpeed(percentOutput: Double) {
