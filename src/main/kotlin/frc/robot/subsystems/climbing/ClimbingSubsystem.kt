@@ -60,5 +60,9 @@ object ClimbingSubsystem : SubsystemBase() {
         leftMotor1.set(percentOutput)
         rightMotor1.set(percentOutput)
     }
-
+    
+    fun withinTolerance(): Boolean {
+        return (leftMotor1.closedLoopError.value <= Constants.TOLERANCE_ROTATIONS) &&
+                (rightMotor1.closedLoopError.value <= Constants.TOLERANCE_ROTATIONS)
+    }
 }

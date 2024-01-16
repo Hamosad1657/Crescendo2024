@@ -15,6 +15,8 @@ object ClimbingConstants {
     const val FULLY_CLOSED_ROTATIONS_COUNT = 0.0;
     const val FULLY_OPEN_ROTATIONS_COUNT = 0.0
 
+    const val TOLERANCE_ROTATIONS = 0.0
+
     val FALCON_HARDWARE_LIMITS_CONFIG = HardwareLimitSwitchConfigs().apply {
         ForwardLimitEnable = true
         ForwardLimitAutosetPositionEnable = true
