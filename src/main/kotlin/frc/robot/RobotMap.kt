@@ -11,11 +11,11 @@ object RobotMap {
 
     }
 
-    object Climber {
-        const val RIGHT_MOTOR_1_ID = 0
-        const val RIGHT_MOTOR_2_ID = 0
-        const val LEFT_MOTOR_1_ID = 0
-        const val LEFT_MOTOR_2_ID = 0
+    object Climbing {
+        const val RIGHT_MAIN_MOTOR_ID = 0
+        const val RIGHT_SECONDARY_MOTOR_ID = 0
+        const val LEFT_MAIN_MOTOR_ID = 0
+        const val LEFT_SECONDARY_MOTOR_ID = 0
     }
 
     object Grabber {
