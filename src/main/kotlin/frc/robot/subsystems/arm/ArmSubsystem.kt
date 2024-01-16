@@ -10,6 +10,11 @@ object ArmSubsystem : SubsystemBase() {
     // TODO: Check if limits are wired normally false pr normally false.
 
     private val motor = HaTalonSRX(ArmMap.MOTOR_ID)
+
+    init {
+        motor.inverted = false // TODO: Verify positive output opens arm.
+    }
+
     private val forwardLimit = DigitalInput(ArmMap.FORWARD_LIMIT_CHANNEL)
     private val reverseLimit = DigitalInput(ArmMap.REVERSE_LIMIT_CHANNEL)
 
