@@ -13,6 +13,7 @@ import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 object ClimbingSubsystem : SubsystemBase() {
     private val motionMagicConfig = MotionMagicConfigs()
     private val leftMotor1 = HaTalonFX(ClimberMap.LEFT_MOTOR_1_ID).apply {
+        inverted = false // TODO: Verify positive output raises climber
         configPIDGains(Constants.PID_GAINS)
         configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
         configurator.apply(motionMagicConfig)
@@ -24,6 +25,7 @@ object ClimbingSubsystem : SubsystemBase() {
     }
 
     private val rightMotor1 = HaTalonFX(ClimberMap.RIGHT_MOTOR_1_ID).apply {
+        inverted = false // TODO: Verify positive output raises climber
         configPIDGains(Constants.PID_GAINS)
         configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
         configurator.apply(motionMagicConfig)
