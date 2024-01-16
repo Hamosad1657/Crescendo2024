@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Arm as ArmMap
 
 object ArmSubsystem : SubsystemBase() {
+    // TODO: Check if limits are wired normally false pr normally false.
+
     private val motor = HaTalonSRX(ArmMap.MOTOR_ID)
     private val forwardLimit = DigitalInput(ArmMap.FORWARD_LIMIT_CHANNEL)
     private val reverseLimit = DigitalInput(ArmMap.REVERSE_LIMIT_CHANNEL)
@@ -18,4 +20,7 @@ object ArmSubsystem : SubsystemBase() {
     fun set(percentOutput: Double) {
         motor.set(percentOutput)
     }
+
+    fun isAtForwardLimit() = forwardLimit.get()
+    fun isAtReverseLimit() = reverseLimit.get()
 }
