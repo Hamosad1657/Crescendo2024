@@ -45,9 +45,9 @@ object ClimbingSubsystem : SubsystemBase() {
             field = value
         }
 
-    fun setRotationSetpoint(rotations: Double) {
-        leftMotor1.setControl(MotionMagicVoltage(rotations))
-        rightMotor1.setControl(MotionMagicVoltage(rotations))
+    fun setMotionMagicVoltage(control: MotionMagicVoltage) {
+        leftMotor1.setControl(control)
+        rightMotor1.setControl(control)
     }
 
     fun setMaxVelocity(velocity: AngularVelocity) {
