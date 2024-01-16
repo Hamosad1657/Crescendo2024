@@ -24,7 +24,7 @@ object ClimbingConstants {
     }
 
 
-    enum class ClimbingMode(val speedLimit: AngularVelocity, setpointAndFF: MotionMagicVoltage) {
+    enum class ClimbingMode(val speedLimit: AngularVelocity, val setpointAndFF: MotionMagicVoltage) {
         REACHING_CHAIN(
             0.0.rps,
             MotionMagicVoltage(0.0, false, 0.0, 0, false, false, false)
