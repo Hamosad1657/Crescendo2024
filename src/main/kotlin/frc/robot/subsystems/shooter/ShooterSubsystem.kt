@@ -16,13 +16,14 @@ import frc.robot.RobotMap
 object ShooterSubsystem : SubsystemBase() {
     private val shooterMotor1 = CANSparkFlex(RobotMap.Shooter.SHOOTER_MOTOR_1_ID, MotorType.kBrushless)
     private val shooterMotor2 = CANSparkFlex(RobotMap.Shooter.SHOOTER_MOTOR_2_ID, MotorType.kBrushless).apply {
-        this.follow(
-            shooterMotor1, true
-        )
+        this.follow(shooterMotor1, true) // TODO: Check if follower needs to be inverted from the main motor
     }
 
     // TODO: Change to whatever motor controller we will use
     private val angleMotor = TalonFX(RobotMap.Shooter.ANGLE_MOTOR_ID)
+
+
+    // ----------- Motor behaviour -----------
 
     var shooterNeutralMode = NeutralMode.Coast
         set(value) {
@@ -37,6 +38,8 @@ object ShooterSubsystem : SubsystemBase() {
             field = value
         }
 
+    // ----------- Motor configuration -----------
+
     init {
         // TODO: Verify positive output shoots
         shooterMotor1.inverted = false
@@ -44,6 +47,8 @@ object ShooterSubsystem : SubsystemBase() {
         // TODO: Verify positive output raises angle
         angleMotor.inverted = false
     }
+
+    // ----------- Motor control -----------
 
     private fun setVelocity(velocity: AngularVelocity) {
         shooterMotor1.pidController.setReference(velocity.rpm, CANSparkBase.ControlType.kSmartVelocity)
