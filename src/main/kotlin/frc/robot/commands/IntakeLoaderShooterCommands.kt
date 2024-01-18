@@ -46,7 +46,7 @@ fun loadAndShootCommand(state: ShooterState): Command {
 
 /**
  * Apart from testing,
- * Should only be used in [intakeCommand].
+ * should only be used in [intakeCommand] or in a manual override.
  */
 fun IntakeSubsystem.runIntakeCommand(): Command {
     return run { set(IntakeConstants.DEFAULT_OUTPUT) }
@@ -55,7 +55,8 @@ fun IntakeSubsystem.runIntakeCommand(): Command {
 
 /**
  * Apart from testing,
- * Should only be used in [intakeIntoLoaderCommand] or [loadIntoShooterCommand].
+ * should only be used in [intakeIntoLoaderCommand] or [loadIntoShooterCommand],
+ * or in a manual override.
  */
 fun runLoaderCommand(): Command {
     return run { LoaderSubsystem.setLoader(ShooterConstants.LOADER_OUTPUT) }
@@ -64,7 +65,7 @@ fun runLoaderCommand(): Command {
 
 /**
  * Apart from testing,
- * Should only be used in [intakeCommand].
+ * should only be used in [intakeCommand] or in a manual override.
  */
 fun intakeIntoLoaderCommand(): Command {
     return IntakeSubsystem.runIntakeCommand() andThen runLoaderCommand()
@@ -73,7 +74,7 @@ fun intakeIntoLoaderCommand(): Command {
 
 /**
  * Apart from testing,
- * Should only be used in [loadAndShootCommand].
+ * should only be used in [loadAndShootCommand] or in a manual override.
  */
 fun loadIntoShooterCommand(): Command {
     return waitUntilShooterInToleranceCommand()
