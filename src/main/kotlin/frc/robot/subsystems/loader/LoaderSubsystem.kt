@@ -16,11 +16,11 @@ object LoaderSubsystem : SubsystemBase() {
             field = value
         }
 
+    // TODO: Check if beam-break sensor is wired normally-true or normally-false
+    /** Beam-break is positioned between loader and shooter. */
+    val isNoteDetected get() = beamBreak.get()
+
     fun setLoader(percentOutput: Double) {
         motor.set(percentOutput)
     }
-
-    // TODO: Check if beam-break sensor is wired normally-true or normally-false
-    /** Beam-break is positioned between loader and shooter. */
-    fun isNoteDetected() = beamBreak.get()
 }
