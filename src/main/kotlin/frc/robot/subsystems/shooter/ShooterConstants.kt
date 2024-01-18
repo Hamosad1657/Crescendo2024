@@ -15,6 +15,8 @@ object ShooterConstants {
      */
     const val SHOOT_TIME = 0.0 // TODO: Measure SHOOT_TIME
 
+    const val LOADER_OUTPUT = 0.0
+
     // ShooterState is a data class and not an enum, because we might want to make
     // a continuous function (robot pose3d to target pose3d) if we have the time.
     // In the meantime, we will shoot from a few constant positions. Keep instances
