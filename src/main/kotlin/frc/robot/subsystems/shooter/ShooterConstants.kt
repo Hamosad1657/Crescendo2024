@@ -5,15 +5,23 @@ import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 
 object ShooterConstants {
-    val SHOOTER_VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
-    val SHOOTER_ANGLE_TOLERANCE = Rotation2d()
+    val SHOOTING_VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
+    val SHOOTING_ANGLE_TOLERANCE = Rotation2d()
+
+    val SHOOTER_ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
 
     /**
      * Time between when loading started to when the note is shot.
      * It might be a little different in different speeds, so put here
      * it's maximum value.
      */
-    const val SHOOT_TIME = 0.0 // TODO: Measure SHOOT_TIME
+    const val SHOOT_TIME_SEC = 0.0 // TODO: Measure SHOOT_TIME_SEC
+
+    /**
+     * Time that loader should be run to get the note from the intake,
+     * without putting it in the shooter yet.
+     */
+    const val LOAD_FROM_INTAKE_TIME_SEC = 0.0 // TODO: Measure LOAD_FROM_INTAKE_TIME_SEC
 
     const val LOADER_OUTPUT = 0.0
 

@@ -13,8 +13,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
-import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_ANGLE_TOLERANCE
-import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_VELOCITY_TOLERANCE
+import frc.robot.subsystems.shooter.ShooterConstants.SHOOTING_ANGLE_TOLERANCE
+import frc.robot.subsystems.shooter.ShooterConstants.SHOOTING_VELOCITY_TOLERANCE
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 
 object ShooterSubsystem : SubsystemBase() {
@@ -83,10 +83,10 @@ object ShooterSubsystem : SubsystemBase() {
     }
 
     private fun withinVelocityTolerance(): Boolean {
-        return getShooterError() <= SHOOTER_VELOCITY_TOLERANCE
+        return getShooterError() <= SHOOTING_VELOCITY_TOLERANCE
     }
 
     private fun withinAngleTolerance(): Boolean {
-        return angleMotor.closedLoopError.value <= SHOOTER_ANGLE_TOLERANCE.rotations
+        return angleMotor.closedLoopError.value <= SHOOTING_ANGLE_TOLERANCE.rotations
     }
 }
