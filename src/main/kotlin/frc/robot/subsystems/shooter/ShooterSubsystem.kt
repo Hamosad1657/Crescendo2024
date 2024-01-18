@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.rotations
 import com.hamosad1657.lib.units.rpm
 import com.hamosad1657.lib.units.toIdleMode
 import com.revrobotics.CANSparkBase
@@ -62,9 +63,15 @@ object ShooterSubsystem : SubsystemBase() {
         setVelocity(shooterState.velocity)
     }
 
+    // ----------- Getters -----------
+
     fun withinTolerance(): Boolean {
         return withinVelocityTolerance() && withinAngleTolerance()
     }
+
+    fun getAngle() = angleMotor.position.value.rotations
+
+    fun getVelocity() = shooterEncoder.velocity.rpm
 
     // ----------- Private utility methods -----------
 
@@ -88,5 +95,35 @@ object ShooterSubsystem : SubsystemBase() {
 
     private fun withinAngleTolerance(): Boolean {
         return angleMotor.closedLoopError.value <= SHOOTING_ANGLE_TOLERANCE.rotations
+    }
+
+    // ----------- For testing or manual overrides -----------
+
+    /**
+     * To be used in testing or in manual overrides.
+     */
+    fun setShooterMotorsOutput(percentOutput: Double) {
+        shooterMotor1.set(percentOutput)
+    }
+
+    /**
+     * To be used in testing or in manual overrides.
+     */
+    fun increaseVelocitySetpointBy(velocity: AngularVelocity) {
+        setVelocity(getVelocity() + velocity)
+    }
+
+    /**
+     * To be used in testing or in manual overrides.
+     */
+    fun setAngleMotorOutput(percentOutput: Double) {
+        angleMotor.set(percentOutput)
+    }
+
+    /**
+     * To be used in testing or in manual overrides.
+     */
+    fun increaseAngleSetpointBy(angle: Rotation2d) {
+        setAngle(getAngle() + angle)
     }
 }
