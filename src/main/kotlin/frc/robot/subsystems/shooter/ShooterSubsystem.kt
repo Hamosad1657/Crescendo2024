@@ -1,9 +1,15 @@
 package frc.robot.subsystems.shooter
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix6.configs.CANcoderConfiguration
+import com.ctre.phoenix6.configs.FeedbackConfigs
 import com.ctre.phoenix6.controls.PositionVoltage
+import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
 import com.ctre.phoenix6.signals.NeutralModeValue
+import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.rotations
 import com.hamosad1657.lib.units.rpm
@@ -29,8 +35,16 @@ object ShooterSubsystem : SubsystemBase() {
     private var velocitySetpoint = AngularVelocity.fromRpm(0.0)
 
 
-    // TODO: Change to whatever motor controller we will use
+    private val angleCANCoder = CANcoder(RobotMap.Shooter.ANGLE_CANCODER_ID)
     private val angleMotor = TalonFX(RobotMap.Shooter.ANGLE_MOTOR_ID)
+
+    init {
+        val angleMotorConfig = FeedbackConfigs().apply {
+            FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
+            FeedbackRemoteSensorID = RobotMap.Shooter.ANGLE_CANCODER_ID
+        }
+        angleMotor.configurator.apply(angleMotorConfig)
+    }
 
     // ----------- Motor behaviour -----------
 
@@ -55,6 +69,15 @@ object ShooterSubsystem : SubsystemBase() {
 
         // TODO: Verify positive output raises angle
         angleMotor.inverted = false
+
+        val canCoderConfig = CANcoderConfiguration().apply {
+            MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1
+            MagnetSensor.MagnetOffset = ShooterConstants.CANCODER_OFFSET_DEG
+
+            // TODO: Verify measurement gets more positive when going up after the minimum
+            MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive
+        }
+        angleCANCoder.configurator.apply(canCoderConfig)
     }
 
     // ----------- Motor control -----------
@@ -69,20 +92,15 @@ object ShooterSubsystem : SubsystemBase() {
         return withinVelocityTolerance() && withinAngleTolerance()
     }
 
+    /**
+     * When the shooter is at it's lowest possible angle, measurement is 0.
+     * When moving away the measurement gets more positive.
+     */
     fun getAngle() = angleMotor.position.value.rotations
 
     fun getVelocity() = shooterEncoder.velocity.rpm
 
     // ----------- Private utility methods -----------
-
-    private fun setVelocity(velocity: AngularVelocity) {
-        shooterMotor1.pidController.setReference(velocity.rpm, CANSparkBase.ControlType.kSmartVelocity)
-        velocitySetpoint = velocity
-    }
-
-    private fun setAngle(angle: Rotation2d) {
-        angleMotor.setControl(PositionVoltage(angle.rotations))
-    }
 
     private fun getShooterError(): AngularVelocity {
         val velocity = shooterEncoder.velocity.rpm
@@ -98,6 +116,25 @@ object ShooterSubsystem : SubsystemBase() {
     }
 
     // ----------- For testing or manual overrides -----------
+
+    /**
+     * To be used in testing or in manual overrides.
+     *
+     * For normal operation use setShooterState.
+     */
+    private fun setVelocity(velocity: AngularVelocity) {
+        shooterMotor1.pidController.setReference(velocity.rpm, CANSparkBase.ControlType.kSmartVelocity)
+        velocitySetpoint = velocity
+    }
+
+    /**
+     * To be used in testing or in manual overrides.
+     *
+     * For normal operation use setShooterState.
+     */
+    private fun setAngle(angle: Rotation2d) {
+        angleMotor.setControl(PositionVoltage(angle.rotations))
+    }
 
     /**
      * To be used in testing or in manual overrides.
