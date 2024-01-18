@@ -21,5 +21,8 @@ object LoaderSubsystem : SubsystemBase() {
     }
 
     // TODO: Check if beam-break sensor is wired normally-true or normally-false
+    /**
+     * Beam-break is positioned between loader and shooter.
+     */
     fun isNoteDetected() = beamBreak.get()
 }
