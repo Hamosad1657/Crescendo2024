@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 
 object ShooterSubsystem : SubsystemBase() {
     private val shooterMotor1 = CANSparkFlex(RobotMap.Shooter.SHOOTER_MOTOR_1_ID, MotorType.kBrushless)
@@ -68,5 +69,3 @@ object ShooterSubsystem : SubsystemBase() {
         setVelocity(state.velocity)
     }
 }
-
-data class ShooterState(val velocity: AngularVelocity, val angle: Rotation2d)
