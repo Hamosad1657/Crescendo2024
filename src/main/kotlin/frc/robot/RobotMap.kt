@@ -31,6 +31,7 @@ object RobotMap {
         const val LOADER_MOTOR_ID = 0
         const val SHOOTER_MOTOR_1_ID = 0
         const val SHOOTER_MOTOR_2_ID = 0
+        const val LOADER_BEAM_BREAK_CHANNEL = 0
     }
 
     object Swerve {

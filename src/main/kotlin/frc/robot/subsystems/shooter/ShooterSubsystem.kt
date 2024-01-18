@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooter
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
@@ -32,8 +31,6 @@ object ShooterSubsystem : SubsystemBase() {
     // TODO: Change to whatever motor controller we will use
     private val angleMotor = TalonFX(RobotMap.Shooter.ANGLE_MOTOR_ID)
 
-    private val loaderMotor = WPI_TalonSRX(RobotMap.Shooter.LOADER_MOTOR_ID)
-
     // ----------- Motor behaviour -----------
 
     var shooterNeutralMode = NeutralMode.Coast
@@ -46,12 +43,6 @@ object ShooterSubsystem : SubsystemBase() {
     var angleNeutralMode = NeutralModeValue.Brake
         set(value) {
             angleMotor.setNeutralMode(value)
-            field = value
-        }
-
-    var loaderNeutralMode = NeutralMode.Brake
-        set(value) {
-            loaderMotor.setNeutralMode(value)
             field = value
         }
 
@@ -69,10 +60,6 @@ object ShooterSubsystem : SubsystemBase() {
     fun setShooterState(shooterState: ShooterState) {
         setAngle(shooterState.angle)
         setVelocity(shooterState.velocity)
-    }
-
-    fun setLoader(percentOutput: Double) {
-        loaderMotor.set(percentOutput)
     }
 
     fun withinTolerance(): Boolean {
