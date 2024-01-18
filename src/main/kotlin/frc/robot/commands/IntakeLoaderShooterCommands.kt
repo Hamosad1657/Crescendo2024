@@ -2,6 +2,7 @@ package frc.robot.commands
 
 import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.units.AngularVelocity
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.subsystems.intake.IntakeConstants
@@ -41,38 +42,70 @@ fun loadAndShootCommand(state: ShooterState): Command {
 }
 
 
-// Other than for testing purposes,
-// The commands below should only be used in other command groups in this file.
+// ------ Other than for testing, the commands below should only be used in other command groups in this file. ------
 
 /**
+ * Apart from testing,
  * Should only be used in [intakeCommand].
  */
-private fun IntakeSubsystem.runIntakeCommand(): Command {
+fun IntakeSubsystem.runIntakeCommand(): Command {
     return run { set(IntakeConstants.DEFAULT_OUTPUT) }
         .finallyDo { set(0.0) }
 }
 
 /**
+ * Apart from testing,
  * Should only be used in [intakeIntoLoaderCommand] or [loadIntoShooterCommand].
  */
-private fun runLoaderCommand(): Command {
+fun runLoaderCommand(): Command {
     return run { LoaderSubsystem.setLoader(ShooterConstants.LOADER_OUTPUT) }
         .finallyDo { LoaderSubsystem.setLoader(0.0) }
 }
 
 /**
+ * Apart from testing,
  * Should only be used in [intakeCommand].
  */
-private fun intakeIntoLoaderCommand(): Command {
+fun intakeIntoLoaderCommand(): Command {
     return IntakeSubsystem.runIntakeCommand() andThen runLoaderCommand()
         .withTimeout(ShooterConstants.LOAD_FROM_INTAKE_TIME_SEC)
 }
 
 /**
+ * Apart from testing,
  * Should only be used in [loadAndShootCommand].
  */
-private fun loadIntoShooterCommand(): Command {
+fun loadIntoShooterCommand(): Command {
     return waitUntilShooterInToleranceCommand()
         .andThen(runLoaderCommand())
         .withTimeout(SHOOT_TIME_SEC)
+}
+
+// -------------------------------------------- Manual overrides ---------------------------------------------------
+
+fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): Command {
+    return run { setAngleMotorOutput(percentOutput()) }.finallyDo { setAngleMotorOutput(0.0) }
+}
+
+/**
+ * [changeInAngleSupplier] is assumed -1 to 1, will come from joysticks.
+ */
+fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngleSupplier: () -> Double, multiplier: Double): Command {
+    return run {
+        increaseAngleSetpointBy(Rotation2d.fromDegrees(changeInAngleSupplier() * multiplier))
+    }
+}
+
+fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double): Command {
+    return run { increaseShooterMotorsOutputBy(percentOutput()) }.finallyDo { setShooterMotorsOutput(0.0) }
+}
+
+/**
+ * [changeInVelocitySupplier] is assumed -1 to 1, will come from joysticks.
+ */
+fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
+    changeInVelocitySupplier: () -> Double,
+    multiplier: Double
+): Command {
+    return run { increaseVelocitySetpointBy(AngularVelocity.fromRpm(changeInVelocitySupplier() * multiplier)) }
 }
