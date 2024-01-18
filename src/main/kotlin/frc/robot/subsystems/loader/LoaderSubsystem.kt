@@ -7,17 +7,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Loader as LoaderMap
 
 object LoaderSubsystem : SubsystemBase() {
-    private val loaderMotor = WPI_TalonSRX(LoaderMap.MOTOR_ID)
+    private val motor = WPI_TalonSRX(LoaderMap.MOTOR_ID)
     private val beamBreak = DigitalInput(LoaderMap.BEAM_BREAK_CHANNEL)
 
     var neutralMode = NeutralMode.Brake
         set(value) {
-            loaderMotor.setNeutralMode(value)
+            motor.setNeutralMode(value)
             field = value
         }
 
     fun setLoader(percentOutput: Double) {
-        loaderMotor.set(percentOutput)
+        motor.set(percentOutput)
     }
 
     // TODO: Check if beam-break sensor is wired normally-true or normally-false
