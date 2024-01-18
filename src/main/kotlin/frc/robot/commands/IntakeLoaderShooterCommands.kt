@@ -49,8 +49,7 @@ fun loadAndShootCommand(state: ShooterState): Command {
  * should only be used in [intakeCommand] or in a manual override.
  */
 fun IntakeSubsystem.runIntakeCommand(): Command {
-    return run { set(IntakeConstants.DEFAULT_OUTPUT) }
-        .finallyDo { set(0.0) }
+    return run { set(IntakeConstants.DEFAULT_OUTPUT) }.finallyDo { _ -> set(0.0) }
 }
 
 /**
@@ -58,9 +57,9 @@ fun IntakeSubsystem.runIntakeCommand(): Command {
  * should only be used in [intakeIntoLoaderCommand] or [loadIntoShooterCommand],
  * or in a manual override.
  */
-fun runLoaderCommand(): Command {
-    return run { LoaderSubsystem.setLoader(ShooterConstants.LOADER_OUTPUT) }
-        .finallyDo { LoaderSubsystem.setLoader(0.0) }
+fun LoaderSubsystem.runLoaderCommand(): Command {
+    return run { setLoader(ShooterConstants.LOADER_OUTPUT) }
+        .finallyDo { _ -> setLoader(0.0) }
 }
 
 /**
@@ -68,7 +67,7 @@ fun runLoaderCommand(): Command {
  * should only be used in [intakeCommand] or in a manual override.
  */
 fun intakeIntoLoaderCommand(): Command {
-    return IntakeSubsystem.runIntakeCommand() andThen runLoaderCommand()
+    return IntakeSubsystem.runIntakeCommand() andThen LoaderSubsystem.runLoaderCommand()
         .withTimeout(ShooterConstants.LOAD_FROM_INTAKE_TIME_SEC)
 }
 
@@ -78,14 +77,14 @@ fun intakeIntoLoaderCommand(): Command {
  */
 fun loadIntoShooterCommand(): Command {
     return waitUntilShooterInToleranceCommand()
-        .andThen(runLoaderCommand())
+        .andThen(LoaderSubsystem.runLoaderCommand())
         .withTimeout(SHOOT_TIME_SEC)
 }
 
 // -------------------------------------------- Manual overrides ---------------------------------------------------
 
 fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): Command {
-    return run { setAngleMotorOutput(percentOutput()) }.finallyDo { setAngleMotorOutput(0.0) }
+    return run { setAngleMotorOutput(percentOutput()) }.finallyDo { _ -> setAngleMotorOutput(0.0) }
 }
 
 /**
@@ -98,7 +97,7 @@ fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngleSupplier: () -> 
 }
 
 fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double): Command {
-    return run { increaseShooterMotorsOutputBy(percentOutput()) }.finallyDo { setShooterMotorsOutput(0.0) }
+    return run { increaseShooterMotorsOutputBy(percentOutput()) }.finallyDo { _ -> setShooterMotorsOutput(0.0) }
 }
 
 /**
