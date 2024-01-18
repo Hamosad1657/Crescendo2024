@@ -44,7 +44,7 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
         config_kP(slotIndex, gains.kP)
         config_kI(slotIndex, gains.kI)
         config_kD(slotIndex, gains.kD)
-        config_IntegralZone(0, gains.iZone)
+        config_IntegralZone(0, gains.kIZone)
     }
 
     /**

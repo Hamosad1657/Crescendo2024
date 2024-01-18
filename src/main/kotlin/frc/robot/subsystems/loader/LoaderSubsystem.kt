@@ -1,13 +1,13 @@
 package frc.robot.subsystems.loader
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
+import com.hamosad1657.lib.motors.HaTalonSRX
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Loader as LoaderMap
 
 object LoaderSubsystem : SubsystemBase() {
-    private val motor = WPI_TalonSRX(LoaderMap.MOTOR_ID)
+    private val motor = HaTalonSRX(LoaderMap.MOTOR_ID)
     private val beamBreak = DigitalInput(LoaderMap.BEAM_BREAK_CHANNEL)
 
     var neutralMode = NeutralMode.Brake
