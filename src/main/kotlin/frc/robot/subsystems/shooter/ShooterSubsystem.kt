@@ -58,6 +58,11 @@ object ShooterSubsystem : SubsystemBase() {
         angleMotor.setControl(PositionVoltage(angle.rotations))
     }
 
+    private fun setShooterState(shooterState: ShooterState) {
+        setAngle(shooterState.angle)
+        setVelocity(shooterState.velocity)
+    }
+
     fun set(state: ShooterState) {
         setAngle(state.angle)
         setVelocity(state.velocity)
