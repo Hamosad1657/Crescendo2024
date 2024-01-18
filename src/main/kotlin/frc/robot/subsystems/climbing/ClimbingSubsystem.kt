@@ -44,7 +44,7 @@ object ClimbingSubsystem : SubsystemBase() {
         }
 
 
-    // --- Motors Behaviours ---
+    // --- Motors Properties ---
 
     var neutralMode = NeutralModeValue.Brake
         set(value) {

@@ -7,9 +7,9 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.intake.IntakeSubsystem
-import frc.robot.subsystems.shooter.LoaderSubsystem
+import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterConstants
-import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_ANGLE_FOR_INTAKE
+import frc.robot.subsystems.shooter.ShooterConstants.ANGLE_FOR_INTAKE
 import frc.robot.subsystems.shooter.ShooterConstants.SHOOT_TIME_SEC
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.shooter.ShooterSubsystem
@@ -18,7 +18,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem
  * SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM.
  */
 fun prepareShooterForIntakingCommand(): Command {
-    return getToShooterStateCommand(ShooterState(SHOOTER_ANGLE_FOR_INTAKE, AngularVelocity.fromRpm(0.0)))
+    return getToShooterStateCommand(ShooterState(ANGLE_FOR_INTAKE, AngularVelocity.fromRpm(0.0)))
 }
 
 fun intakeCommand() {

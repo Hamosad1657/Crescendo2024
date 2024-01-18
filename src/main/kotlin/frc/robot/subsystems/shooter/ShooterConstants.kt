@@ -5,10 +5,10 @@ import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 
 object ShooterConstants {
-    val SHOOTING_VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
-    val SHOOTING_ANGLE_TOLERANCE = Rotation2d()
+    val VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
+    val ANGLE_TOLERANCE = Rotation2d()
 
-    val SHOOTER_ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
+    val ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
 
     /**
      * Time between when loading started to when the note is shot.
@@ -17,17 +17,7 @@ object ShooterConstants {
      */
     const val SHOOT_TIME_SEC = 0.0 // TODO: Measure SHOOT_TIME_SEC
 
-    /**
-     * Time that loader should be run to get the note from the intake,
-     * without putting it in the shooter yet.
-     */
-    const val LOAD_FROM_INTAKE_TIME_SEC = 0.0 // TODO: Measure LOAD_FROM_INTAKE_TIME_SEC
-
-    const val LOADER_OUTPUT = 0.0
-
-    /**
-     * Lowest possible angle should be 0.
-     */
+    /** 0 should be the starting position (the lowest possible angle). */
     const val CANCODER_OFFSET_DEG = 0.0
 
     // ShooterState is a data class and not an enum, because we might want to make

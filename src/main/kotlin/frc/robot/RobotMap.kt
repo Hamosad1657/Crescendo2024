@@ -23,12 +23,18 @@ object RobotMap {
     }
 
     object Shooter {
-        const val ANGLE_MOTOR_ID = 0
-        const val ANGLE_CANCODER_ID = 0
-        const val LOADER_MOTOR_ID = 0
-        const val SHOOTER_MOTOR_1_ID = 0
-        const val SHOOTER_MOTOR_2_ID = 0
-        const val LOADER_BEAM_BREAK_CHANNEL = 0
+        const val MAIN_MOTOR_ID = 0
+        const val SECONDARY_MOTOR_ID = 0
+
+        object Angle {
+            const val MOTOR_ID = 0
+            const val CANCODER_ID = 0
+        }
+    }
+
+    object Loader {
+        const val MOTOR_ID = 0
+        const val BEAM_BREAK_CHANNEL = 0
     }
 
     object Swerve
