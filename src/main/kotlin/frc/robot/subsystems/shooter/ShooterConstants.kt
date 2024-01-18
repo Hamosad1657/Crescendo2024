@@ -5,6 +5,9 @@ import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 
 object ShooterConstants {
+    val SHOOTER_VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
+    val SHOOTER_ANGLE_TOLERANCE = Rotation2d()
+
     // ShooterState is a data class and not an enum, because we might want to make
     // a continuous function (robot pose3d to target pose3d) if we have the time.
     // In the meantime, we will shoot from a few constant positions. Keep instances
