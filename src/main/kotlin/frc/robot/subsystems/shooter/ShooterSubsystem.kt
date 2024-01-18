@@ -109,6 +109,13 @@ object ShooterSubsystem : SubsystemBase() {
     /**
      * To be used in testing or in manual overrides.
      */
+    fun increaseShooterMotorsOutputBy(percentOutput: Double) {
+        shooterMotor1.set(shooterMotor1.get() + percentOutput)
+    }
+
+    /**
+     * To be used in testing or in manual overrides.
+     */
     fun increaseVelocitySetpointBy(velocity: AngularVelocity) {
         setVelocity(getVelocity() + velocity)
     }
