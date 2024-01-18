@@ -1,6 +1,6 @@
 package frc.robot.commands
 
-import com.hamosad1657.lib.commands.andThen
+import com.hamosad1657.lib.commands.alongWith
 import com.hamosad1657.lib.units.AngularVelocity
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
@@ -67,8 +67,8 @@ fun LoaderSubsystem.runLoaderCommand(): Command {
  * should only be used in [intakeCommand] or in a manual override.
  */
 fun intakeIntoLoaderCommand(): Command {
-    return IntakeSubsystem.runIntakeCommand() andThen LoaderSubsystem.runLoaderCommand()
-        .withTimeout(ShooterConstants.LOAD_FROM_INTAKE_TIME_SEC)
+    return IntakeSubsystem.runIntakeCommand() alongWith LoaderSubsystem.runLoaderCommand()
+        .until(LoaderSubsystem::isNoteDetected)
 }
 
 /**
