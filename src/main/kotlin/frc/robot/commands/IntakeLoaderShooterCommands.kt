@@ -49,7 +49,7 @@ fun loadAndShootCommand(state: ShooterState): Command {
  * should only be used in [intakeCommand] or in a manual override.
  */
 fun IntakeSubsystem.runIntakeCommand(): Command {
-    return run { set(IntakeConstants.DEFAULT_OUTPUT) }.finallyDo { _ -> set(0.0) }
+    return run { set(IntakeConstants.MOTOR_OUTPUT) }.finallyDo { _ -> set(0.0) }
 }
 
 /**

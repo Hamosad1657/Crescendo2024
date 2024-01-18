@@ -1,29 +1,27 @@
 package frc.robot.subsystems.intake
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
+import com.hamosad1657.lib.motors.HaTalonSRX
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.RobotMap
+import frc.robot.RobotMap.Intake as IntakeMap
 import frc.robot.subsystems.intake.IntakeConstants as Constants
 
 object IntakeSubsystem : SubsystemBase() {
-	private val motor = WPI_TalonSRX(RobotMap.Intake.MOTOR_ID)
+    private val motor = HaTalonSRX(IntakeMap.MOTOR_ID).apply {
+        isSafetyEnabled = true
+        // TODO: Verify positive output intakes
+        inverted = false
+        configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
+    }
 
-	// TODO: Change default neutral mode
-	var neutralMode = NeutralMode.Coast
-		set(value) {
-			motor.setNeutralMode(value)
-			field = value
-		}
-
-	init {
-		// TODO: Verify positive output intakes
-		motor.inverted = false
-		motor.configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
-		motor.isSafetyEnabled = true
-	}
-
-	fun set(percentOutput: Double) {
-		motor.set(percentOutput)
-	}
+    // TODO: Change default neutral mode
+    var neutralMode = NeutralMode.Coast
+        set(value) {
+            motor.setNeutralMode(value)
+            field = value
+        }
+    
+    fun set(percentOutput: Double) {
+        motor.set(percentOutput)
+    }
 }
