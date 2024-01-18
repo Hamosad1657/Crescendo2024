@@ -49,6 +49,7 @@ fun loadAndShootCommand(state: ShooterState): Command {
  */
 private fun IntakeSubsystem.runIntakeCommand(): Command {
     return run { set(IntakeConstants.DEFAULT_OUTPUT) }
+        .finallyDo { set(0.0) }
 }
 
 /**
