@@ -331,3 +331,5 @@ bin/
 
 # End entries from WPI Lib team
 
+.idea/codeStyles/Project.xml
+.idea/codeStyles/codeStyleConfig.xml
