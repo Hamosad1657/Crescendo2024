@@ -14,10 +14,9 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy
 import kotlin.math.PI
 
 object Vision : SubsystemBase() {
-	
 	private val robotToCamera = Transform3d(Translation3d(), Rotation3d(0.0, 0.0, PI / 2))
 	private val camera = PhotonCamera("AprilTag-Cam")
-	
+
 	var aprilTags: AprilTagFieldLayout =
 		AprilTagFieldLayout(
 			listOf(
@@ -30,7 +29,7 @@ object Vision : SubsystemBase() {
 				)
 			), 10.0, 10.0
 		)
-	
+
 	private val poseEstimator =
 		PhotonPoseEstimator(
 			aprilTags,
@@ -40,17 +39,17 @@ object Vision : SubsystemBase() {
 		).apply {
 			setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
 		}
-	
+
 	/**
 	 * Gets the estimated robot position from the PhotonVision camera.
 	 * Returns null if it doesn't detect any April Tags.
 	 */
 	var estimatedGlobalPose: EstimatedRobotPose? = poseEstimator.update().orElse(null)
-	
+
 	val latestResult get() = camera.latestResult
-	
+
 	val bestTag get() = latestResult.bestTarget
-	
+
 	fun calibrateTagPositions(transform: Transform3d) {
 		aprilTags = AprilTagFieldLayout(
 			latestResult.targets.map { target ->
@@ -61,9 +60,9 @@ object Vision : SubsystemBase() {
 			}, 10.0, 10.0
 		)
 	}
-	
+
 	fun getTag(tagID: Int) = latestResult.getTargets().getOrNull(tagID)
-	
+
 	override fun periodic() {
 		poseEstimator.update().orElse(null)
 	}

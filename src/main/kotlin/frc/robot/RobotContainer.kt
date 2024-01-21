@@ -17,21 +17,21 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  */
 object RobotContainer {
 	val swerve = SwerveSubsystem
-	
+
 	val controller = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
-	
+
 	init {
 		registerAutoCommands()
 		configureBindings()
 		setDefaultCommands()
 	}
-	
+
 	/** Use this method to define your `trigger->command` mappings. */
 	private fun configureBindings() {
 //		controller.triangle().onTrue(swerve.pathFindToPathCommand("example_path"))
 		controller.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
 	}
-	
+
 	private fun setDefaultCommands() {
 		swerve.defaultCommand = TeleopDriveCommand(
 			swerve,
@@ -40,14 +40,14 @@ object RobotContainer {
 			omega = { simpleDeadband(controller.rightX * 0.8, 0.1) },
 			isFieldRelative = { true },
 			headingCorrection = false
-		
+
 		)
 	}
-	
+
 	private fun registerAutoCommands() {
 		NamedCommands.registerCommand("HelloCommand", PrintCommand("HelloWorld"))
 	}
-	
+
 	fun getAutonomousCommand(): Command {
 		// TODO: Implement properly
 		return swerve.pathFindToPathCommand("example_path")

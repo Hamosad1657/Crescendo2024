@@ -1,5 +1,3 @@
 package frc.robot.subsystems.shooter
 
-object ShooterConstants {
-
-}
+object ShooterConstants

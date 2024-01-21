@@ -30,58 +30,58 @@ import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SubsystemBase() {
 	private val swerveDrive: SwerveDrive
-	
+
 	/** Gets the current field-relative velocity (x, y and omega) of the robot*/
 	val fieldVelocity: ChassisSpeeds get() = swerveDrive.fieldVelocity
-	
+
 	/** Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped. */
 	val heading: Rotation2d get() = swerveDrive.yaw
-	
+
 	/** Get the swerve drive kinematics object.*/
 	val kinematics: SwerveDriveKinematics get() = swerveDrive.kinematics
-	
+
 	/** Gets the current pitch angle of the robot, as reported by the imu. */
 	val pitch: Rotation2d get() = swerveDrive.pitch
-	
+
 	/** Gets the current pose (position and rotation) of the robot, as reported by odometry. */
 	val pose: Pose2d get() = swerveDrive.pose
-	
+
 	/** Gets the current velocity (x, y and omega) of the robot */
 	val robotVelocity: ChassisSpeeds get() = swerveDrive.robotVelocity
-	
+
 	/** Get the [SwerveController] in the swerve drive. */
 	val swerveController: SwerveController get() = swerveDrive.swerveController
-	
+
 	/** Get the [SwerveDriveConfiguration] object. */
 	val swerveDriveConfiguration: SwerveDriveConfiguration get() = swerveDrive.swerveDriveConfiguration
-	
+
 	init {
 		// Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-		
+
 		try {
 			val swerveDirectory = File(Filesystem.getDeployDirectory(), Constants.SWERVE_CONFIG_DIR)
 			swerveDrive = SwerveParser(swerveDirectory).createSwerveDrive(Constants.MAX_SPEED)
 		} catch (e: Exception) {
 			throw RuntimeException(e)
 		}
-		
+
 		SwerveDriveTelemetry.verbosity = when (Robot.robotTelemetry) {
 			Telemetry.Simulation -> {
 				SmartDashboard.putData(swerveDrive.field)
 				TelemetryVerbosity.MACHINE
 			}
-			
+
 			Telemetry.Testing -> {
 				SmartDashboard.putData(swerveDrive.field)
 				TelemetryVerbosity.HIGH
 			}
-			
+
 			Telemetry.Competition -> TelemetryVerbosity.NONE
 		}
-		
+
 		configureAutoBuilder()
 	}
-	
+
 	private fun configureAutoBuilder() {
 		AutoBuilder.configureHolonomic(
 			::pose,
@@ -94,14 +94,14 @@ object SwerveSubsystem : SubsystemBase() {
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 				val alliance = DriverStation.getAlliance().orElse(null)
-				
+
 				alliance == DriverStation.Alliance.Red
 			},
 			this
 		)
 	}
-	
-	
+
+
 	/**
 	 * The primary method for controlling the drivebase.  Takes a [Translation2d] and a rotation rate, and
 	 * calculates and commands module states accordingly.  Can use either open-loop or closed-loop velocity control for
@@ -120,7 +120,7 @@ object SwerveSubsystem : SubsystemBase() {
 	fun drive(translation: Translation2d?, rotation: Double, fieldRelative: Boolean, isOpenLoop: Boolean) {
 		swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop)
 	}
-	
+
 	/**
 	 * Get the chassis speeds based on controller input of 2 joysticks. One for speeds in which direction. The other for
 	 * the angle of the robot.
@@ -140,7 +140,7 @@ object SwerveSubsystem : SubsystemBase() {
 			heading.radians,
 		)
 	}
-	
+
 	/**
 	 * Get the chassis speeds based on controller input of 1 joystick and one angle.
 	 *
@@ -158,12 +158,12 @@ object SwerveSubsystem : SubsystemBase() {
 			Constants.MAX_SPEED
 		)
 	}
-	
+
 	/** Lock the swerve drive to prevent it from moving. */
 	fun lock() {
 		swerveDrive.lockPose()
 	}
-	
+
 	/**
 	 * Post the trajectory to the field.
 	 *
@@ -172,7 +172,7 @@ object SwerveSubsystem : SubsystemBase() {
 	fun postTrajectory(trajectory: Trajectory?) {
 		swerveDrive.postTrajectory(trajectory)
 	}
-	
+
 	/**
 	 * Resets odometry to the given pose. Gyro angle and module positions do not need to be reset when calling this
 	 * method.  However, if either gyro angle or module position is reset, this must be called in order for odometry to
@@ -183,7 +183,7 @@ object SwerveSubsystem : SubsystemBase() {
 	fun resetOdometry(initialHolonomicPose: Pose2d?) {
 		swerveDrive.resetOdometry(initialHolonomicPose)
 	}
-	
+
 	/**
 	 * Set chassis speeds with closed-loop velocity control.
 	 *
@@ -192,17 +192,17 @@ object SwerveSubsystem : SubsystemBase() {
 	fun setChassisSpeeds(chassisSpeeds: ChassisSpeeds?) {
 		swerveDrive.setChassisSpeeds(chassisSpeeds)
 	}
-	
+
 	/** Sets the drive motors to brake/coast mode. */
 	fun setMotorBrake(isBrake: Boolean) {
 		swerveDrive.setMotorIdleMode(isBrake)
 	}
-	
+
 	/** Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0. */
 	fun zeroGyro() {
 		swerveDrive.zeroGyro()
 	}
-	
+
 	private fun addVisionMeasurement(
 		translationStdDev: Double = 0.3, thetaStdDev: Double = 0.9,
 	) {
@@ -220,25 +220,24 @@ object SwerveSubsystem : SubsystemBase() {
 			swerveDrive.setGyroOffset(swerveDrive.gyroRotation3d)
 		}
 	}
-	
+
 	fun pathFindToPathCommand(pathname: String): Command {
 		return AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile(pathname), Constants.PATH_CONSTRAINTS)
 	}
-	
+
 	fun pathFindToPoseCommand(pose: Pose2d): Command {
 		return AutoBuilder.pathfindToPose(pose, Constants.PATH_CONSTRAINTS)
 	}
-	
+
 	fun followAutoCommand(autoName: String): Command {
 		return AutoBuilder.buildAuto(autoName)
 	}
-	
+
 	fun followPathCommand(pathName: String): Command {
 		return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
 	}
-	
+
 	override fun periodic() {
 		addVisionMeasurement()
-		
 	}
 }

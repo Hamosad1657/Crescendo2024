@@ -23,36 +23,36 @@ class TeleopDriveCommand(
 	private val timer = Timer()
 	private var angle = 0.0
 	private var lastTime = 0.0
-	
+
 	init {
 		addRequirements(swerve)
 	}
-	
+
 	override fun initialize() {
 		if (headingCorrection) {
 			timer.start()
 			lastTime = timer.get()
 		}
 	}
-	
+
 	override fun execute() {
 		val xVelocity = -vX.asDouble.pow(3.0)
 		val yVelocity = -vY.asDouble.pow(3.0)
 		val angleVelocity = omega.asDouble.pow(3.0)
-		
+
 		SmartDashboard.putNumber("vx", xVelocity)
 		SmartDashboard.putNumber("vy", yVelocity)
 		SmartDashboard.putNumber("omega", angleVelocity)
-		
+
 		if (headingCorrection) {
 			// Estimate the desired angle in radians.
 			val deltaTime = timer.get() - lastTime
 			angle += angleVelocity * deltaTime * controller.config.maxAngularVelocity
-			
+
 			// Get the desired ChassisSpeeds given the desired angle and current angle.
 			val correctedChassisSpeeds =
 				controller.getTargetSpeeds(xVelocity, yVelocity, angle, swerve.heading.radians, Constants.MAX_SPEED)
-			
+
 			// Drive using given data points.
 			swerve.drive(
 				SwerveController.getTranslation2d(correctedChassisSpeeds),
@@ -60,7 +60,7 @@ class TeleopDriveCommand(
 				isFieldRelative.asBoolean,
 				false,
 			)
-			
+
 			lastTime = timer.get()
 		} else {
 			// Drive using raw values.
