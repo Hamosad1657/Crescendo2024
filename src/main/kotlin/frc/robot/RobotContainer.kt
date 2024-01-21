@@ -37,7 +37,7 @@ object RobotContainer {
 			swerve,
 			vX = { simpleDeadband(controller.leftY, 0.1) },
 			vY = { simpleDeadband(controller.leftX, 0.1) },
-			omega = { simpleDeadband(controller.rightX * 0.8, 0.1) },
+			omega = { simpleDeadband(controller.rightX * 0.9, 0.1) },
 			isFieldRelative = { true },
 			headingCorrection = false
 
