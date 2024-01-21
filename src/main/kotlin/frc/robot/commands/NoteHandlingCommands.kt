@@ -21,12 +21,7 @@ fun collectCommand(): Command =
 
 /** SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM */
 fun ShooterSubsystem.prepareShooterForCollectingCommand(): Command =
-    getToShooterStateCommand(
-        ShooterState(
-            ShooterConstants.ANGLE_FOR_INTAKE,
-            AngularVelocity.fromRpm(0.0)
-        )
-    )
+    getToShooterStateCommand(ShooterState.COLLECT)
 
 fun loadAndShootCommand(state: ShooterState): Command =
     ShooterSubsystem.getToShooterStateCommand(state) raceWith
