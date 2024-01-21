@@ -1,6 +1,13 @@
 package frc.robot
 
+import com.hamosad1657.lib.math.simpleDeadband
+import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.PrintCommand
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
+import frc.robot.commands.swerve.TeleopDriveCommand
+import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -9,22 +16,40 @@ import edu.wpi.first.wpilibj2.command.Command
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-    init {
-        configureBindings()
-        setDefaultCommands()
-    }
-
-    /** Use this method to define your `trigger->command` mappings. */
-    private fun configureBindings() {
-
-    }
-
-    private fun setDefaultCommands() {
-
-    }
-
-    fun getAutonomousCommand(): Command? {
-        // TODO: Implement properly
-        return null
-    }
+	val swerve = SwerveSubsystem
+	
+	val controller = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
+	
+	init {
+		registerAutoCommands()
+		configureBindings()
+		setDefaultCommands()
+	}
+	
+	/** Use this method to define your `trigger->command` mappings. */
+	private fun configureBindings() {
+//		controller.triangle().onTrue(swerve.pathFindToPathCommand("example_path"))
+		controller.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
+	}
+	
+	private fun setDefaultCommands() {
+		swerve.defaultCommand = TeleopDriveCommand(
+			swerve,
+			vX = { simpleDeadband(controller.leftY, 0.1) },
+			vY = { simpleDeadband(controller.leftX, 0.1) },
+			omega = { simpleDeadband(controller.rightX * 0.8, 0.1) },
+			isFieldRelative = { true },
+			headingCorrection = false
+		
+		)
+	}
+	
+	private fun registerAutoCommands() {
+		NamedCommands.registerCommand("HelloCommand", PrintCommand("HelloWorld"))
+	}
+	
+	fun getAutonomousCommand(): Command {
+		// TODO: Implement properly
+		return swerve.pathFindToPathCommand("example_path")
+	}
 }
