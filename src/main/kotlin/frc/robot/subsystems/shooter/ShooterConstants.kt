@@ -25,16 +25,19 @@ object ShooterConstants {
     // In the meantime, we will shoot from a few constant positions. Keep instances
     // of ShooterState as constants.
     data class ShooterState(val angle: Rotation2d, val velocity: AngularVelocity) {
-        // TODO: Test and find the shooter states
-        val TO_AMP = ShooterState(Rotation2d(), 0.0.rpm)
-        val TO_TRAP = ShooterState(Rotation2d(), 0.0.rpm)
 
-        // TODO: Name these shooter states better
-        val TO_SPEAKER_1 = ShooterState(Rotation2d(), 0.0.rpm)
-        val TO_SPEAKER_2 = ShooterState(Rotation2d(), 0.0.rpm)
-        val TO_SPEAKER_3 = ShooterState(Rotation2d(), 0.0.rpm)
+        companion object {
+            // TODO: Test and find the shooter states
+            val TO_AMP = ShooterState(Rotation2d(), 0.0.rpm)
+            val TO_TRAP = ShooterState(Rotation2d(), 0.0.rpm)
 
-        val COLLECT = ShooterState(Rotation2d(), 0.0.rpm)
+            // TODO: Name these shooter states better
+            val TO_SPEAKER_1 = ShooterState(Rotation2d(), 0.0.rpm)
+            val TO_SPEAKER_2 = ShooterState(Rotation2d(), 0.0.rpm)
+            val TO_SPEAKER_3 = ShooterState(Rotation2d(), 0.0.rpm)
+
+            val COLLECT = ShooterState(Rotation2d(), 0.0.rpm)
+        }
     }
 
 }
