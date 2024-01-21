@@ -48,7 +48,11 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
 /** Apart from testing, should only be used in [collectCommand] or in a manual override. */
 fun IntakeSubsystem.runIntakeCommand(): Command =
     run {
-        set(IntakeConstants.MOTOR_OUTPUT)
+        if (ShooterSubsystem.withinTolerance) {
+            set(IntakeConstants.MOTOR_OUTPUT)
+        } else {
+            set(0.0)
+        }
     } finallyDo { _ ->
         set(0.0)
     }
