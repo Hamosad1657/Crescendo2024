@@ -39,10 +39,12 @@ object ShooterSubsystem : SubsystemBase() {
         // TODO: Verify positive output raises angle
         inverted = false
 
-        FeedbackConfigs().apply {
-            FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
-            FeedbackRemoteSensorID = ShooterMap.Angle.CANCODER_ID
-        }.let { configurator.apply(it) }
+        configurator.apply(
+            FeedbackConfigs().apply {
+                FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
+                FeedbackRemoteSensorID = ShooterMap.Angle.CANCODER_ID
+            }
+        )
     }
 
     private val angleCANCoder = CANcoder(ShooterMap.Angle.CANCODER_ID).apply {
