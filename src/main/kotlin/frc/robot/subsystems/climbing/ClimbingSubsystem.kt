@@ -55,7 +55,7 @@ object ClimbingSubsystem : SubsystemBase() {
             field = value
         }
 
-    private fun setMaxVelocity(maxVelocity: AngularVelocity) {
+    fun setMaxVelocity(maxVelocity: AngularVelocity) {
         val motionMagicConfig = Constants.MOTION_MAGIC_CONFIG.apply {
             MotionMagicCruiseVelocity = maxVelocity.rps
         }
@@ -70,9 +70,14 @@ object ClimbingSubsystem : SubsystemBase() {
 
     // --- Motors Control ---
 
+    /**
+     * Does not config the max velocity, because that is an expensive operation, and the
+     * [setClimbingStateSetpoint] function is meant to be called periodically (for motor safety).
+     *
+     * Set the max velocity separately using the [setMaxVelocity] function. This only needs to
+     * be called once (every time you change it).
+     */
     fun setClimbingStateSetpoint(state: ClimbingState) {
-        setMaxVelocity(state.maxVelocity)
-
         val control = PositionVoltage(state.setpoint, 0.0, false, state.voltageFF, 0, false, false, false)
         leftMainMotor.setControl(control)
         rightMainMotor.setControl(control)

@@ -5,23 +5,23 @@ import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 fun ClimbingSubsystem.reachUpCommand(): Command {
-    return runOnce { setMaxVelocity(Constants.ClimbingMode.REACHING_CHAIN.speedLimit) }.andThen(
-        run { setMotionMagicVoltage(Constants.ClimbingMode.REACHING_CHAIN.setpointAndFF) })
-        .until { withinTolerance() }
+    return runOnce { setMaxVelocity(Constants.ClimbingState.REACHING_CHAIN.maxVelocity) }.andThen(
+        run { setClimbingStateSetpoint(Constants.ClimbingState.REACHING_CHAIN) })
+        .until { withinTolerance }
 }
 
 fun ClimbingSubsystem.climbUpCommand(): Command {
-    return runOnce { setMaxVelocity(Constants.ClimbingMode.CLIMBING_UP.speedLimit) }.andThen(
-        run { setMotionMagicVoltage(Constants.ClimbingMode.CLIMBING_UP.setpointAndFF) })
+    return runOnce { setMaxVelocity(Constants.ClimbingState.CLIMBING_UP.maxVelocity) }.andThen(
+        run { setClimbingStateSetpoint(Constants.ClimbingState.CLIMBING_UP) })
 }
 
 fun ClimbingSubsystem.climbDownCommand(): Command {
-    return runOnce { setMaxVelocity(Constants.ClimbingMode.CLIMBING_DOWN.speedLimit) }.andThen(
-        run { setMotionMagicVoltage(Constants.ClimbingMode.CLIMBING_DOWN.setpointAndFF) })
-        .until { withinTolerance() }
+    return runOnce { setMaxVelocity(Constants.ClimbingState.CLIMBING_DOWN.maxVelocity) }.andThen(
+        run { setClimbingStateSetpoint(Constants.ClimbingState.CLIMBING_DOWN) })
+        .until { withinTolerance }
 }
 
 fun ClimbingSubsystem.stayFoldedCommand(): Command {
-    return runOnce { setMaxVelocity(Constants.ClimbingMode.STAYING_FOLDED.speedLimit) }.andThen(
-        run { setMotionMagicVoltage(Constants.ClimbingMode.STAYING_FOLDED.setpointAndFF) })
+    return runOnce { setMaxVelocity(Constants.ClimbingState.STAYING_FOLDED.maxVelocity) }.andThen(
+        run { setClimbingStateSetpoint(Constants.ClimbingState.STAYING_FOLDED) })
 }
