@@ -14,7 +14,7 @@ object IntakeSubsystem : SubsystemBase() {
         configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
     }
 
-    private val followerMotor = HaTalonSRX(IntakeMap.MOTOR_2_ID).apply {
+    private val secondaryMotor = HaTalonSRX(IntakeMap.MOTOR_2_ID).apply {
         isSafetyEnabled = true
         // TODO: Verify positive output intakes
         inverted = false
