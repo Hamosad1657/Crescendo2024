@@ -5,6 +5,7 @@ import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 
 object ShooterConstants {
+    // TODO: Find velocity and angle tolerances for shooter
     val VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
     val ANGLE_TOLERANCE = Rotation2d()
 
