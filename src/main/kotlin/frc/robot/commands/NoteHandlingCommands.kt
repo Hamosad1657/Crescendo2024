@@ -89,7 +89,10 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): C
     }
 
 
-/** [changeInAngle] is assumed -1 to 1, will come from joysticks. */
+/**
+ * [changeInAngle] is assumed -1 to 1, will come from joysticks.
+ * To modify the rate of change, use [multiplier].
+ */
 fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngle: () -> Double, multiplier: Double): Command =
     run {
         val delta = changeInAngle() * multiplier
@@ -105,7 +108,10 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double)
     }
 
 
-/** [changeInVelocity] is assumed -1 to 1, will come from joysticks. */
+/**
+ * [changeInVelocity] is assumed -1 to 1, will come from joysticks.
+ * To modify the rate of change, use [multiplier].
+ */
 fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(changeInVelocity: () -> Double, multiplier: Double): Command =
     run {
         val delta = changeInVelocity() * multiplier
