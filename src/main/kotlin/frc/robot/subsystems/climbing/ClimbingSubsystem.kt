@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState
 import frc.robot.RobotMap.Climbing as ClimbingMap
@@ -25,6 +26,7 @@ object ClimbingSubsystem : SubsystemBase() {
     private val rightSecondaryMotor = HaTalonFX(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID)
         .apply { configSecondaryMotor(ClimbingMap.RIGHT_MAIN_MOTOR_ID) }
 
+    private var lastFFVolts = 0.0
 
     // --- Motors Configuration ---
 
@@ -55,6 +57,7 @@ object ClimbingSubsystem : SubsystemBase() {
             field = value
         }
 
+    /** Sets max velocity when using closed loop. */
     fun setMaxVelocity(maxVelocity: AngularVelocity) {
         val motionMagicConfig = Constants.MOTION_MAGIC_CONFIG.apply {
             MotionMagicCruiseVelocity = maxVelocity.rps
@@ -78,7 +81,17 @@ object ClimbingSubsystem : SubsystemBase() {
      * be called once (every time you change it).
      */
     fun setClimbingStateSetpoint(state: ClimbingState) {
-        val control = PositionVoltage(state.setpoint, 0.0, false, state.voltageFF, 0, false, false, false)
+        this.lastFFVolts = state.voltageFF
+        val control = PositionVoltage(state.setpoint, 0.0, false, lastFFVolts, 0, false, false, false)
+        leftMainMotor.setControl(control)
+        rightMainMotor.setControl(control)
+    }
+
+    fun increasePositionSetpointBy(changeInPosition: Rotations) {
+        val currentPosition = leftMainMotor.position.value
+        val newSetpoint = currentPosition + changeInPosition
+
+        val control = PositionVoltage(newSetpoint, 0.0, false, lastFFVolts, 0, false, false, false)
         leftMainMotor.setControl(control)
         rightMainMotor.setControl(control)
     }
