@@ -14,20 +14,24 @@ object RobotMap {
         const val LEFT_SECONDARY_MOTOR_ID = 0
     }
 
-    object Grabber {
-
-    }
-
     object Intake {
-
+        const val MOTOR_1_ID = 0
+        const val MOTOR_2_ID = 0
     }
 
     object Shooter {
+        const val MAIN_MOTOR_ID = 0
+        const val SECONDARY_MOTOR_ID = 0
 
+        object Angle {
+            const val MOTOR_ID = 0
+            const val CANCODER_ID = 0
+        }
     }
 
-    object Swerve {
-
+    object Loader {
+        const val MOTOR_ID = 0
+        const val BEAM_BREAK_CHANNEL = 0
     }
 
     object Arm {

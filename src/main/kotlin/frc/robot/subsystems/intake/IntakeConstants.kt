@@ -1,5 +1,11 @@
 package frc.robot.subsystems.intake
 
-object IntakeConstants {
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration
 
+object IntakeConstants {
+    // TODO: decide optimal intake current limit configs
+    val SUPPLY_CURRENT_LIMIT = SupplyCurrentLimitConfiguration(true, 30.0, 35.0, 0.05)
+
+    // TODO: Do tests and decide optimal intake output
+    const val MOTOR_OUTPUT = 0.0
 }
