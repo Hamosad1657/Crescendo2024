@@ -27,17 +27,17 @@ fun ClimbingSubsystem.stayFoldedCommand(): Command {
         run { setClimbingStateSetpoint(Constants.ClimbingState.STAYING_FOLDED) })
 }
 
-/** [percentOutputSupplier] is assumed -1 to 1, will come from joysticks. */
-fun ClimbingSubsystem.openLoopTeleopCommand(percentOutputSupplier: () -> Double): Command {
-    return run { setSpeed(percentOutputSupplier()) } finallyDo { setSpeed(0.0) }
+/** [percentOutput] is assumed -1 to 1, will come from joysticks. */
+fun ClimbingSubsystem.openLoopTeleopCommand(percentOutput: () -> Double): Command {
+    return run { setSpeed(percentOutput()) } finallyDo { setSpeed(0.0) }
 }
 
-/** [changeInPositionSupplier] is assumed -1 to 1, will come from joysticks.
+/** [changeInPosition] is assumed -1 to 1, will come from joysticks.
  * Modify the rate of change using [multiplier].
  */
-fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPositionSupplier: () -> Double, multiplier: Double): Command {
+fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> Double, multiplier: Double): Command {
     return run {
-        val delta = changeInPositionSupplier() * multiplier
+        val delta = changeInPosition() * multiplier
         increasePositionSetpointBy(delta)
     }
 }
