@@ -66,7 +66,7 @@ object ClimbingSubsystem : SubsystemBase() {
         leftSecondaryMotor.configurator.apply(motionMagicConfig)
     }
 
-    val withinTolerance
+    val isWithinTolerance
         get() = (leftMainMotor.closedLoopError.value <= Constants.SETPOINT_TOLERANCE) &&
                 (rightMainMotor.closedLoopError.value <= Constants.SETPOINT_TOLERANCE)
 

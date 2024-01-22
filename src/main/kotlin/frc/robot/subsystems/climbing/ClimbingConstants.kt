@@ -34,7 +34,7 @@ object ClimbingConstants {
             voltageFF = 0.0,
             maxVelocity = 0.0.rps,
         ),
-        CLIMBING_UP(
+        PULLING_UP_ROBOT(
             setpoint = 0.0,
             voltageFF = 0.0,
             maxVelocity = 0.0.rps,
