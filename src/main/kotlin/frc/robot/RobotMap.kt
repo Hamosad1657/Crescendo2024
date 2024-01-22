@@ -19,7 +19,8 @@ object RobotMap {
     object Grabber
 
     object Intake {
-        const val MOTOR_ID = 0
+        const val MOTOR_1_ID = 0
+        const val MOTOR_2_ID = 0
     }
 
     object Shooter {
