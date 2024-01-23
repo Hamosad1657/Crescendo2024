@@ -1,5 +1,5 @@
 package frc.robot.subsystems.vision
-
+/*
 import edu.wpi.first.apriltag.AprilTag
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.math.geometry.Pose3d
@@ -67,3 +67,4 @@ object Vision : SubsystemBase() {
 		poseEstimator.update().orElse(null)
 	}
 }
+*/

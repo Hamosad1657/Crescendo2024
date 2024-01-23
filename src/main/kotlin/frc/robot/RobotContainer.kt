@@ -29,6 +29,7 @@ object RobotContainer {
 	private fun configureBindings() {
 		controller.triangle().onTrue(swerve.followAutoCommand("calibration_auto"))
 		controller.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
+		controller.square().onTrue(InstantCommand({}, swerve))
 	}
 
 	private fun setDefaultCommands() {
