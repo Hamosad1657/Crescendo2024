@@ -17,21 +17,19 @@ import frc.robot.subsystems.shooter.ShooterSubsystem
 
 fun collectCommand(): Command =
     ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
-            collectIntoLoaderCommand()
+            collectIntoLoaderCommand() withName "collect"
 
 /** SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM */
 fun ShooterSubsystem.prepareShooterForCollectingCommand(): Command =
-    getToShooterStateCommand(ShooterState.COLLECT)
+    getToShooterStateCommand(ShooterState.COLLECT) withName "prepare shooter for collecting"
 
 fun loadAndShootCommand(state: ShooterState): Command =
     ShooterSubsystem.getToShooterStateCommand(state) raceWith
-            loadIntoShooterCommand()
+            loadIntoShooterCommand() withName "load and shoot"
 
 /** No end condition. This is intentional. */
 fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
-    run {
-        setShooterState(state)
-    }
+    run { setShooterState(state) } withName "get to shooter state"
 
 
 // ---
@@ -42,23 +40,27 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
 
 /** Apart from testing, should only be used in [collectCommand] or in a manual override. */
 fun IntakeSubsystem.runIntakeCommand(): Command =
-    run {
-        if (ShooterSubsystem.withinTolerance) {
-            set(IntakeConstants.MOTOR_OUTPUT)
-        } else {
+    withName("run") {
+        run {
+            if (ShooterSubsystem.withinTolerance) {
+                set(IntakeConstants.MOTOR_OUTPUT)
+            } else {
+                set(0.0)
+            }
+        } finallyDo { _ ->
             set(0.0)
         }
-    } finallyDo { _ ->
-        set(0.0)
     }
 
 
 /** Apart from testing, should only be used in [collectIntoLoaderCommand] or [loadIntoShooterCommand], or in a manual override. */
 fun LoaderSubsystem.runLoaderCommand(): Command =
-    run {
-        setLoader(LoaderConstants.MOTOR_OUTPUT)
-    } finallyDo { _ ->
-        setLoader(0.0)
+    withName("run") {
+        run {
+            setLoader(LoaderConstants.MOTOR_OUTPUT)
+        } finallyDo { _ ->
+            setLoader(0.0)
+        }
     }
 
 
@@ -66,13 +68,13 @@ fun LoaderSubsystem.runLoaderCommand(): Command =
 fun collectIntoLoaderCommand(): Command =
     IntakeSubsystem.runIntakeCommand() alongWith
             LoaderSubsystem.runLoaderCommand() until
-            LoaderSubsystem::isNoteDetected
+            LoaderSubsystem::isNoteDetected withName "collect into loader"
 
 
 /** Apart from testing, should only be used in [loadAndShootCommand] or in a manual override. */
 fun loadIntoShooterCommand(): Command =
     WaitUntilCommand(ShooterSubsystem::withinTolerance) andThen
-            LoaderSubsystem.runLoaderCommand().withTimeout(ShooterConstants.SHOOT_TIME_SEC)
+            LoaderSubsystem.runLoaderCommand().withTimeout(ShooterConstants.SHOOT_TIME_SEC) withName "load into shooter"
 
 
 // ---
@@ -82,10 +84,12 @@ fun loadIntoShooterCommand(): Command =
 // ---
 
 fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): Command =
-    run {
-        setAngleMotorOutput(percentOutput())
-    } finallyDo { _ ->
-        setAngleMotorOutput(0.0)
+    withName("angle open loop teleop") {
+        run {
+            setAngleMotorOutput(percentOutput())
+        } finallyDo { _ ->
+            setAngleMotorOutput(0.0)
+        }
     }
 
 
@@ -94,17 +98,21 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): C
  * To modify the rate of change, use [multiplier].
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngle: () -> Double, multiplier: Double): Command =
-    run {
-        val delta = changeInAngle() * multiplier
-        increaseAngleSetpointBy(Rotation2d.fromDegrees(delta))
+    withName("angle closed loop teleop") {
+        run {
+            val delta = changeInAngle() * multiplier
+            increaseAngleSetpointBy(Rotation2d.fromDegrees(delta))
+        }
     }
 
 
 fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double): Command =
-    run {
-        increaseShooterMotorsOutputBy(percentOutput())
-    }.finallyDo { _ ->
-        setShooterMotorsOutput(0.0)
+    withName("velocity open loop teleop") {
+        run {
+            increaseShooterMotorsOutputBy(percentOutput())
+        }.finallyDo { _ ->
+            setShooterMotorsOutput(0.0)
+        }
     }
 
 
@@ -113,7 +121,9 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double)
  * To modify the rate of change, use [multiplier].
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(changeInVelocity: () -> Double, multiplier: Double): Command =
-    run {
-        val delta = changeInVelocity() * multiplier
-        increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
+    withName("velocity closed loop teleop") {
+        run {
+            val delta = changeInVelocity() * multiplier
+            increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
+        }
     }
