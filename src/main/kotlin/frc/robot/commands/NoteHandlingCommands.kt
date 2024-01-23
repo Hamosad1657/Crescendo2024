@@ -15,6 +15,7 @@ import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.shooter.ShooterSubsystem
 
+/** - Requirements: intake, loader & shooter. */
 fun collectCommand(): Command =
     ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
             collectIntoLoaderCommand() withName "collect"
@@ -23,11 +24,15 @@ fun collectCommand(): Command =
 fun ShooterSubsystem.prepareShooterForCollectingCommand(): Command =
     getToShooterStateCommand(ShooterState.COLLECT) withName "prepare shooter for collecting"
 
+/** - Requirements: loader & shooter. */
 fun loadAndShootCommand(state: ShooterState): Command =
     ShooterSubsystem.getToShooterStateCommand(state) raceWith
             loadIntoShooterCommand() withName "load and shoot"
 
-/** No end condition. This is intentional. */
+/**
+ * No end condition. This is intentional.
+ * - Requirements: shooter.
+ */
 fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
     run { setShooterState(state) } withName "get to shooter state"
 
@@ -38,7 +43,10 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
 //
 // ---
 
-/** Apart from testing, should only be used in [collectCommand] or in a manual override. */
+/**
+ * Apart from testing, should only be used in [collectCommand] or in a manual override.
+ * - Requirements: intake.
+ */
 fun IntakeSubsystem.runIntakeCommand(): Command =
     withName("run") {
         run {
@@ -53,7 +61,10 @@ fun IntakeSubsystem.runIntakeCommand(): Command =
     }
 
 
-/** Apart from testing, should only be used in [collectIntoLoaderCommand] or [loadIntoShooterCommand], or in a manual override. */
+/**
+ * Apart from testing, should only be used in [collectIntoLoaderCommand] or [loadIntoShooterCommand], or in a manual override.
+ * - Requirements: loader.
+ */
 fun LoaderSubsystem.runLoaderCommand(): Command =
     withName("run") {
         run {
@@ -64,14 +75,20 @@ fun LoaderSubsystem.runLoaderCommand(): Command =
     }
 
 
-/** Apart from testing, should only be used in [collectCommand] or in a manual override. */
+/**
+ * Apart from testing, should only be used in [collectCommand] or in a manual override.
+ * - Requirements: intake & loader.
+ */
 fun collectIntoLoaderCommand(): Command =
     IntakeSubsystem.runIntakeCommand() alongWith
             LoaderSubsystem.runLoaderCommand() until
             LoaderSubsystem::isNoteDetected withName "collect into loader"
 
 
-/** Apart from testing, should only be used in [loadAndShootCommand] or in a manual override. */
+/**
+ * Apart from testing, should only be used in [loadAndShootCommand] or in a manual override.
+ * - Requirements: loader & shooter.
+ */
 fun loadIntoShooterCommand(): Command =
     WaitUntilCommand(ShooterSubsystem::withinTolerance) andThen
             LoaderSubsystem.runLoaderCommand().withTimeout(ShooterConstants.SHOOT_TIME_SEC) withName "load into shooter"
@@ -83,6 +100,7 @@ fun loadIntoShooterCommand(): Command =
 //
 // ---
 
+/** - Requirements: shooter. */
 fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): Command =
     withName("angle open loop teleop") {
         run {
@@ -96,6 +114,8 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): C
 /**
  * [changeInAngle] is assumed -1 to 1, will come from joysticks.
  * To modify the rate of change, use [multiplier].
+ *
+ * - Requirements: shooter.
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngle: () -> Double, multiplier: Double): Command =
     withName("angle closed loop teleop") {
@@ -105,7 +125,7 @@ fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngle: () -> Double, 
         }
     }
 
-
+/** - Requirements: shooter. */
 fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double): Command =
     withName("velocity open loop teleop") {
         run {
@@ -119,6 +139,8 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double)
 /**
  * [changeInVelocity] is assumed -1 to 1, will come from joysticks.
  * To modify the rate of change, use [multiplier].
+ *
+ * - Requirements: shooter.
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(changeInVelocity: () -> Double, multiplier: Double): Command =
     withName("velocity closed loop teleop") {

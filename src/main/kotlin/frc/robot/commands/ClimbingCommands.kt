@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 
+/** - Requirements: climbing. */
 fun ClimbingSubsystem.reachChainCommand(): Command =
     withName("reach chain") {
         runOnce {
@@ -17,6 +18,7 @@ fun ClimbingSubsystem.reachChainCommand(): Command =
         } until ::isWithinTolerance
     }
 
+/** - Requirements: climbing. */
 fun ClimbingSubsystem.pullUpRobotCommand(): Command =
     withName("pull up robot") {
         runOnce {
@@ -26,6 +28,7 @@ fun ClimbingSubsystem.pullUpRobotCommand(): Command =
         }
     }
 
+/** - Requirements: climbing. */
 fun ClimbingSubsystem.climbDownCommand(): Command =
     withName("climb down") {
         runOnce {
@@ -35,7 +38,7 @@ fun ClimbingSubsystem.climbDownCommand(): Command =
         } until ::isWithinTolerance
     }
 
-
+/** - Requirements: climbing. */
 fun ClimbingSubsystem.stayFoldedCommand(): Command =
     withName("stay folded") {
         runOnce {
@@ -45,7 +48,11 @@ fun ClimbingSubsystem.stayFoldedCommand(): Command =
         }
     }
 
-/** [percentOutput] is assumed -1 to 1, will come from joysticks. */
+/**
+ * [percentOutput] is assumed -1 to 1, will come from joysticks.
+ *
+ * - Requirements: climbing.
+ */
 fun ClimbingSubsystem.openLoopTeleopCommand(percentOutput: () -> Double): Command =
     withName("climbing open loop teleop") {
         run {
@@ -57,6 +64,8 @@ fun ClimbingSubsystem.openLoopTeleopCommand(percentOutput: () -> Double): Comman
 
 /** [changeInPosition] is assumed -1 to 1, will come from joysticks.
  * Modify the rate of change using [multiplier].
+ *
+ * - Requirements: climbing.
  */
 fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> Double, multiplier: Double): Command =
     withName("climbing closed loop teleop") {
