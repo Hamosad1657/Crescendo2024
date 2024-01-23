@@ -51,7 +51,7 @@ class HaCANSparkMax(deviceID: Int) : CANSparkMax(deviceID, MotorType.kBrushless)
             p = gains.kP
             i = gains.kI
             d = gains.kD
-            iZone = gains.iZone
+            iZone = gains.kIZone
         }
     }
 
