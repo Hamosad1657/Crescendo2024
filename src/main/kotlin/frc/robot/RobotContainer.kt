@@ -16,9 +16,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-	val swerve = SwerveSubsystem
-
-	val controller = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
+	private val controller = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
+	private val swerve = SwerveSubsystem
 
 	init {
 		registerAutoCommands()
@@ -40,7 +39,6 @@ object RobotContainer {
 			omega = { simpleDeadband(controller.rightX * 1.0, 0.1) },
 			isFieldRelative = { true },
 			headingCorrection = false
-
 		)
 	}
 
