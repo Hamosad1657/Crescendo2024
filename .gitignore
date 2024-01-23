@@ -205,7 +205,8 @@ replay_pid*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -333,3 +334,4 @@ bin/
 
 .idea/codeStyles/Project.xml
 .idea/codeStyles/codeStyleConfig.xml
+ctre_sim/

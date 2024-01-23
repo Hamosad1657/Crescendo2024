@@ -28,7 +28,7 @@ object RobotContainer {
 
 	/** Use this method to define your `trigger->command` mappings. */
 	private fun configureBindings() {
-//		controller.triangle().onTrue(swerve.pathFindToPathCommand("example_path"))
+		controller.triangle().onTrue(swerve.followAutoCommand("calibration_auto"))
 		controller.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
 	}
 
@@ -37,7 +37,7 @@ object RobotContainer {
 			swerve,
 			vX = { simpleDeadband(controller.leftY, 0.1) },
 			vY = { simpleDeadband(controller.leftX, 0.1) },
-			omega = { simpleDeadband(controller.rightX * 0.9, 0.1) },
+			omega = { simpleDeadband(controller.rightX * 1.0, 0.1) },
 			isFieldRelative = { true },
 			headingCorrection = false
 

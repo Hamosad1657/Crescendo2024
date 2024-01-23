@@ -6,6 +6,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
@@ -19,7 +20,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	var robotTelemetry = Telemetry.Testing
+	var robotTelemetry = Telemetry.Testing.apply { SmartDashboard.putString("Telemetry", this.name) }
+		set(value) {
+			field = value
+			SmartDashboard.putString("Telemetry", field.name)
+		}
 
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()

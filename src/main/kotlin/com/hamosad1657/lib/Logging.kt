@@ -25,5 +25,5 @@ val driverStationID: Int
     }
 
 enum class Telemetry {
-    Testing, Competition, Simulation
+    Testing, Simulation, Competition;
 }

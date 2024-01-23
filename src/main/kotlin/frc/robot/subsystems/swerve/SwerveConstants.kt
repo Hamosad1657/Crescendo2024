@@ -19,14 +19,14 @@ object SwerveConstants {
 			0.0, 0.0
 		)
 
-	val PATH_TRANSLATION_CONSTANTS = PIDConstants(0.1, 0.0, 0.0)
-	val PATH_ROTATION_CONSTANTS = PIDConstants(0.1, 0.0, 0.0)
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(0.1, 0.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(3.0, 0.0, 0.0)
 
 	private val DRIVEBASE_RADIUS = 0.417405.meters
 
 	val PATH_PLANNER_CONFIG = HolonomicPathFollowerConfig(
-		PIDConstants(0.1, 0.0, 0.0),
-		PIDConstants(0.1, 0.0, 0.0),
+		PATH_TRANSLATION_CONSTANTS,
+		PATH_ROTATION_CONSTANTS,
 		MAX_SPEED,
 		DRIVEBASE_RADIUS.meters,
 		ReplanningConfig(),
