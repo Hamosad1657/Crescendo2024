@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.hamosad1657.lib.motors.HaTalonSRX
+import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -10,6 +11,10 @@ import frc.robot.subsystems.arm.ArmConstants.STATOR_CURRENT_AT_REVERSE_LIMIT
 import frc.robot.RobotMap.Arm as ArmMap
 
 object ArmSubsystem : SubsystemBase() {
+    init {
+        setNameToClassName()
+    }
+
     private val leftMotor = HaTalonSRX(ArmMap.MOTOR_ID)
     private val rightMotor = HaTalonSRX(ArmMap.MOTOR_ID)
 

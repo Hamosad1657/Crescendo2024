@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.hamosad1657.lib.motors.HaTalonFX
+import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.toIdleMode
 import com.revrobotics.CANSparkBase
@@ -22,6 +23,10 @@ import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.subsystems.shooter.ShooterConstants as Constants
 
 object ShooterSubsystem : SubsystemBase() {
+    init {
+        setNameToClassName()
+    }
+
     // --- Motors and Sensors ---
 
     private val shooterMainMotor = CANSparkFlex(ShooterMap.MAIN_MOTOR_ID, MotorType.kBrushless).apply {

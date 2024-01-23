@@ -4,6 +4,7 @@ import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.motors.HaTalonFX
+import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -12,6 +13,10 @@ import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
+    init {
+        setNameToClassName()
+    }
+
     // --- Motors ---
 
     private val leftMainMotor = HaTalonFX(ClimbingMap.LEFT_MAIN_MOTOR_ID)
