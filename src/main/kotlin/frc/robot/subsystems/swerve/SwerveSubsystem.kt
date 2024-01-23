@@ -3,8 +3,6 @@ package frc.robot.subsystems.swerve
 import com.hamosad1657.lib.Telemetry
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
@@ -17,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Robot
-import frc.robot.subsystems.vision.Vision
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.parser.SwerveDriveConfiguration
@@ -180,7 +177,7 @@ object SwerveSubsystem : SubsystemBase() {
 	 *
 	 * @param initialHolonomicPose The pose to set the odometry to
 	 */
-	fun resetOdometry(initialHolonomicPose: Pose2d?) {
+	fun resetOdometry(initialHolonomicPose: Pose2d) {
 		swerveDrive.resetOdometry(initialHolonomicPose)
 	}
 
@@ -189,8 +186,14 @@ object SwerveSubsystem : SubsystemBase() {
 	 *
 	 * @param chassisSpeeds Chassis Speeds to set.
 	 */
-	fun setChassisSpeeds(chassisSpeeds: ChassisSpeeds?) {
-		swerveDrive.setChassisSpeeds(chassisSpeeds)
+	fun setChassisSpeeds(chassisSpeeds: ChassisSpeeds) {
+		swerveDrive.setChassisSpeeds(chassisSpeeds.let {
+			ChassisSpeeds(
+				it.vxMetersPerSecond,
+				it.vyMetersPerSecond,
+				-it.omegaRadiansPerSecond
+			)
+		})
 	}
 
 	/** Sets the drive motors to brake/coast mode. */
@@ -206,19 +209,19 @@ object SwerveSubsystem : SubsystemBase() {
 	private fun addVisionMeasurement(
 		translationStdDev: Double = 0.3, thetaStdDev: Double = 0.9,
 	) {
-		Vision.estimatedGlobalPose?.let { estimatedPose ->
-			swerveDrive.field.getObject("Vision_Robot").pose = estimatedPose.estimatedPose.toPose2d()
-			swerveDrive.addVisionMeasurement(
-				estimatedPose.estimatedPose.toPose2d(),
-				estimatedPose.timestampSeconds,
-				Matrix(Nat.N3(), Nat.N1()).apply {
-					this[0, 0] = translationStdDev
-					this[1, 0] = translationStdDev
-					this[2, 0] = thetaStdDev
-				},
-			)
-			swerveDrive.setGyroOffset(swerveDrive.gyroRotation3d)
-		}
+//		Vision.estimatedGlobalPose?.let { estimatedPose ->
+//			swerveDrive.field.getObject("Vision_Robot").pose = estimatedPose.estimatedPose.toPose2d()
+//			swerveDrive.addVisionMeasurement(
+//				estimatedPose.estimatedPose.toPose2d(),
+//				estimatedPose.timestampSeconds,
+//				Matrix(Nat.N3(), Nat.N1()).apply {
+//					this[0, 0] = translationStdDev
+//					this[1, 0] = translationStdDev
+//					this[2, 0] = thetaStdDev
+//				},
+//			)
+//			swerveDrive.setGyroOffset(swerveDrive.gyroRotation3d)
+//		}
 	}
 
 	fun pathFindToPathCommand(pathname: String): Command {
