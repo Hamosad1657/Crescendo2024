@@ -76,6 +76,26 @@ object ClimbingSubsystem : SubsystemBase() {
                 (rightMainMotor.closedLoopError.value <= Constants.SETPOINT_TOLERANCE)
 
 
+    // --- Switches ---
+
+    // TODO: Check if switches are wired normally open or normally closed.
+    //  If they are wired normally closed, replace the 0 with a 1 and delete this comment.
+
+    val isAtOpenedLimit: Boolean
+        get() {
+            val leftSideAtForwardLimit = (leftMainMotor.getForwardLimit().value.value == 0)
+            val rightSideAtForwardLimit = (rightMainMotor.getForwardLimit().value.value == 0)
+            return leftSideAtForwardLimit || rightSideAtForwardLimit
+        }
+
+    val isAtClosedLimit: Boolean
+        get() {
+            val leftSideAtReverseLimit = (leftMainMotor.getReverseLimit().value.value == 0)
+            val rightSideAtReverseLimit = (rightMainMotor.getReverseLimit().value.value == 0)
+            return leftSideAtReverseLimit || rightSideAtReverseLimit
+        }
+
+
     // --- Motors Control ---
 
     /**

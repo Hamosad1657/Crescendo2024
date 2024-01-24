@@ -21,6 +21,12 @@ object ClimbingConstants {
         ForwardLimitAutosetPositionValue = ClimbingState.REACHING_CHAIN.setpoint
         ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
         ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
+
+        ReverseLimitEnable = true
+        ReverseLimitAutosetPositionEnable = true
+        ReverseLimitAutosetPositionValue = 0.0
+        ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
+        ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
     }
 
     val MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
