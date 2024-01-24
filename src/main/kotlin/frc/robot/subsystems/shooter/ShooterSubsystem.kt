@@ -50,6 +50,7 @@ object ShooterSubsystem : SubsystemBase() {
                 FeedbackRemoteSensorID = ShooterMap.Angle.CANCODER_ID
             }
         )
+        configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
     }
 
     private val angleCANCoder = CANcoder(ShooterMap.Angle.CANCODER_ID).apply {
@@ -92,7 +93,7 @@ object ShooterSubsystem : SubsystemBase() {
     // I have to track this myself because there is no getter for it in SparkPIDController :(
     private var velocitySetpoint = AngularVelocity.fromRpm(0.0)
 
-    val withinTolerance get() = withinVelocityTolerance && withinAngleTolerance
+    val withinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
 
     // --- Motor control ---
@@ -111,11 +112,20 @@ object ShooterSubsystem : SubsystemBase() {
         angleMotor.setControl(PositionVoltage(angle.rotations))
     }
 
-    // --- Private Utility ---
+    // --- Getters ---
 
-    private val withinVelocityTolerance get() = velocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
+    // TODO: Check if switches are wired normally open or normally closed.
+    //  If they are wired normally closed, replace the 0 with a 1 and delete this comment.
 
-    private val withinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
+    val isAtMaxAngleLimit: Boolean
+        get() = angleMotor.getForwardLimit().value.value == 0
+
+    val isAtMinAngleLimit: Boolean
+        get() = angleMotor.getReverseLimit().value.value == 0
+    
+    private val isWithinVelocityTolerance get() = velocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
+
+    private val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
 
 
     // --- Testing and Manual Overrides ---

@@ -1,8 +1,12 @@
 package frc.robot.subsystems.shooter
 
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs
+import com.ctre.phoenix6.signals.ForwardLimitSourceValue
+import com.ctre.phoenix6.signals.ForwardLimitTypeValue
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
+import frc.robot.subsystems.climbing.ClimbingConstants
 
 object ShooterConstants {
     // TODO: Find velocity and angle tolerances for shooter
@@ -39,6 +43,20 @@ object ShooterConstants {
 
             val COLLECT = ShooterState(Rotation2d(), 0.0.rpm)
         }
+    }
+
+    val FALCON_HARDWARE_LIMITS_CONFIG = HardwareLimitSwitchConfigs().apply {
+        ForwardLimitEnable = true
+        ForwardLimitAutosetPositionEnable = true
+        ForwardLimitAutosetPositionValue = ClimbingConstants.ClimbingState.REACHING_CHAIN.setpoint
+        ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
+        ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
+
+        ReverseLimitEnable = true
+        ReverseLimitAutosetPositionEnable = true
+        ReverseLimitAutosetPositionValue = 0.0
+        ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
+        ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
     }
 
 }
