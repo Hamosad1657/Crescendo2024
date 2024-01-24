@@ -50,7 +50,7 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
 fun IntakeSubsystem.runIntakeCommand(): Command =
     withName("run") {
         run {
-            if (ShooterSubsystem.withinTolerance) {
+            if (ShooterSubsystem.isWithinTolerance) {
                 set(IntakeConstants.MOTOR_OUTPUT)
             } else {
                 set(0.0)
@@ -90,7 +90,7 @@ fun collectIntoLoaderCommand(): Command =
  * - Requirements: loader & shooter.
  */
 fun loadIntoShooterCommand(): Command =
-    WaitUntilCommand(ShooterSubsystem::withinTolerance) andThen
+    WaitUntilCommand(ShooterSubsystem::isWithinAngleTolerance) andThen
             LoaderSubsystem.runLoaderCommand().withTimeout(ShooterConstants.SHOOT_TIME_SEC) withName "load into shooter"
 
 

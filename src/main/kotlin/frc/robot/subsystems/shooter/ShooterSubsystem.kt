@@ -93,7 +93,7 @@ object ShooterSubsystem : SubsystemBase() {
     // I have to track this myself because there is no getter for it in SparkPIDController :(
     private var velocitySetpoint = AngularVelocity.fromRpm(0.0)
 
-    val withinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
+    val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
 
     // --- Motor control ---
@@ -122,10 +122,10 @@ object ShooterSubsystem : SubsystemBase() {
 
     val isAtMinAngleLimit: Boolean
         get() = angleMotor.getReverseLimit().value.value == 0
-    
-    private val isWithinVelocityTolerance get() = velocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
 
-    private val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
+    val isWithinVelocityTolerance get() = velocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
+
+    val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
 
 
     // --- Testing and Manual Overrides ---
