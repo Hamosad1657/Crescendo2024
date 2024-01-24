@@ -6,6 +6,7 @@ import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.toIdleMode
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.subsystems.arm.ArmConstants.CURRENT_LIMIT_AMP
 import frc.robot.RobotMap.Arm as ArmMap
 
 object ArmSubsystem : SubsystemBase() {
@@ -19,6 +20,10 @@ object ArmSubsystem : SubsystemBase() {
     init {
         leftMotor.inverted = false // TODO: Verify positive output opens arm.
         rightMotor.inverted = false
+
+        leftMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
+        rightMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
+        
         rightMotor.follow(leftMotor)
     }
 
