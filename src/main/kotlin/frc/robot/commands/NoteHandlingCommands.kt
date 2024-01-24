@@ -17,24 +17,26 @@ import frc.robot.subsystems.shooter.ShooterSubsystem
 
 /** - Requirements: intake, loader & shooter. */
 fun collectCommand(): Command =
-    ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
-            collectIntoLoaderCommand() withName "collect"
+	ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
+			collectIntoLoaderCommand() withName "collect"
 
 /** SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM */
 fun ShooterSubsystem.prepareShooterForCollectingCommand(): Command =
-    getToShooterStateCommand(ShooterState.COLLECT) withName "prepare shooter for collecting"
+	withName("prepare shooter for collecting") { getToShooterStateCommand(ShooterState.COLLECT) }
 
 /** - Requirements: loader & shooter. */
 fun loadAndShootCommand(state: ShooterState): Command =
-    ShooterSubsystem.getToShooterStateCommand(state) raceWith
-            loadIntoShooterCommand() withName "load and shoot"
+	ShooterSubsystem.getToShooterStateCommand(state) raceWith
+			loadIntoShooterCommand() withName "load and shoot"
 
 /**
  * No end condition. This is intentional.
  * - Requirements: shooter.
  */
 fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
-    run { setShooterState(state) } withName "get to shooter state"
+	withName("get to shooter state") {
+		run { setShooterState(state) }
+	}
 
 
 // ---
@@ -48,17 +50,17 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
  * - Requirements: intake.
  */
 fun IntakeSubsystem.runIntakeCommand(): Command =
-    withName("run") {
-        run {
-            if (ShooterSubsystem.isWithinAngleTolerance) {
-                set(IntakeConstants.MOTOR_OUTPUT)
-            } else {
-                set(0.0)
-            }
-        } finallyDo { _ ->
-            set(0.0)
-        }
-    }
+	withName("run") {
+		run {
+			if (ShooterSubsystem.isWithinAngleTolerance) {
+				set(IntakeConstants.MOTOR_OUTPUT)
+			} else {
+				set(0.0)
+			}
+		} finallyDo { _ ->
+			set(0.0)
+		}
+	}
 
 
 /**
@@ -66,13 +68,13 @@ fun IntakeSubsystem.runIntakeCommand(): Command =
  * - Requirements: loader.
  */
 fun LoaderSubsystem.runLoaderCommand(): Command =
-    withName("run") {
-        run {
-            setLoader(LoaderConstants.MOTOR_OUTPUT)
-        } finallyDo { _ ->
-            setLoader(0.0)
-        }
-    }
+	withName("run") {
+		run {
+			setLoader(LoaderConstants.MOTOR_OUTPUT)
+		} finallyDo { _ ->
+			setLoader(0.0)
+		}
+	}
 
 
 /**
@@ -80,9 +82,9 @@ fun LoaderSubsystem.runLoaderCommand(): Command =
  * - Requirements: intake & loader.
  */
 fun collectIntoLoaderCommand(): Command =
-    IntakeSubsystem.runIntakeCommand() alongWith
-            LoaderSubsystem.runLoaderCommand() until
-            LoaderSubsystem::isNoteDetected withName "collect into loader"
+	IntakeSubsystem.runIntakeCommand() alongWith
+			LoaderSubsystem.runLoaderCommand() until
+			LoaderSubsystem::isNoteDetected withName "collect into loader"
 
 
 /**
@@ -90,8 +92,9 @@ fun collectIntoLoaderCommand(): Command =
  * - Requirements: loader & shooter.
  */
 fun loadIntoShooterCommand(): Command =
-    WaitUntilCommand(ShooterSubsystem::isWithinTolerance) andThen
-            LoaderSubsystem.runLoaderCommand().withTimeout(ShooterConstants.SHOOT_TIME_SEC) withName "load into shooter"
+	WaitUntilCommand(ShooterSubsystem::isWithinTolerance) andThen
+			LoaderSubsystem.runLoaderCommand() withTimeout
+			ShooterConstants.SHOOT_TIME_SEC withName "load into shooter"
 
 
 // ---
@@ -102,13 +105,13 @@ fun loadIntoShooterCommand(): Command =
 
 /** - Requirements: shooter. */
 fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): Command =
-    withName("angle open loop teleop") {
-        run {
-            setAngleMotorOutput(percentOutput())
-        } finallyDo { _ ->
-            setAngleMotorOutput(0.0)
-        }
-    }
+	withName("angle open loop teleop") {
+		run {
+			setAngleMotorOutput(percentOutput())
+		} finallyDo { _ ->
+			setAngleMotorOutput(0.0)
+		}
+	}
 
 
 /**
@@ -118,22 +121,22 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): C
  * - Requirements: shooter.
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngle: () -> Double, multiplier: Double): Command =
-    withName("angle closed loop teleop") {
-        run {
-            val delta = changeInAngle() * multiplier
-            increaseAngleSetpointBy(Rotation2d.fromDegrees(delta))
-        }
-    }
+	withName("angle closed loop teleop") {
+		run {
+			val delta = changeInAngle() * multiplier
+			increaseAngleSetpointBy(Rotation2d.fromDegrees(delta))
+		}
+	}
 
 /** - Requirements: shooter. */
 fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double): Command =
-    withName("velocity open loop teleop") {
-        run {
-            increaseShooterMotorsOutputBy(percentOutput())
-        }.finallyDo { _ ->
-            setShooterMotorsOutput(0.0)
-        }
-    }
+	withName("velocity open loop teleop") {
+		run {
+			increaseShooterMotorsOutputBy(percentOutput())
+		} finallyDo { _ ->
+			setShooterMotorsOutput(0.0)
+		}
+	}
 
 
 /**
@@ -143,9 +146,9 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double)
  * - Requirements: shooter.
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(changeInVelocity: () -> Double, multiplier: Double): Command =
-    withName("velocity closed loop teleop") {
-        run {
-            val delta = changeInVelocity() * multiplier
-            increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
-        }
-    }
+	withName("velocity closed loop teleop") {
+		run {
+			val delta = changeInVelocity() * multiplier
+			increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
+		}
+	}
