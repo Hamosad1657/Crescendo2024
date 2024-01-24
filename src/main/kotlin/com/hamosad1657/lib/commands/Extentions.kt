@@ -13,6 +13,8 @@ infix fun Command.finallyDo(end: (interrupted: Boolean) -> Unit): Command = this
 infix fun Command.alongWith(parallel: Command): Command = this.alongWith(parallel)
 infix fun Command.raceWith(parallel: Command): Command = this.raceWith(parallel)
 
+infix fun Command.withTimeout(seconds: Double): Command = this.withTimeout(seconds)
+
 /** Good for multi-subsystem commands.
  * For single-subsystem commands, use [SubsystemBase.withName].
  */
