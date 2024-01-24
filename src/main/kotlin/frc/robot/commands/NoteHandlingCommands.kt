@@ -90,7 +90,7 @@ fun collectIntoLoaderCommand(): Command =
  * - Requirements: loader & shooter.
  */
 fun loadIntoShooterCommand(): Command =
-    WaitUntilCommand(ShooterSubsystem::isWithinAngleTolerance) andThen
+    WaitUntilCommand(ShooterSubsystem::isWithinTolerance) andThen
             LoaderSubsystem.runLoaderCommand().withTimeout(ShooterConstants.SHOOT_TIME_SEC) withName "load into shooter"
 
 
