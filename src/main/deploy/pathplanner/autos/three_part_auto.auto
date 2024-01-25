@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.48,
-      "y": 1.4272981273235277
+      "x": 1.3203408224998268,
+      "y": 5.503960098829289
     },
     "rotation": 0
   },
@@ -14,13 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "wavy_calibration_path"
+            "pathName": "left_collection"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "calibration_return_path"
+            "pathName": "left_to_middle"
           }
         }
       ]

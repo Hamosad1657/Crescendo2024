@@ -27,7 +27,7 @@ object RobotContainer {
 
 	/** Use this method to define your `trigger->command` mappings. */
 	private fun configureBindings() {
-		controller.triangle().onTrue(swerve.followAutoCommand("calibration_auto"))
+		controller.triangle().onTrue(swerve.followAutoCommand("three_part_auto"))
 		controller.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
 		controller.square().onTrue(InstantCommand({}, swerve))
 	}
