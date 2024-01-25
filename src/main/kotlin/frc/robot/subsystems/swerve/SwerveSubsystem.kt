@@ -179,7 +179,7 @@ object SwerveSubsystem : SubsystemBase() {
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
 		swerveDrive.resetOdometry(initialHolonomicPose)
-		swerveDrive.setGyroOffset(Rotation3d(0.0, 0.0, initialHolonomicPose.rotation.radians))
+		swerveDrive.setGyro(Rotation3d(0.0, 0.0, initialHolonomicPose.rotation.radians))
 	}
 
 	/**
