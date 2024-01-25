@@ -19,8 +19,8 @@ object SwerveConstants {
 			0.0, 0.0
 		)
 
-	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(6.0, 0.0, 0.0)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(5.0, 0.0, 0.0)
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(6.0, 0.0, 0.8)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(18.0, 3.0, 1.0)
 
 	private val DRIVEBASE_RADIUS = 0.417405.meters
 
