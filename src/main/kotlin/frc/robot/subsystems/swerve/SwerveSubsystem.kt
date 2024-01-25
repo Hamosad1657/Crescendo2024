@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve
 
 import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.alliance
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.geometry.Pose2d
@@ -91,8 +92,6 @@ object SwerveSubsystem : SubsystemBase() {
 				// Boolean supplier that controls when the path will be mirrored for the red alliance
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-				val alliance = DriverStation.getAlliance().orElse(null)
-
 				alliance == DriverStation.Alliance.Red
 			},
 			this
