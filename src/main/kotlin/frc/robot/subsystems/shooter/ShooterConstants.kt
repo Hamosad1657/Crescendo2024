@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs
 import com.ctre.phoenix6.signals.ForwardLimitSourceValue
 import com.ctre.phoenix6.signals.ForwardLimitTypeValue
 import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 import frc.robot.subsystems.climbing.ClimbingConstants
@@ -11,7 +12,7 @@ import frc.robot.subsystems.climbing.ClimbingConstants
 object ShooterConstants {
     // TODO: Find velocity and angle tolerances for shooter
     val VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
-    val ANGLE_TOLERANCE = Rotation2d()
+    val ANGLE_TOLERANCE = 0.25.degrees
 
     val ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
 
