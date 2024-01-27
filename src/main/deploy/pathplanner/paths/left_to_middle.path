@@ -45,5 +45,5 @@
   "reversed": false,
   "folder": "basic_auto",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

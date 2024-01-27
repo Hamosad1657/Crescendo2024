@@ -32,12 +32,7 @@
     {
       "waypointRelativePos": 0.2,
       "rotationDegrees": 0.0,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 30.0,
-      "rotateFast": true
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
@@ -56,5 +51,5 @@
   "reversed": false,
   "folder": "basic_auto",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

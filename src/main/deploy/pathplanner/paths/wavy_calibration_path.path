@@ -67,5 +67,5 @@
   "reversed": false,
   "folder": "calibration",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
