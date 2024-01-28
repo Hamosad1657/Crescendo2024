@@ -11,7 +11,8 @@ import com.hamosad1657.lib.units.rps
 
 object ClimbingConstants {
     // TODO: Tune PID
-    val PID_GAINS = PIDGains(0.0, 0.0, 0.0)
+    val WEIGHT_BEARING_PID_GAINS = PIDGains(0.0, 0.0, 0.0, {0.0})
+    val NO_WEIGHT_BEARING_PID_GAINS = PIDGains(0.0, 0.0, 0.0, {0.0})
 
     const val SETPOINT_TOLERANCE: Rotations = 0.0
 
@@ -34,26 +35,26 @@ object ClimbingConstants {
         MotionMagicAcceleration = 0.0
     }
 
-    enum class ClimbingState(val setpoint: Rotations, val voltageFF: Double, val maxVelocity: AngularVelocity) {
+    enum class ClimbingState(val setpoint: Rotations, val output: Double, val bearingWeight: Boolean) {
         REACHING_CHAIN(
             setpoint = 0.0,
-            voltageFF = 0.0,
-            maxVelocity = 0.0.rps,
+            output = 0.0,
+            bearingWeight = false
         ),
         PULLING_UP_ROBOT(
             setpoint = 0.0,
-            voltageFF = 0.0,
-            maxVelocity = 0.0.rps,
+            output = 0.0,
+            bearingWeight = true
         ),
         CLIMBING_DOWN(
             setpoint = 0.0,
-            voltageFF = 0.0,
-            maxVelocity = 0.0.rps,
+            output = 0.0,
+            bearingWeight = true
         ),
         STAYING_FOLDED(
             setpoint = 0.0,
-            voltageFF = 0.0,
-            maxVelocity = 0.0.rps,
+            output = 0.0,
+            bearingWeight = false
         ),
     }
 }

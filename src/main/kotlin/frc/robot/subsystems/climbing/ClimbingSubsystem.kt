@@ -5,12 +5,11 @@ import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.ParentDevice
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
+import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.subsystemutils.setNameToClassName
-import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState
 import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
@@ -33,7 +32,7 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val rightSecondaryMotor = HaTalonFX(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID)
 		.apply { configSecondaryMotor(ClimbingMap.RIGHT_MAIN_MOTOR_ID) }
 
-	private var lastFFVolts = 0.0
+	private var lastSetFFVolts = 0.0
 
 	// --- Motors Configuration ---
 
@@ -41,7 +40,7 @@ object ClimbingSubsystem : SubsystemBase() {
 		apply {
 			// TODO: Verify positive output raises climber
 			inverted = false
-			configPIDGains(Constants.PID_GAINS)
+			configPIDGains(Constants.WEIGHT_BEARING_PID_GAINS)
 			configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
 			configurator.apply(Constants.MOTION_MAGIC_CONFIG)
 		}
@@ -63,15 +62,6 @@ object ClimbingSubsystem : SubsystemBase() {
 			rightSecondaryMotor.setNeutralMode(value)
 			field = value
 		}
-
-	/** Sets max velocity when using closed loop. */
-	fun setMaxVelocity(maxVelocity: AngularVelocity) {
-		val motionMagicConfig = Constants.MOTION_MAGIC_CONFIG.apply {
-			MotionMagicCruiseVelocity = maxVelocity.rps
-		}
-		leftMainMotor.configurator.apply(motionMagicConfig)
-		rightMainMotor.configurator.apply(motionMagicConfig)
-	}
 
 	val isWithinTolerance
 		get() = (leftMainMotor.closedLoopError.value <= Constants.SETPOINT_TOLERANCE) &&
@@ -100,27 +90,22 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// --- Motors Control ---
 
-	/**
-	 * Does not config the max velocity, because that is an expensive operation, and the
-	 * [setClimbingStateSetpoint] function is meant to be called periodically (for motor safety).
-	 *
-	 * Set the max velocity separately using the [setMaxVelocity] function. This only needs to
-	 * be called once (every time you change it).
-	 */
-	fun setClimbingStateSetpoint(state: ClimbingState) {
-		this.lastFFVolts = state.voltageFF
-		val control = PositionVoltage(state.setpoint, 0.0, false, lastFFVolts, 0, false, false, false)
+	fun configPIDF(gains: PIDGains) {
+		leftMainMotor.configPIDGains(gains)
+		rightMainMotor.configPIDGains(gains)
+		lastSetFFVolts = gains.kFF()
+	}
+
+	fun getPosition(): Rotations = leftMainMotor.position.value
+
+	fun setPositionSetpoint(newSetpoint: Rotations) {
+		val control = PositionVoltage(newSetpoint, 0.0, false, lastSetFFVolts, 0, false, false, false)
 		leftMainMotor.setControl(control)
 		rightMainMotor.setControl(control)
 	}
 
-	fun increasePositionSetpointBy(changeInPosition: Rotations) {
-		val currentPosition = leftMainMotor.position.value
-		val newSetpoint = currentPosition + changeInPosition
-
-		val control = PositionVoltage(newSetpoint, 0.0, false, lastFFVolts, 0, false, false, false)
-		leftMainMotor.setControl(control)
-		rightMainMotor.setControl(control)
+	fun increasePositionSetpointBy(desiredChangeInPosition: Rotations) {
+		setPositionSetpoint(getPosition() + desiredChangeInPosition)
 	}
 
 	fun setSpeed(percentOutput: Double) {
