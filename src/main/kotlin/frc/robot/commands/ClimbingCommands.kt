@@ -7,7 +7,6 @@ import com.hamosad1657.lib.commands.withName
 import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
-import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState
 import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState.*
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 
@@ -36,7 +35,7 @@ fun ClimbingSubsystem.pullUpRobotCommand(): Command =
 	}
 
 /**
- * Climbing mechanism extends open-loop untill it passed [CLIMBING_DOWN.setpoint],
+ * Climbing mechanism extends open-loop until it passed [CLIMBING_DOWN.setpoint],
  * then performs PID to maintain that setpoint. Command has no end condition.
  * - Requirements: climbing.
  */
@@ -49,14 +48,16 @@ fun ClimbingSubsystem.climbDownCommand(): Command =
 	}
 
 /**
- * Performs PID to maintain [STAYING_FOLDED.setpoint]. Command has no end condition.
+ * Climbing mechanism retracts open-loop until it passed [STAYING_FOLDED.setpoint],
+ * then performs PID to maintain that setpoint. Command has no end condition.
  * - Requirements: climbing.
  */
 fun ClimbingSubsystem.stayFoldedCommand(): Command =
 	withName("stay folded") {
 		runOnce {
 			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
-		} andThen maintainSetpointCommand(STAYING_FOLDED.setpoint)
+		} andThen openLoopGetToPositionCommand(STAYING_FOLDED.setpoint, STAYING_FOLDED.output) andThen
+				maintainSetpointCommand(STAYING_FOLDED.setpoint)
 	}
 
 /**
