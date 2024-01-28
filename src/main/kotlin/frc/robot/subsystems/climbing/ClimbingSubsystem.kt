@@ -70,7 +70,7 @@ object ClimbingSubsystem : SubsystemBase() {
 			MotionMagicCruiseVelocity = maxVelocity.rps
 		}
 		leftMainMotor.configurator.apply(motionMagicConfig)
-		leftSecondaryMotor.configurator.apply(motionMagicConfig)
+		rightMainMotor.configurator.apply(motionMagicConfig)
 	}
 
 	val isWithinTolerance
