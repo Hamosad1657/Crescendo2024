@@ -33,10 +33,9 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val rightSecondaryMotor = CANSparkFlex(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID, MotorType.kBrushless)
 		.apply { configSecondaryMotor(rightMainMotor) }
 
-	private val rightPIDController = rightMainMotor.pidController
 	private val leftPIDController = leftMainMotor.pidController
+	private val rightPIDController = rightMainMotor.pidController
 
-	private var lastSetFFVolts = 0.0
 	private var lastSetpoint: Rotations = 0.0
 
 	// --- Motors Configuration ---
@@ -70,7 +69,8 @@ object ClimbingSubsystem : SubsystemBase() {
 			field = value
 		}
 
-	val closedLoopError: Rotations = lastSetpoint - currentPosition
+	val closedLoopError: Rotations
+		get() = lastSetpoint - currentPosition
 
 	val isWithinTolerance: Boolean
 		get() = closedLoopError <= Constants.SETPOINT_TOLERANCE
@@ -104,7 +104,6 @@ object ClimbingSubsystem : SubsystemBase() {
 	fun configPIDF(gains: PIDGains) {
 		leftMainMotor.configPIDF(gains)
 		rightMainMotor.configPIDF(gains)
-		lastSetFFVolts = gains.kFF()
 	}
 
 	val currentPosition: Rotations
@@ -120,7 +119,7 @@ object ClimbingSubsystem : SubsystemBase() {
 		setPositionSetpoint(currentPosition + desiredChangeInPosition)
 	}
 
-	fun setSpeed(percentOutput: Double) {
+	fun setPercentOutput(percentOutput: Double) {
 		leftMainMotor.set(percentOutput)
 		rightMainMotor.set(percentOutput)
 	}

@@ -68,9 +68,9 @@ fun ClimbingSubsystem.stayFoldedCommand(): Command =
 fun ClimbingSubsystem.openLoopTeleopCommand(percentOutput: () -> Double): Command =
 	withName("climbing open loop teleop") {
 		run {
-			setSpeed(percentOutput())
+			setPercentOutput(percentOutput())
 		} finallyDo {
-			setSpeed(0.0)
+			setPercentOutput(0.0)
 		}
 	}
 
@@ -85,7 +85,7 @@ fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> Double, mu
 			val delta = changeInPosition() * multiplier
 			increasePositionSetpointBy(delta)
 		} finallyDo {
-			setSpeed(0.0)
+			setPercentOutput(0.0)
 		}
 	}
 
@@ -103,17 +103,17 @@ fun ClimbingSubsystem.maintainSetpointCommand(setpoint: Rotations): Command =
  * - Requirements: climbing.
  */
 private fun ClimbingSubsystem.openLoopGetToPositionCommand(desiredPosition: Rotations, output: Double): Command {
-	val endCondition: (() -> Boolean)?
+	val endCondition: (() -> Boolean)
 
 	if (output < 0.0) {
-		endCondition = { currentPosition < desiredPosition }
+		endCondition = { currentPosition <= desiredPosition }
 	} else {
-		endCondition = { currentPosition > desiredPosition }
+		endCondition = { currentPosition >= desiredPosition }
 	}
 
 	return withName("get to setpoint") {
 		run {
-			setSpeed(output)
+			setPercentOutput(output)
 		} until endCondition
 	}
 }
