@@ -46,13 +46,15 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
 // ---
 
 /**
- * Apart from testing, should only be used in [collectCommand] or in a manual override.
+ * Apart from testing, should only be used in [collectIntoLoaderCommand] or in a manual override.
+ *
+ * Runs intake only if shooter angle is within tolerance, and loader is running.
  * - Requirements: intake.
  */
 fun IntakeSubsystem.runIntakeCommand(): Command =
 	withName("run") {
 		run {
-			if (ShooterSubsystem.isWithinAngleTolerance) {
+			if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.running) {
 				set(IntakeConstants.MOTOR_OUTPUT)
 			} else {
 				set(0.0)
@@ -82,8 +84,9 @@ fun LoaderSubsystem.runLoaderCommand(): Command =
  * - Requirements: intake & loader.
  */
 fun collectIntoLoaderCommand(): Command =
-	IntakeSubsystem.runIntakeCommand() alongWith
-			LoaderSubsystem.runLoaderCommand() until
+	ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
+			LoaderSubsystem.runLoaderCommand() alongWith
+			IntakeSubsystem.runIntakeCommand() until
 			LoaderSubsystem::isNoteDetected withName "collect into loader"
 
 
