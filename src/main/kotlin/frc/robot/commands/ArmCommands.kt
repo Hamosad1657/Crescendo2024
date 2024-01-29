@@ -12,24 +12,24 @@ import frc.robot.subsystems.arm.ArmSubsystem
 
 /** - Requirements: arm. */
 fun ArmSubsystem.openCommand(): Command {
-    return withName("open") {
-        run { set(OPEN_OUTPUT) } until ::isAtForwardLimit finallyDo { set(0.0) }
-    }
+	return withName("open") {
+		run { setWithLimits(OPEN_OUTPUT) } until ::isAtForwardLimit finallyDo { set(0.0) }
+	}
 }
 
 /** - Requirements: arm. */
 fun ArmSubsystem.foldCommand(): Command {
-    return withName("fold") {
-        run { set(FOLD_OUTPUT) } until ::isAtReverseLimit finallyDo { set(0.0) }
-    }
+	return withName("fold") {
+		run { setWithLimits(FOLD_OUTPUT) } until ::isAtReverseLimit finallyDo { set(0.0) }
+	}
 }
 
 fun ArmSubsystem.stayFoldedCommand(): Command {
-    return withName("stay folded") {
-        run { set(STAY_FOLDED_OUTPUT) } finallyDo { set(0.0) }
-    }
+	return withName("stay folded") {
+		run { set(STAY_FOLDED_OUTPUT) } finallyDo { set(0.0) }
+	}
 }
 
 fun ArmSubsystem.foldAndStayFoldedCommand(): Command {
-    return withName("fold & stay folded") { foldCommand() andThen stayFoldedCommand() }
+	return withName("fold & stay folded") { foldCommand() andThen stayFoldedCommand() }
 }

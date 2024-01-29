@@ -10,39 +10,51 @@ import frc.robot.subsystems.arm.ArmConstants.CURRENT_LIMIT_AMP
 import frc.robot.RobotMap.Arm as ArmMap
 
 object ArmSubsystem : SubsystemBase() {
-    init {
-        setNameToClassName()
-    }
+	init {
+		setNameToClassName()
+	}
 
-    private val leftMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
-    private val rightMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
+	private val leftMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
+	private val rightMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
 
-    init {
-        leftMotor.inverted = false // TODO: Verify positive output opens arm.
-        rightMotor.inverted = false
+	init {
+		leftMotor.inverted = false // TODO: Verify positive output opens arm.
+		rightMotor.inverted = false
 
-        leftMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
-        rightMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
-        
-        rightMotor.follow(leftMotor)
-    }
+		leftMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
+		rightMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
 
-    private val forwardLimit = DigitalInput(ArmMap.FORWARD_LIMIT_CHANNEL)
-    private val reverseLimit = DigitalInput(ArmMap.REVERSE_LIMIT_CHANNEL)
+		rightMotor.follow(leftMotor)
+	}
+
+	private val forwardLimit = DigitalInput(ArmMap.FORWARD_LIMIT_CHANNEL)
+	private val reverseLimit = DigitalInput(ArmMap.REVERSE_LIMIT_CHANNEL)
 
 
-    var neutralMode: NeutralMode = NeutralMode.Brake
-        set(value) {
-            leftMotor.setIdleMode(value.toIdleMode())
-            rightMotor.setIdleMode(value.toIdleMode())
-            field = value
-        }
+	var neutralMode: NeutralMode = NeutralMode.Brake
+		set(value) {
+			leftMotor.setIdleMode(value.toIdleMode())
+			rightMotor.setIdleMode(value.toIdleMode())
+			field = value
+		}
 
-    fun set(percentOutput: Double) {
-        leftMotor.set(percentOutput)
-    }
+	fun setWithLimits(percentOutput: Double) {
+		if (percentOutput < 0.0 && isAtReverseLimit) {
+			set(0.0)
+			return
+		}
+		if (percentOutput > 0.0 && isAtForwardLimit) {
+			set(0.0)
+			return
+		}
+		set(percentOutput)
+	}
 
-    // TODO: Check if limit switch is wired normally false or normally true.
-    val isAtForwardLimit get() = forwardLimit.get()
-    val isAtReverseLimit get() = reverseLimit.get()
+	fun set(percentOutput: Double) {
+		leftMotor.set(percentOutput)
+	}
+
+	// TODO: Check if limit switch is wired normally false or normally true.
+	val isAtForwardLimit get() = forwardLimit.get()
+	val isAtReverseLimit get() = reverseLimit.get()
 }
