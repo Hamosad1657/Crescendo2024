@@ -1,14 +1,15 @@
 package frc.robot.subsystems.climbing
 
-import com.ctre.phoenix6.controls.Follower
-import com.ctre.phoenix6.controls.PositionVoltage
-import com.ctre.phoenix6.hardware.ParentDevice
-import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.PIDGains
-import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.Rotations
+import com.hamosad1657.lib.units.toIdleMode
+import com.revrobotics.CANSparkBase.ControlType
+import com.revrobotics.CANSparkBase.SoftLimitDirection
+import com.revrobotics.CANSparkFlex
+import com.revrobotics.CANSparkLowLevel.MotorType
+import com.revrobotics.SparkLimitSwitch
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
@@ -20,35 +21,41 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// --- Motors ---
 
-	private val leftMainMotor = HaTalonFX(ClimbingMap.LEFT_MAIN_MOTOR_ID)
+	private val leftMainMotor = CANSparkFlex(ClimbingMap.LEFT_MAIN_MOTOR_ID, MotorType.kBrushless)
 		.apply { configMainMotor() }
 
-	private val leftSecondaryMotor = HaTalonFX(ClimbingMap.LEFT_SECONDARY_MOTOR_ID)
-		.apply { configSecondaryMotor(ClimbingMap.LEFT_MAIN_MOTOR_ID) }
+	private val leftSecondaryMotor = CANSparkFlex(ClimbingMap.LEFT_SECONDARY_MOTOR_ID, MotorType.kBrushless)
+		.apply { configSecondaryMotor(leftMainMotor) }
 
-	private val rightMainMotor = HaTalonFX(ClimbingMap.RIGHT_MAIN_MOTOR_ID)
+	private val rightMainMotor = CANSparkFlex(ClimbingMap.RIGHT_MAIN_MOTOR_ID, MotorType.kBrushless)
 		.apply { configMainMotor() }
 
-	private val rightSecondaryMotor = HaTalonFX(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID)
-		.apply { configSecondaryMotor(ClimbingMap.RIGHT_MAIN_MOTOR_ID) }
+	private val rightSecondaryMotor = CANSparkFlex(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID, MotorType.kBrushless)
+		.apply { configSecondaryMotor(rightMainMotor) }
+
+	private val rightPIDController = rightMainMotor.pidController
+	private val leftPIDController = leftMainMotor.pidController
 
 	private var lastSetFFVolts = 0.0
+	private var lastSetpoint: Rotations = 0.0
 
 	// --- Motors Configuration ---
 
-	private fun HaTalonFX.configMainMotor() =
+	private fun CANSparkFlex.configMainMotor() =
 		apply {
 			// TODO: Verify positive output raises climber
 			inverted = false
-			configPIDGains(Constants.WEIGHT_BEARING_PID_GAINS)
-			configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
-			configurator.apply(Constants.MOTION_MAGIC_CONFIG)
+			configPIDF(Constants.WEIGHT_BEARING_PID_GAINS)
+			setSoftLimit(SoftLimitDirection.kForward, Constants.MAX_POSSIBLE_POSITION.toFloat())
+			setSoftLimit(SoftLimitDirection.kReverse, Constants.MAX_POSSIBLE_POSITION.toFloat())
+			enableSoftLimit(SoftLimitDirection.kForward, true)
+			enableSoftLimit(SoftLimitDirection.kReverse, true)
 		}
 
-	private fun HaTalonFX.configSecondaryMotor(mainMotorID: Int) =
+	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
 		apply {
 			// TODO: Check if follower motor should oppose master motor or not
-			setControl(Follower(mainMotorID, false))
+			this.follow(mainMotor, false)
 		}
 
 
@@ -56,56 +63,61 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	var neutralMode = NeutralModeValue.Brake
 		set(value) {
-			leftMainMotor.setNeutralMode(value)
-			leftSecondaryMotor.setNeutralMode(value)
-			rightMainMotor.setNeutralMode(value)
-			rightSecondaryMotor.setNeutralMode(value)
+			leftMainMotor.setIdleMode(value.toIdleMode())
+			leftSecondaryMotor.setIdleMode(value.toIdleMode())
+			rightMainMotor.setIdleMode(value.toIdleMode())
+			rightSecondaryMotor.setIdleMode(value.toIdleMode())
 			field = value
 		}
 
-	val isWithinTolerance
-		get() = (leftMainMotor.closedLoopError.value <= Constants.SETPOINT_TOLERANCE) &&
-				(rightMainMotor.closedLoopError.value <= Constants.SETPOINT_TOLERANCE)
+	val closedLoopError: Rotations = lastSetpoint - currentPosition
+
+	val isWithinTolerance: Boolean
+		get() = closedLoopError <= Constants.SETPOINT_TOLERANCE
 
 
 	// --- Switches ---
 
 	// TODO: Check if switches are wired normally open or normally closed.
-	//  If they are wired normally closed, replace the 0 with a 1 and delete this comment.
+
+	val isLeftAtOpenedLimit: Boolean
+		get() = leftMainMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
+
+	val isLeftAtClosedLimit: Boolean
+		get() = leftMainMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
+
+	val isRightAtOpenedLimit: Boolean
+		get() = rightMainMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
+
+	val isRightAtClosedLimit: Boolean
+		get() = rightMainMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
 
 	val isAtOpenedLimit: Boolean
-		get() {
-			val leftSideAtForwardLimit = (leftMainMotor.getForwardLimit().value.value == 0)
-			val rightSideAtForwardLimit = (rightMainMotor.getForwardLimit().value.value == 0)
-			return leftSideAtForwardLimit || rightSideAtForwardLimit
-		}
+		get() = isLeftAtOpenedLimit || isRightAtOpenedLimit
 
 	val isAtClosedLimit: Boolean
-		get() {
-			val leftSideAtReverseLimit = (leftMainMotor.getReverseLimit().value.value == 0)
-			val rightSideAtReverseLimit = (rightMainMotor.getReverseLimit().value.value == 0)
-			return leftSideAtReverseLimit || rightSideAtReverseLimit
-		}
+		get() = isLeftAtClosedLimit || isRightAtClosedLimit
 
 
 	// --- Motors Control ---
 
 	fun configPIDF(gains: PIDGains) {
-		leftMainMotor.configPIDGains(gains)
-		rightMainMotor.configPIDGains(gains)
+		leftMainMotor.configPIDF(gains)
+		rightMainMotor.configPIDF(gains)
 		lastSetFFVolts = gains.kFF()
 	}
 
-	fun getPosition(): Rotations = leftMainMotor.position.value
+	val currentPosition: Rotations
+		get() = leftMainMotor.encoder.position
 
 	fun setPositionSetpoint(newSetpoint: Rotations) {
-		val control = PositionVoltage(newSetpoint, 0.0, false, lastSetFFVolts, 0, false, false, false)
-		leftMainMotor.setControl(control)
-		rightMainMotor.setControl(control)
+		lastSetpoint = newSetpoint
+		leftPIDController.setReference(newSetpoint, ControlType.kPosition)
+		rightPIDController.setReference(newSetpoint, ControlType.kPosition)
 	}
 
 	fun increasePositionSetpointBy(desiredChangeInPosition: Rotations) {
-		setPositionSetpoint(getPosition() + desiredChangeInPosition)
+		setPositionSetpoint(currentPosition + desiredChangeInPosition)
 	}
 
 	fun setSpeed(percentOutput: Double) {
@@ -113,42 +125,11 @@ object ClimbingSubsystem : SubsystemBase() {
 		rightMainMotor.set(percentOutput)
 	}
 
-
-	// --- Orchestra ---
-
-	object Orchestra {
-		private var songs: Array<String>? = null
-		private var instruments: ArrayList<TalonFX> = arrayListOf(
-			leftMainMotor,
-			leftSecondaryMotor,
-			rightMainMotor,
-			rightSecondaryMotor
-		)
-
-		private val orchestra = com.ctre.phoenix6.Orchestra(instruments as Collection<ParentDevice>)
-
-		fun loadSongOptions(fileNames: Array<String>) {
-			songs = fileNames
-		}
-
-		fun selectAndLoadSong(index: Int) {
-			require(songs != null) { "Song options not loaded. Call [loadSongOptions]." }
-			orchestra.loadMusic(songs!![index])
-		}
-
-		fun playSelectedSong() {
-			orchestra.play()
-		}
-
-		fun pause() {
-			orchestra.pause()
-		}
-
-		fun reset() {
-			orchestra.stop()
-		}
-
-		val isPlaying: Boolean
-			get() = orchestra.isPlaying
+	private fun CANSparkFlex.configPIDF(gains: PIDGains) {
+		pidController.p = gains.kP
+		pidController.i = gains.kI
+		pidController.d = gains.kD
+		pidController.iZone = gains.kIZone
+		pidController.ff = gains.kFF()
 	}
 }

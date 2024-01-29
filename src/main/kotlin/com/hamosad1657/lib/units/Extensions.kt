@@ -1,6 +1,7 @@
 package com.hamosad1657.lib.units
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix6.signals.NeutralModeValue
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
 
@@ -52,14 +53,20 @@ inline val Int.rotations: Rotation2d get() = Rotation2d.fromRotations(this.toDou
 /// --- NeutralMode and IdleMode
 
 fun IdleMode.toNeutralMode(): NeutralMode =
-    when (this) {
-        IdleMode.kCoast -> NeutralMode.Coast
-        IdleMode.kBrake -> NeutralMode.Brake
-    }
+	when (this) {
+		IdleMode.kCoast -> NeutralMode.Coast
+		IdleMode.kBrake -> NeutralMode.Brake
+	}
 
 fun NeutralMode.toIdleMode(): IdleMode =
-    when (this) {
-        NeutralMode.Coast -> IdleMode.kCoast
-        NeutralMode.Brake -> IdleMode.kBrake
-        NeutralMode.EEPROMSetting -> throw IllegalStateException("can't convert `NeutralMode.EEPROMSetting` to IdleMode")
-    }
+	when (this) {
+		NeutralMode.Coast -> IdleMode.kCoast
+		NeutralMode.Brake -> IdleMode.kBrake
+		NeutralMode.EEPROMSetting -> throw IllegalStateException("can't convert `NeutralMode.EEPROMSetting` to IdleMode")
+	}
+
+fun NeutralModeValue.toIdleMode(): IdleMode =
+	when (this) {
+		NeutralModeValue.Coast -> IdleMode.kCoast
+		NeutralModeValue.Brake -> IdleMode.kBrake
+	}

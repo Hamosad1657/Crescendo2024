@@ -6,9 +6,9 @@ import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.commands.withName
 import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState.*
 import frc.robot.subsystems.climbing.ClimbingSubsystem
+import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 /**
  * Climbing mechanism extends open-loop until it passed [REACHING_CHAIN.setpoint], then the command ends.
@@ -106,9 +106,9 @@ private fun ClimbingSubsystem.openLoopGetToPositionCommand(desiredPosition: Rota
 	val endCondition: (() -> Boolean)?
 
 	if (output < 0.0) {
-		endCondition = { getPosition() < desiredPosition }
+		endCondition = { currentPosition < desiredPosition }
 	} else {
-		endCondition = { getPosition() > desiredPosition }
+		endCondition = { currentPosition > desiredPosition }
 	}
 
 	return withName("get to setpoint") {
