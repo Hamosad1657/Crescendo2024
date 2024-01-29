@@ -8,33 +8,33 @@ import frc.robot.RobotMap.Intake as IntakeMap
 import frc.robot.subsystems.intake.IntakeConstants as Constants
 
 object IntakeSubsystem : SubsystemBase() {
-    init {
-        setNameToClassName()
-    }
-    
-    private val mainMotor = HaTalonSRX(IntakeMap.MOTOR_1_ID).apply {
-        isSafetyEnabled = true
-        // TODO: Verify positive output intakes
-        inverted = false
-        configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
-    }
+	init {
+		setNameToClassName()
+	}
 
-    private val secondaryMotor = HaTalonSRX(IntakeMap.MOTOR_2_ID).apply {
-        isSafetyEnabled = true
-        // TODO: Verify positive output intakes
-        inverted = false
-        configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
-        follow(mainMotor)
-    }
+	private val intakeToLoaderMotor = HaTalonSRX(IntakeMap.MOTOR_1_ID).apply {
+		isSafetyEnabled = true
+		// TODO: Verify positive output intakes
+		inverted = false
+		configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
+	}
 
-    // TODO: Change default neutral mode
-    var neutralMode = NeutralMode.Coast
-        set(value) {
-            mainMotor.setNeutralMode(value)
-            field = value
-        }
+	private val floorIntakeMotor = HaTalonSRX(IntakeMap.MOTOR_2_ID).apply {
+		isSafetyEnabled = true
+		// TODO: Verify positive output intakes
+		inverted = false
+		configSupplyCurrentLimit(Constants.SUPPLY_CURRENT_LIMIT)
+		follow(intakeToLoaderMotor)
+	}
 
-    fun set(percentOutput: Double) {
-        mainMotor.set(percentOutput)
-    }
+	// TODO: Change default neutral mode
+	var neutralMode = NeutralMode.Coast
+		set(value) {
+			intakeToLoaderMotor.setNeutralMode(value)
+			field = value
+		}
+
+	fun set(percentOutput: Double) {
+		intakeToLoaderMotor.set(percentOutput)
+	}
 }
