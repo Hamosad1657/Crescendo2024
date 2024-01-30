@@ -23,13 +23,25 @@ object ArmSubsystem : SubsystemBase() {
 
 		leftMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
 		rightMotor.setSmartCurrentLimit(CURRENT_LIMIT_AMP)
-
-		rightMotor.follow(leftMotor)
 	}
 
-	private val forwardLimit = DigitalInput(ArmMap.FORWARD_LIMIT_CHANNEL)
-	private val reverseLimit = DigitalInput(ArmMap.REVERSE_LIMIT_CHANNEL)
+	private val leftForwardLimitSwitch = DigitalInput(ArmMap.LEFT_FORWARD_LIMIT_CHANNEL)
+	private val leftReverseLimitSwitch = DigitalInput(ArmMap.LEFT_REVERSE_LIMIT_CHANNEL)
+	private val rightForwardLimitSwitch = DigitalInput(ArmMap.RIGHT_FORWARD_LIMIT_CHANNEL)
+	private val rightReverseLimitSwitch = DigitalInput(ArmMap.RIGHT_REVERSE_LIMIT_CHANNEL)
 
+	// TODO: Check if limit switches are wired normally open or normally closed.
+	//  If normally open, add a ! to these getters.
+	// Open circuit -> pin reads 5V -> DigitalInput.get() returns true
+	// Closed circuit -> pin reads 0V -> DigitalInput.get() returns false
+	val isLeftAtForwardLimit get() = leftForwardLimitSwitch.get()
+	val isLeftAtReverseLimit get() = leftReverseLimitSwitch.get()
+	val isRightAtForwardLimit get() = rightForwardLimitSwitch.get()
+	val isRightAtReverseLimit get() = rightReverseLimitSwitch.get()
+
+
+	val isAtForwardLimit get() = isLeftAtForwardLimit || isRightAtForwardLimit
+	val isAtReverseLimit get() = isLeftAtReverseLimit || isRightAtReverseLimit
 
 	var neutralMode: NeutralMode = NeutralMode.Brake
 		set(value) {
@@ -38,23 +50,45 @@ object ArmSubsystem : SubsystemBase() {
 			field = value
 		}
 
-	fun setWithLimits(percentOutput: Double) {
-		if (percentOutput < 0.0 && isAtReverseLimit) {
-			set(0.0)
-			return
-		}
-		if (percentOutput > 0.0 && isAtForwardLimit) {
-			set(0.0)
-			return
-		}
-		set(percentOutput)
-	}
-
-	fun set(percentOutput: Double) {
+	fun setLeftMotor(percentOutput: Double) {
 		leftMotor.set(percentOutput)
 	}
 
-	// TODO: Check if limit switch is wired normally false or normally true.
-	val isAtForwardLimit get() = forwardLimit.get()
-	val isAtReverseLimit get() = reverseLimit.get()
+	fun setRightMotor(percentOutput: Double) {
+		rightMotor.set(percentOutput)
+	}
+
+	fun setLeftMotorWithLimits(percentOutput: Double) {
+		if (percentOutput < 0.0 && isLeftAtReverseLimit) {
+			setLeftMotor(0.0)
+			return
+		}
+		if (percentOutput > 0.0 && isLeftAtForwardLimit) {
+			setLeftMotor(0.0)
+			return
+		}
+		setLeftMotor(percentOutput)
+	}
+
+	fun setRightMotorWithLimits(percentOutput: Double) {
+		if (percentOutput < 0.0 && isRightAtReverseLimit) {
+			setRightMotor(0.0)
+			return
+		}
+		if (percentOutput > 0.0 && isRightAtForwardLimit) {
+			setRightMotor(0.0)
+			return
+		}
+		setRightMotor(percentOutput)
+	}
+
+	fun setBothMotors(percentOutput: Double) {
+		setLeftMotor(percentOutput)
+		setRightMotor(percentOutput)
+	}
+
+	fun setBothMotorsWithLimits(percentOutput: Double) {
+		setLeftMotorWithLimits(percentOutput)
+		setRightMotorWithLimits(percentOutput)
+	}
 }

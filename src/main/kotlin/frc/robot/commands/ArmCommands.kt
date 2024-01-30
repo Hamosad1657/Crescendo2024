@@ -11,25 +11,36 @@ import frc.robot.subsystems.arm.ArmConstants.STAY_FOLDED_OUTPUT
 import frc.robot.subsystems.arm.ArmSubsystem
 
 /** - Requirements: arm. */
-fun ArmSubsystem.openCommand(): Command {
-	return withName("open") {
-		run { setWithLimits(OPEN_OUTPUT) } until ::isAtForwardLimit finallyDo { set(0.0) }
+fun ArmSubsystem.openCommand(): Command =
+	withName("open") {
+		run { setBothMotorsWithLimits(OPEN_OUTPUT) } until ::isAtForwardLimit finallyDo { setBothMotors(0.0) }
 	}
-}
 
 /** - Requirements: arm. */
-fun ArmSubsystem.foldCommand(): Command {
-	return withName("fold") {
-		run { setWithLimits(FOLD_OUTPUT) } until ::isAtReverseLimit finallyDo { set(0.0) }
+fun ArmSubsystem.foldCommand(): Command =
+	withName("fold") {
+		run { setBothMotorsWithLimits(FOLD_OUTPUT) } until ::isAtReverseLimit finallyDo { setBothMotors(0.0) }
 	}
-}
 
-fun ArmSubsystem.stayFoldedCommand(): Command {
-	return withName("stay folded") {
-		run { set(STAY_FOLDED_OUTPUT) } finallyDo { set(0.0) }
+
+fun ArmSubsystem.stayFoldedCommand(): Command =
+	withName("stay folded") {
+		run { setBothMotors(STAY_FOLDED_OUTPUT) } finallyDo { setBothMotors(0.0) }
 	}
-}
 
-fun ArmSubsystem.foldAndStayFoldedCommand(): Command {
-	return withName("fold & stay folded") { foldCommand() andThen stayFoldedCommand() }
-}
+
+fun ArmSubsystem.foldAndStayFoldedCommand(): Command =
+	withName("fold & stay folded") { foldCommand() andThen stayFoldedCommand() }
+
+fun ArmSubsystem.separateSidesTeleopCommand(leftOutput: () -> Double, rightOutput: () -> Double): Command =
+	withName("separate sides teleop") {
+		run {
+			setLeftMotorWithLimits(leftOutput())
+			setRightMotorWithLimits(rightOutput())
+		} finallyDo { setBothMotors(0.0) }
+	}
+
+fun ArmSubsystem.bothSidesTeleopCommand(output: () -> Double) =
+	withName("both sides teleop") {
+		separateSidesTeleopCommand(output, output)
+	}
