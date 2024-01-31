@@ -6,6 +6,7 @@ import com.hamosad1657.lib.units.toIdleMode
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import kotlin.math.abs
 import frc.robot.RobotMap.Loader as LoaderMap
 
 object LoaderSubsystem : SubsystemBase() {
@@ -28,7 +29,7 @@ object LoaderSubsystem : SubsystemBase() {
 	}
 
 	val isRunning: Boolean
-		get() = motor.get() > 0.0
+		get() = abs(motor.get()) > 0.0
 
 	override fun initSendable(builder: SendableBuilder) {
 		super.initSendable(builder)
