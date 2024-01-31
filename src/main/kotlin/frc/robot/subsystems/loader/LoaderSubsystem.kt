@@ -24,7 +24,7 @@ object LoaderSubsystem : SubsystemBase() {
 	/** Beam-break is positioned between loader and shooter. */
 	val isNoteDetected get() = beamBreak.get()
 
-	fun setLoader(percentOutput: Double) {
+	fun set(percentOutput: Double) {
 		motor.set(percentOutput)
 	}
 

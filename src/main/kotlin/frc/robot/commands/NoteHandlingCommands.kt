@@ -6,8 +6,6 @@ import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.AngularVelocity
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.intake.IntakeSubsystem
@@ -74,9 +72,9 @@ fun IntakeSubsystem.runIntakeCommand(): Command =
 fun LoaderSubsystem.runLoaderCommand(): Command =
 	withName("run") {
 		run {
-			setLoader(LoaderConstants.MOTOR_OUTPUT)
+			set(LoaderConstants.MOTOR_OUTPUT)
 		} finallyDo { _ ->
-			setLoader(0.0)
+			set(0.0)
 		}
 	}
 
