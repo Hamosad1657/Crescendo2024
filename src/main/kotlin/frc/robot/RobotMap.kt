@@ -12,6 +12,10 @@ object RobotMap {
 		const val RIGHT_SECONDARY_MOTOR_ID = 0
 		const val LEFT_MAIN_MOTOR_ID = 0
 		const val LEFT_SECONDARY_MOTOR_ID = 0
+		const val LEFT_OPENED_LIMIT_CHANNEL = 0
+		const val LEFT_CLOSED_LIMIT_CHANNEL = 0
+		const val RIGHT_OPENED_LIMIT_CHANNEL = 0
+		const val RIGHT_CLOSED_LIMIT_CHANNEL = 0
 	}
 
 	object Intake {

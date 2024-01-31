@@ -2,24 +2,23 @@ package frc.robot.subsystems.climbing
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.PIDGains
-import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.Rotations
 import com.hamosad1657.lib.units.toIdleMode
-import com.revrobotics.CANSparkBase.ControlType
-import com.revrobotics.CANSparkBase.SoftLimitDirection
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel.MotorType
-import com.revrobotics.SparkLimitSwitch
+import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.util.sendable.SendableBuilder
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.subsystems.climbing.ClimbingConstants.MAX_POSSIBLE_POSITION
+import frc.robot.subsystems.climbing.ClimbingConstants.STAY_FOLDED_OUTPUT
+import frc.robot.subsystems.climbing.ClimbingConstants.WEIGHT_BEARING_PID_GAINS
 import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
-	init {
-		setNameToClassName()
-	}
 
-	// --- Motors ---
+	// --- Motors and sensors ---
 
 	private val leftMainMotor = CANSparkFlex(ClimbingMap.LEFT_MAIN_MOTOR_ID, MotorType.kBrushless)
 		.apply { configMainMotor() }
@@ -33,8 +32,16 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val rightSecondaryMotor = CANSparkFlex(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID, MotorType.kBrushless)
 		.apply { configSecondaryMotor(rightMainMotor) }
 
-	private val leftPIDController = leftMainMotor.pidController
-	private val rightPIDController = rightMainMotor.pidController
+	private val pidController = WEIGHT_BEARING_PID_GAINS.toPIDController()
+	private var feedForwardPercentOutput = 0.0
+
+	private val leftEncoder = leftMainMotor.encoder
+	private val rightEncoder = rightMainMotor.encoder
+
+	private val leftOpenedLimitSwitch = DigitalInput(ClimbingMap.LEFT_OPENED_LIMIT_CHANNEL)
+	private val leftClosedLimitSwitch = DigitalInput(ClimbingMap.LEFT_CLOSED_LIMIT_CHANNEL)
+	private val rightOpenedLimitSwitch = DigitalInput(ClimbingMap.RIGHT_OPENED_LIMIT_CHANNEL)
+	private val rightClosedLimitSwitch = DigitalInput(ClimbingMap.RIGHT_CLOSED_LIMIT_CHANNEL)
 
 	private var lastSetpoint: Rotations = 0.0
 
@@ -44,11 +51,6 @@ object ClimbingSubsystem : SubsystemBase() {
 		apply {
 			// TODO: Verify positive output raises climber
 			inverted = false
-			configPIDF(Constants.WEIGHT_BEARING_PID_GAINS)
-			setSoftLimit(SoftLimitDirection.kForward, Constants.MAX_POSSIBLE_POSITION.toFloat())
-			setSoftLimit(SoftLimitDirection.kReverse, Constants.MAX_POSSIBLE_POSITION.toFloat())
-			enableSoftLimit(SoftLimitDirection.kForward, true)
-			enableSoftLimit(SoftLimitDirection.kReverse, true)
 		}
 
 	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
@@ -80,17 +82,21 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// TODO: Check if switches are wired normally open or normally closed.
 
-	val isLeftAtOpenedLimit: Boolean
-		get() = leftMainMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
-
 	val isLeftAtClosedLimit: Boolean
-		get() = leftMainMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
-
-	val isRightAtOpenedLimit: Boolean
-		get() = rightMainMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
+		get() = leftClosedLimitSwitch.get()
 
 	val isRightAtClosedLimit: Boolean
-		get() = rightMainMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed
+		get() = rightClosedLimitSwitch.get()
+
+	val isLeftAtOpenedLimit: Boolean
+		get() {
+			return leftOpenedLimitSwitch.get() || currentPosition >= MAX_POSSIBLE_POSITION
+		}
+
+	val isRightAtOpenedLimit: Boolean
+		get() {
+			return rightOpenedLimitSwitch.get() || currentPosition >= MAX_POSSIBLE_POSITION
+		}
 
 	val isAtOpenedLimit: Boolean
 		get() = isLeftAtOpenedLimit || isRightAtOpenedLimit
@@ -102,33 +108,79 @@ object ClimbingSubsystem : SubsystemBase() {
 	// --- Motors Control ---
 
 	fun configPIDF(gains: PIDGains) {
-		leftMainMotor.configPIDF(gains)
-		rightMainMotor.configPIDF(gains)
+		feedForwardPercentOutput = gains.kFF()
+		pidController.configPID(gains)
 	}
 
 	val currentPosition: Rotations
 		get() = leftMainMotor.encoder.position
 
 	fun setPositionSetpoint(newSetpoint: Rotations) {
+		if (lastSetpoint != newSetpoint) {
+			pidController.reset()
+		}
+		val controlEffort = pidController.calculate(currentPosition, newSetpoint) + feedForwardPercentOutput
+		set(controlEffort)
 		lastSetpoint = newSetpoint
-		leftPIDController.setReference(newSetpoint, ControlType.kPosition)
-		rightPIDController.setReference(newSetpoint, ControlType.kPosition)
 	}
 
 	fun increasePositionSetpointBy(desiredChangeInPosition: Rotations) {
 		setPositionSetpoint(currentPosition + desiredChangeInPosition)
 	}
 
-	fun setPercentOutput(percentOutput: Double) {
+	fun set(percentOutput: Double) {
+		setLeft(percentOutput)
+		setRight(percentOutput)
+	}
+
+	private fun PIDController.configPID(gains: PIDGains) {
+		p = gains.kP
+		i = gains.kI
+		d = gains.kD
+		iZone = gains.kIZone
+	}
+
+	private fun setLeft(percentOutput: Double) {
+		if (isLeftAtOpenedLimit && percentOutput > 0.0) {
+			leftMainMotor.set(0.0)
+			return
+		}
+		if (isLeftAtClosedLimit && percentOutput < 0.0) {
+			leftMainMotor.set(STAY_FOLDED_OUTPUT)
+			return
+		}
 		leftMainMotor.set(percentOutput)
+	}
+
+	private fun setRight(percentOutput: Double) {
+		if (isRightAtOpenedLimit && percentOutput > 0.0) {
+			rightMainMotor.set(0.0)
+			return
+		}
+		if (isRightAtClosedLimit && percentOutput < 0.0) {
+			rightMainMotor.set(STAY_FOLDED_OUTPUT)
+			return
+		}
 		rightMainMotor.set(percentOutput)
 	}
 
-	private fun CANSparkFlex.configPIDF(gains: PIDGains) {
-		pidController.p = gains.kP
-		pidController.i = gains.kI
-		pidController.d = gains.kD
-		pidController.iZone = gains.kIZone
-		pidController.ff = gains.kFF()
+	override fun initSendable(builder: SendableBuilder) {
+		super.initSendable(builder)
+		builder.addBooleanProperty("Left at opened limit", { isLeftAtOpenedLimit }, null)
+		builder.addBooleanProperty("Left at closed limit", { isLeftAtClosedLimit }, null)
+		builder.addBooleanProperty("Right at opened limit", { isRightAtOpenedLimit }, null)
+		builder.addBooleanProperty("Right at opened limit", { isRightAtClosedLimit }, null)
+		builder.addDoubleProperty("Position rotations", { currentPosition }, null)
+		builder.addDoubleProperty("Position setpoint rotations", { lastSetpoint }, null)
+		builder.addBooleanProperty("In tolerance", { isWithinTolerance }, null)
+	}
+
+	override fun periodic() {
+		if (isLeftAtClosedLimit) {
+			leftEncoder.position = 0.0
+		}
+		if (isRightAtClosedLimit) {
+			rightEncoder.position = 0.0
+		}
 	}
 }
