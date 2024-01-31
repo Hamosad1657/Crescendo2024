@@ -17,141 +17,161 @@ import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.subsystems.shooter.ShooterConstants.ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.subsystems.shooter.ShooterConstants as Constants
 
 object ShooterSubsystem : SubsystemBase() {
-    init {
-        setNameToClassName()
-    }
 
-    // --- Motors and Sensors ---
+	// --- Motors and Sensors ---
 
-    private val shooterMainMotor = CANSparkFlex(ShooterMap.MAIN_MOTOR_ID, MotorType.kBrushless).apply {
-        // TODO: Verify positive output shoots
-        inverted = false
-    }
+	private val shooterMainMotor = CANSparkFlex(ShooterMap.MAIN_MOTOR_ID, MotorType.kBrushless).apply {
+		// TODO: Verify positive output shoots
+		inverted = false
+	}
 
-    private val shooterSecondaryMotor = CANSparkFlex(ShooterMap.SECONDARY_MOTOR_ID, MotorType.kBrushless).apply {
-        follow(shooterMainMotor, true) // TODO: Check if follower needs to be inverted from the main motor
-    }
+	private val shooterSecondaryMotor = CANSparkFlex(ShooterMap.SECONDARY_MOTOR_ID, MotorType.kBrushless).apply {
+		follow(shooterMainMotor, true) // TODO: Check if follower needs to be inverted from the main motor
+	}
 
-    private val shooterEncoder = shooterMainMotor.getEncoder()
+	private val shooterEncoder = shooterMainMotor.getEncoder()
 
-    private val angleMotor = HaTalonFX(ShooterMap.Angle.MOTOR_ID).apply {
-        // TODO: Verify positive output raises angle
-        inverted = false
+	private val angleMotor = HaTalonFX(ShooterMap.Angle.MOTOR_ID).apply {
+		// TODO: Verify positive output raises angle
+		inverted = false
 
-        configurator.apply(
-            FeedbackConfigs().apply {
-                FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
-                FeedbackRemoteSensorID = ShooterMap.Angle.CANCODER_ID
-            }
-        )
-        configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
-    }
+		configurator.apply(
+			FeedbackConfigs().apply {
+				FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
+				FeedbackRemoteSensorID = ShooterMap.Angle.CANCODER_ID
+				RotorToSensorRatio = ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
+			}
+		)
+		configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
+	}
 
-    private val angleCANCoder = CANcoder(ShooterMap.Angle.CANCODER_ID).apply {
-        CANcoderConfiguration().apply {
-            MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1
-            MagnetSensor.MagnetOffset = Constants.CANCODER_OFFSET_DEG
+	private val angleCANCoder = CANcoder(ShooterMap.Angle.CANCODER_ID).apply {
+		CANcoderConfiguration().apply {
+			MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1
+			MagnetSensor.MagnetOffset = Constants.CANCODER_OFFSET_DEG
 
-            // TODO: Verify measurement gets more positive when going up after the minimum
-            MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive
-        }.let { configurator.apply(it) }
-    }
+			// TODO: Verify measurement gets more positive when going up after the minimum
+			MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive
+		}.let { configurator.apply(it) }
+	}
 
 
-    // --- Motors Configuration ---
+	// --- Motors Configuration ---
 
-    var shooterNeutralMode = NeutralMode.Coast
-        set(value) {
-            shooterMainMotor.idleMode = value.toIdleMode()
-            shooterSecondaryMotor.idleMode = value.toIdleMode()
-            field = value
-        }
+	var shooterNeutralMode = NeutralMode.Coast
+		set(value) {
+			shooterMainMotor.idleMode = value.toIdleMode()
+			shooterSecondaryMotor.idleMode = value.toIdleMode()
+			field = value
+		}
 
-    var angleNeutralMode = NeutralModeValue.Brake
-        set(value) {
-            angleMotor.setNeutralMode(value)
-            field = value
-        }
-
-
-    // --- Motors Properties ---
-
-    val velocity get() = AngularVelocity.fromRpm(shooterEncoder.velocity)
-
-    /**
-     * When the shooter is at it's lowest possible angle, measurement is 0.
-     * When moving away the measurement gets more positive.
-     */
-    val angle get() = Rotation2d.fromRotations(angleMotor.position.value)
-
-    // I have to track this myself because there is no getter for it in SparkPIDController :(
-    private var velocitySetpoint = AngularVelocity.fromRpm(0.0)
+	var angleNeutralMode = NeutralModeValue.Brake
+		set(value) {
+			angleMotor.setNeutralMode(value)
+			field = value
+		}
 
 
-    // --- Motor control ---
+	// --- Motors Properties ---
 
-    fun setShooterState(shooterState: ShooterState) {
-        setAngle(shooterState.angle)
-        setVelocity(shooterState.velocity)
-    }
+	val velocity get() = AngularVelocity.fromRpm(shooterEncoder.velocity)
 
-    private fun setVelocity(velocity: AngularVelocity) {
-        shooterMainMotor.pidController.setReference(velocity.rpm, CANSparkBase.ControlType.kSmartVelocity)
-        velocitySetpoint = velocity
-    }
+	/**
+	 * When the shooter is at its lowest possible angle, measurement is 0.
+	 * When moving away the measurement gets more positive.
+	 *
+	 * - This value does not come directly from the CANCoder, but from the motor controller,
+	 * which uses the CANCoder for feedback. Essentially, this is the position that the motor
+	 * controller thinks it's at.
+	 */
+	val angle get() = Rotation2d.fromRotations(angleMotor.position.value)
 
-    private fun setAngle(angle: Rotation2d) {
-        angleMotor.setControl(PositionVoltage(angle.rotations))
-    }
+	// I have to track this myself because there is no getter for it in SparkPIDController :(
+	var velocitySetpoint = AngularVelocity.fromRpm(0.0)
+		private set
 
-    // --- Getters ---
-
-    // TODO: Check if switches are wired normally open or normally closed.
-    //  If they are wired normally closed, replace the 0 with a 1 and delete this comment.
-
-    val isAtMaxAngleLimit: Boolean
-        get() = angleMotor.getForwardLimit().value.value == 0
-
-    val isAtMinAngleLimit: Boolean
-        get() = angleMotor.getReverseLimit().value.value == 0
-
-    val isWithinVelocityTolerance get() = velocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
-
-    val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
-
-    val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
+	// TODO: Verify this really is in rotations and not degrees.
+	val angleSetpoint get() = Rotation2d.fromRotations(angleMotor.closedLoopReference.value)
 
 
-    // --- Testing and Manual Overrides ---
+	// --- Motor control ---
 
-    /** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-    fun setShooterMotorsOutput(percentOutput: Double) {
-        shooterMainMotor.set(percentOutput)
-    }
+	fun setShooterState(shooterState: ShooterState) {
+		setAngle(shooterState.angle)
+		setVelocity(shooterState.velocity)
+	}
 
-    /** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-    fun increaseShooterMotorsOutputBy(percentOutput: Double) {
-        shooterMainMotor.set(shooterMainMotor.get() + percentOutput)
-    }
+	private fun setVelocity(velocity: AngularVelocity) {
+		shooterMainMotor.pidController.setReference(velocity.rpm, CANSparkBase.ControlType.kSmartVelocity)
+		velocitySetpoint = velocity
+	}
 
-    /** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-    fun increaseVelocitySetpointBy(velocity: AngularVelocity) {
-        setVelocity(this.velocity + velocity)
-    }
+	private fun setAngle(angle: Rotation2d) {
+		angleMotor.setControl(PositionVoltage(angle.rotations))
+	}
 
-    /** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-    fun setAngleMotorOutput(percentOutput: Double) {
-        angleMotor.set(percentOutput)
-    }
+	// --- Getters ---
 
-    /** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-    fun increaseAngleSetpointBy(angle: Rotation2d) {
-        setAngle(this.angle + angle)
-    }
+	// TODO: Check if switches are wired normally open or normally closed.
+	//  If they are wired normally closed, replace the 0 with a 1 and delete this comment.
+
+	val isAtMaxAngleLimit: Boolean
+		get() = angleMotor.getForwardLimit().value.value == 0
+
+	val isAtMinAngleLimit: Boolean
+		get() = angleMotor.getReverseLimit().value.value == 0
+
+	val isWithinVelocityTolerance get() = velocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
+
+	val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
+
+	val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
+
+
+	// --- Testing and Manual Overrides ---
+
+	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
+	fun setShooterMotorsOutput(percentOutput: Double) {
+		shooterMainMotor.set(percentOutput)
+	}
+
+	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
+	fun increaseShooterMotorsOutputBy(percentOutput: Double) {
+		shooterMainMotor.set(shooterMainMotor.get() + percentOutput)
+	}
+
+	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
+	fun increaseVelocitySetpointBy(velocity: AngularVelocity) {
+		setVelocity(this.velocity + velocity)
+	}
+
+	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
+	fun setAngleMotorOutput(percentOutput: Double) {
+		angleMotor.set(percentOutput)
+	}
+
+	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
+	fun increaseAngleSetpointBy(angle: Rotation2d) {
+		setAngle(this.angle + angle)
+	}
+
+	override fun initSendable(builder: SendableBuilder) {
+		super.initSendable(builder)
+		builder.addBooleanProperty("Is at min angle limit", { isAtMinAngleLimit }, null)
+		builder.addBooleanProperty("Is at max angle limit", { isAtMaxAngleLimit }, null)
+		builder.addDoubleProperty("Angle deg", { angle.degrees }, null)
+		builder.addDoubleProperty("Angle setpoint deg", { angleSetpoint.degrees }, null)
+		builder.addBooleanProperty("Angle in tolerance", { isWithinAngleTolerance }, null)
+		builder.addDoubleProperty("Velocity rpm", { velocity.rpm }, null)
+		builder.addDoubleProperty("Velocity setpoint rpm", { velocitySetpoint.rpm }, null)
+		builder.addBooleanProperty("Velocity in tolerance", { isWithinVelocityTolerance }, null)
+	}
 }
