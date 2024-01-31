@@ -4,15 +4,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.hamosad1657.lib.motors.HaCANSparkMax
 import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.toIdleMode
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.arm.ArmConstants.CURRENT_LIMIT_AMP
 import frc.robot.RobotMap.Arm as ArmMap
 
 object ArmSubsystem : SubsystemBase() {
-	init {
-		setNameToClassName()
-	}
 
 	private val leftMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
 	private val rightMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
@@ -90,5 +88,13 @@ object ArmSubsystem : SubsystemBase() {
 	fun setBothMotorsWithLimits(percentOutput: Double) {
 		setLeftMotorWithLimits(percentOutput)
 		setRightMotorWithLimits(percentOutput)
+	}
+
+	override fun initSendable(builder: SendableBuilder) {
+		super.initSendable(builder)
+		builder.addBooleanProperty("Left at forward limit", { isLeftAtForwardLimit }, null)
+		builder.addBooleanProperty("Left at reverse limit", { isLeftAtReverseLimit }, null)
+		builder.addBooleanProperty("Right at forward limit", { isRightAtForwardLimit }, null)
+		builder.addBooleanProperty("Right at forward limit", { isRightAtForwardLimit }, null)
 	}
 }
