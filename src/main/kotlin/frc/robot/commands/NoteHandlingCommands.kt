@@ -54,7 +54,7 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
 fun IntakeSubsystem.runIntakeCommand(): Command =
 	withName("run") {
 		run {
-			if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.running) {
+			if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.isRunning) {
 				set(IntakeConstants.MOTOR_OUTPUT)
 			} else {
 				set(0.0)
