@@ -6,6 +6,8 @@ import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.AngularVelocity
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.intake.IntakeSubsystem
@@ -154,4 +156,24 @@ fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(changeInVelocity: () -> Do
 			val delta = changeInVelocity() * multiplier
 			increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
 		}
+	}
+
+/**
+ * Runs the intake in reverse, regardless of shooter angle.
+ * - Requirements: intake.
+ */
+fun IntakeSubsystem.ejectFromIntakeCommand(): Command =
+	run {
+		set(-IntakeConstants.MOTOR_OUTPUT)
+	} finallyDo {
+		set(0.0)
+	}
+
+/** - Requirements: loader & shooter. */
+fun ejectFromShooterCommand(): Command =
+	LoaderSubsystem.runLoaderCommand() alongWith
+			ShooterSubsystem.run {
+				ShooterSubsystem.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
+			} finallyDo {
+		ShooterSubsystem.setShooterMotorsOutput(0.0)
 	}
