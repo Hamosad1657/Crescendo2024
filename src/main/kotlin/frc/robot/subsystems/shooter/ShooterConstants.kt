@@ -16,8 +16,8 @@ object ShooterConstants {
 
 	val ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
 
-	// TODO: Find rotor to CANCoder gear ratio
-	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 0.0
+	// TODO: Check if this should be 1/20 or 20.
+	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 20.0
 
 	/**
 	 * Time between when loading started to when the note is shot.
