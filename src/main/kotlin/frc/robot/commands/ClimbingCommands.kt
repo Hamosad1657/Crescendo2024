@@ -12,6 +12,7 @@ import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 /**
  * A small constant output is applied to keep the climbing mechanism in place.
+ * Command has no end condition.
  * - Requirements: climbing.
  */
 fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command =
@@ -21,6 +22,10 @@ fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command =
 		}
 	}
 
+/**
+ * PID is performed to keep climbing mechanism at [FOLDING.setpoint].
+ * Command has no end condition.
+ */
 fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command =
 	withName("closed loop stay folded") {
 		runOnce {
