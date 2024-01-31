@@ -54,7 +54,7 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command =
 fun IntakeSubsystem.runIntakeCommand(): Command =
 	withName("run") {
 		run {
-			if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.running) {
+			if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.isRunning) {
 				set(IntakeConstants.MOTOR_OUTPUT)
 			} else {
 				set(0.0)
@@ -72,9 +72,9 @@ fun IntakeSubsystem.runIntakeCommand(): Command =
 fun LoaderSubsystem.runLoaderCommand(): Command =
 	withName("run") {
 		run {
-			setLoader(LoaderConstants.MOTOR_OUTPUT)
+			set(LoaderConstants.MOTOR_OUTPUT)
 		} finallyDo { _ ->
-			setLoader(0.0)
+			set(0.0)
 		}
 	}
 
@@ -154,4 +154,24 @@ fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(changeInVelocity: () -> Do
 			val delta = changeInVelocity() * multiplier
 			increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
 		}
+	}
+
+/**
+ * Runs the intake in reverse, regardless of shooter angle.
+ * - Requirements: intake.
+ */
+fun IntakeSubsystem.ejectFromIntakeCommand(): Command =
+	run {
+		set(-IntakeConstants.MOTOR_OUTPUT)
+	} finallyDo {
+		set(0.0)
+	}
+
+/** - Requirements: loader & shooter. */
+fun ejectFromShooterCommand(): Command =
+	LoaderSubsystem.runLoaderCommand() alongWith
+			ShooterSubsystem.run {
+				ShooterSubsystem.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
+			} finallyDo {
+		ShooterSubsystem.setShooterMotorsOutput(0.0)
 	}

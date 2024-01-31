@@ -16,8 +16,8 @@ object ShooterConstants {
 
 	val ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
 
-	// TODO: Find rotor to CANCoder gear ratio
-	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 0.0
+	// TODO: Check if this should be 1/20 or 20.
+	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 20.0
 
 	/**
 	 * Time between when loading started to when the note is shot.
@@ -28,6 +28,8 @@ object ShooterConstants {
 
 	/** 0 should be the starting position (the lowest possible angle). */
 	const val CANCODER_OFFSET_DEG = 0.0
+
+	const val EJECT_OUTPUT = 0.0
 
 	// ShooterState is a data class and not an enum, because we might want to make
 	// a continuous function (robot pose3d to target pose3d) if we have the time.
