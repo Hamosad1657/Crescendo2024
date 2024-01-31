@@ -11,6 +11,24 @@ import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 /**
+ * A small constant output is applied to keep the climbing mechanism in place.
+ * - Requirements: climbing.
+ */
+fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command =
+	withName("open loop stay folded") {
+		run {
+			set(Constants.STAY_FOLDED_OUTPUT)
+		}
+	}
+
+fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command =
+	withName("closed loop stay folded") {
+		runOnce {
+			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
+		} andThen maintainSetpointCommand(FOLDING.setpoint)
+	}
+
+/**
  * Climbing mechanism extends open-loop until it passed [REACHING_CHAIN.setpoint], then the command ends.
  * - Requirements: climbing.
  */
@@ -48,16 +66,24 @@ fun ClimbingSubsystem.climbDownCommand(): Command =
 	}
 
 /**
- * Climbing mechanism retracts open-loop until it passed [STAYING_FOLDED.setpoint],
+ * Climbing mechanism retracts open-loop until it passed [FOLDING.setpoint].
+ * - Requirements: climbing.
+ */
+fun ClimbingSubsystem.foldCommand(): Command =
+	withName("fold") {
+		runOnce {
+			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
+		} andThen openLoopGetToPositionCommand(FOLDING.setpoint, FOLDING.output)
+	}
+
+/**
+ * Climbing mechanism retracts open-loop until it passed [FOLDING.setpoint],
  * then performs PID to maintain that setpoint. Command has no end condition.
  * - Requirements: climbing.
  */
-fun ClimbingSubsystem.stayFoldedCommand(): Command =
-	withName("stay folded") {
-		runOnce {
-			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
-		} andThen openLoopGetToPositionCommand(STAYING_FOLDED.setpoint, STAYING_FOLDED.output) andThen
-				maintainSetpointCommand(STAYING_FOLDED.setpoint)
+fun ClimbingSubsystem.foldAndStayFolded(): Command =
+	withName("fold and stay folded") {
+		foldCommand() andThen closedLoopStayFoldedCommand()
 	}
 
 /**
@@ -68,9 +94,9 @@ fun ClimbingSubsystem.stayFoldedCommand(): Command =
 fun ClimbingSubsystem.openLoopTeleopCommand(percentOutput: () -> Double): Command =
 	withName("climbing open loop teleop") {
 		run {
-			setPercentOutput(percentOutput())
+			set(percentOutput())
 		} finallyDo {
-			setPercentOutput(0.0)
+			set(0.0)
 		}
 	}
 
@@ -85,7 +111,7 @@ fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> Double, mu
 			val delta = changeInPosition() * multiplier
 			increasePositionSetpointBy(delta)
 		} finallyDo {
-			setPercentOutput(0.0)
+			set(0.0)
 		}
 	}
 
@@ -113,7 +139,7 @@ private fun ClimbingSubsystem.openLoopGetToPositionCommand(desiredPosition: Rota
 
 	return withName("get to setpoint") {
 		run {
-			setPercentOutput(output)
+			set(output)
 		} until endCondition
 	}
 }
