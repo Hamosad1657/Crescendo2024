@@ -10,14 +10,12 @@ import com.revrobotics.CANSparkBase.SoftLimitDirection
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel.MotorType
 import com.revrobotics.SparkLimitSwitch
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
-	init {
-		setNameToClassName()
-	}
 
 	// --- Motors ---
 
@@ -130,5 +128,16 @@ object ClimbingSubsystem : SubsystemBase() {
 		pidController.d = gains.kD
 		pidController.iZone = gains.kIZone
 		pidController.ff = gains.kFF()
+	}
+
+	override fun initSendable(builder: SendableBuilder) {
+		super.initSendable(builder)
+		builder.addBooleanProperty("Left at opened limit", { isLeftAtOpenedLimit }, null)
+		builder.addBooleanProperty("Left at closed limit", { isLeftAtClosedLimit }, null)
+		builder.addBooleanProperty("Right at opened limit", { isRightAtOpenedLimit }, null)
+		builder.addBooleanProperty("Right at opened limit", { isRightAtClosedLimit }, null)
+		builder.addDoubleProperty("Position rotations", { currentPosition }, null)
+		builder.addDoubleProperty("Position setpoint rotations", { lastSetpoint }, null)
+		builder.addBooleanProperty("In tolerance", { isWithinTolerance }, null)
 	}
 }
