@@ -3,7 +3,7 @@ package frc.robot.subsystems.shooter.dynamicshooting
 import com.hamosad1657.lib.units.centimeters
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.feet
-import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.geometry.Translation3d
 
 object DynamicShootingConstants {
 
@@ -18,7 +18,7 @@ object DynamicShootingConstants {
 	 * For more information:
 	 * [coordinate-system.html#origin-follows-your-alliance] (https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html#origin-follows-your-alliance)
 	 */
-	val SPEAKER_POSITION_METERS_BLUE = Translation2d(0.0, 0.0)
+	val SPEAKER_POSITION_METERS_BLUE = Translation3d(0.0, 0.0, SPEAKER_HEIGHT.meters)
 
 	/**
 	 * The Translation2d of the red speaker if you are in the red alliance, according to WPILib's
@@ -29,29 +29,32 @@ object DynamicShootingConstants {
 	 * For more information:
 	 * https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html#origin-follows-your-alliance
 	 */
-	val SPEAKER_POSITION_METERS_RED = Translation2d(0.0, 0.0)
+	val SPEAKER_POSITION_METERS_RED = Translation3d(0.0, 0.0, SPEAKER_HEIGHT.meters)
+
+
+	/** Height from the floor. */
+	val SHOOTER_PIVOT_HEIGHT = 0.0.centimeters
+
 
 	/**
-	 * This value will change according to the shooter's angle. I assume the difference is not
-	 * substantial, so this constant contains the average value. If it does matter, create a function
-	 * to calculate it instead.
+	 * The flat distance (e.g. without accounting for height difference).
 	 */
-	val SHOOTER_END_HEIGHT = 0.0.centimeters
+	val SHOOTER_PIVOT_DISTANCE_FROM_CHASSIS_CENTER = 0.0.centimeters
 
 	/**
-	 * The flat distance (e.g. ignoring height).
-	 *
-	 * This value will change according to the shooter's angle. I assume the difference is not
-	 * substantial, so this constant contains the average value. If it does matter, create a function
-	 * to calculate it instead.
+	 * The 3d position of the shooter's pivot,
+	 * with the floor directly under the chassis's center as the origin.
+	 * Units in meters.
 	 */
-	val SHOOTER_END_FROM_ROBOT_CENTER_DISTANCE = 0.0.centimeters
+	val SHOOTER_PIVOT_TO_CHASSIS_CENTER_TRANSLATION3D = Translation3d(
+		0.0, // X
+		SHOOTER_PIVOT_DISTANCE_FROM_CHASSIS_CENTER.meters, // Y
+		SHOOTER_PIVOT_HEIGHT.meters // Z
+	)
 
 	/**
 	 * The shooter's angle measurement when it is parallel to the floor
 	 * (or what it would have been if it could get to that position).
-	 *
-	 * Parallel meaning, the pivot and the
 	 */
 	val SHOOTER_PITCH_OFFSET = 0.0.degrees
 
