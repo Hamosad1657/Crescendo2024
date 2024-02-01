@@ -16,7 +16,7 @@ object DynamicShootingConstants {
 	 * follows alliance", so the speaker position will be different depending on our alliance.
 	 *
 	 * For more information:
-	 * [coordinate-system.html#origin-follows-your-alliance] (https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html#origin-follows-your-alliance)
+	 * https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html#origin-follows-your-alliance
 	 */
 	val SPEAKER_POSITION_METERS_BLUE = Translation3d(0.0, 0.0, SPEAKER_HEIGHT.meters)
 
