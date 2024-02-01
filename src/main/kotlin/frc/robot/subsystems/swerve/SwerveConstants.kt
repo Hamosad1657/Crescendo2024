@@ -28,7 +28,7 @@ object SwerveConstants {
 		PATH_TRANSLATION_CONSTANTS,
 		PATH_ROTATION_CONSTANTS,
 		MAX_SPEED,
-		DRIVEBASE_RADIUS.meters,
+		DRIVEBASE_RADIUS.asMeters,
 		ReplanningConfig(),
 	)
 }
