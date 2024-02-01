@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooter.dynamicshooting
 
 import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.Length
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.geometry.Translation3d
@@ -54,14 +53,4 @@ private fun determineSpeakerPosition(alliance: Alliance): Translation3d =
 private fun calculateShooterPosition3dMeters(chassisPosition2dMeters: Translation2d): Translation3d {
 	val chassisPosition3dMeters = Translation3d(chassisPosition2dMeters.x, chassisPosition2dMeters.y, 0.0)
 	return chassisPosition3dMeters + SHOOTER_PIVOT_TO_CHASSIS_CENTER_TRANSLATION3D
-}
-
-private fun calculateShooterToSpeakerTranslation3d(
-	chassisPositionMeters: Translation2d,
-	alliance: Alliance
-): Translation3d {
-	val shooterPosition3dMeters = calculateShooterPosition3dMeters(chassisPositionMeters)
-	val speakerPosition3dMeters = determineSpeakerPosition(alliance)
-
-	return speakerPosition3dMeters.minus(shooterPosition3dMeters)
 }
