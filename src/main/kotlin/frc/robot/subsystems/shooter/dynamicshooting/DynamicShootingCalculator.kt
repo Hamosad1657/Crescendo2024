@@ -13,6 +13,8 @@ import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SPE
 import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SPEAKER_POSITION_METERS_RED
 import kotlin.math.atan2
 
+// Everything that says "shooter position" is referring to the center of the shooter along its pivot axis.
+
 /** This function assumes the robot is directly facing the speaker. */
 fun calculateShooterState(chassisPosition2dMeters: Translation2d, alliance: Alliance): ShooterState {
 	val speakerPosition3dMeters = determineSpeakerPosition(alliance)
