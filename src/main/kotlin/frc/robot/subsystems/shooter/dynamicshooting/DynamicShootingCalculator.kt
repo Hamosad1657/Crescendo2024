@@ -3,56 +3,54 @@ package frc.robot.subsystems.shooter.dynamicshooting
 import com.hamosad1657.lib.units.AngularVelocity
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SHOOTER_PITCH_OFFSET
-import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SHOOTER_PIVOT_TO_CHASSIS_CENTER_TRANSLATION3D
+import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SHOOTER_ANGLE_OFFSET
+import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SHOOTER_HEIGHT
+import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SHOOTER_PIVOT_TO_CHASSIS_CENTER
+import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SPEAKER_BLUE_POSITION_METERS
 import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SPEAKER_HEIGHT
-import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SPEAKER_POSITION_METERS_BLUE
-import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SPEAKER_POSITION_METERS_RED
+import frc.robot.subsystems.shooter.dynamicshooting.DynamicShootingConstants.SPEAKER_RED_POSITION_METERS
 import kotlin.math.atan2
 
 // Everything that says "shooter position" is referring to the center of the shooter along its pivot axis.
+// All of the position and distance units are meters.
 
 /** This function assumes the robot is directly facing the speaker. */
-fun calculateShooterState(chassisPosition2dMeters: Translation2d, alliance: Alliance): ShooterState {
-	val speakerPosition3dMeters = determineSpeakerPosition(alliance)
-	val shooterPosition3dMeters = calculateShooterPosition3dMeters(chassisPosition2dMeters)
+fun calculateShooterState(chassisPosition: Translation2d, alliance: Alliance): ShooterState {
+	val speakerPosition = determineSpeakerPosition(alliance)
+	val shooterPosition = calculateShooterPosition(chassisPosition)
 
-	val shooterToSpeakerFlatDistanceMeters =
-		shooterPosition3dMeters.toTranslation2d()
-			.getDistance(
-				speakerPosition3dMeters.toTranslation2d()
-			)
+	val shooterToSpeakerFlatDistance = shooterPosition.getDistance(speakerPosition)
+	val requiredShooterAngle = calculateRequiredShooterAngle(shooterToSpeakerFlatDistance)
 
-	val shooterToSpeakerHeightDifferenceMeters = SPEAKER_HEIGHT.meters - shooterPosition3dMeters.z
+	val angleSetpoint = requiredShooterAngle + SHOOTER_ANGLE_OFFSET
+	val velocitySetpoint = calculateVelocitySetpoint(requiredShooterAngle, shooterToSpeakerFlatDistance)
 
-	val shooterToSpeakerPitch = Rotation2d.fromRadians(
-		atan2(shooterToSpeakerFlatDistanceMeters, shooterToSpeakerHeightDifferenceMeters)
-	)
-
-	val angleSetpoint = shooterToSpeakerPitch + SHOOTER_PITCH_OFFSET
-	val velocitySetpoint = calculateVelocitySetpoint(shooterToSpeakerPitch, shooterToSpeakerFlatDistanceMeters)
 	return ShooterState(angleSetpoint, velocitySetpoint)
 }
 
-private fun calculateVelocitySetpoint(
-	shooterToSpeakerPitch: Rotation2d,
-	shooterToSpeakerFlatDistanceMeters: Double
-): AngularVelocity {
-	// TODO: Implement
-	return AngularVelocity.fromRpm(0.0)
-}
-
-private fun determineSpeakerPosition(alliance: Alliance): Translation3d =
-	if (alliance == Alliance.Blue) {
-		SPEAKER_POSITION_METERS_BLUE
-	} else {
-		SPEAKER_POSITION_METERS_RED
+private fun determineSpeakerPosition(alliance: Alliance) =
+	when (alliance) {
+		Alliance.Red -> SPEAKER_RED_POSITION_METERS
+		Alliance.Blue -> SPEAKER_BLUE_POSITION_METERS
 	}
 
-private fun calculateShooterPosition3dMeters(chassisPosition2dMeters: Translation2d): Translation3d {
-	val chassisPosition3dMeters = Translation3d(chassisPosition2dMeters.x, chassisPosition2dMeters.y, 0.0)
-	return chassisPosition3dMeters + SHOOTER_PIVOT_TO_CHASSIS_CENTER_TRANSLATION3D
+private fun calculateShooterPosition(chassisPosition: Translation2d) =
+	chassisPosition + SHOOTER_PIVOT_TO_CHASSIS_CENTER
+
+private fun calculateRequiredShooterAngle(shooterToSpeakerFlatDistance: Double): Rotation2d {
+	val shooterToSpeakerHeightDifference = SPEAKER_HEIGHT.meters - SHOOTER_HEIGHT.meters
+
+	return Rotation2d.fromRadians(
+		atan2(shooterToSpeakerFlatDistance, shooterToSpeakerHeightDifference)
+	)
+}
+
+private fun calculateVelocitySetpoint(
+	shooterToSpeakerAngle: Rotation2d,
+	shooterToSpeakerFlatDistance: Double,
+): AngularVelocity {
+	// TODO: Implement (by using a function or shooting ranges)
+	return AngularVelocity.fromRpm(0.0)
 }
