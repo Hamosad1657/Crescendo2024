@@ -64,5 +64,4 @@ object ShooterConstants {
 		ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
 		ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
 	}
-
 }

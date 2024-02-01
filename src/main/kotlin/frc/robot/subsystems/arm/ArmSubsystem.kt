@@ -2,7 +2,6 @@ package frc.robot.subsystems.arm
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.hamosad1657.lib.motors.HaCANSparkMax
-import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.toIdleMode
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput

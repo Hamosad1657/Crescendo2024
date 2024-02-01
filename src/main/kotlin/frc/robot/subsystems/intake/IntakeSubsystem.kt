@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake
 import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.motors.HaTalonFX
-import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import kotlin.math.abs
 import frc.robot.RobotMap.Intake as IntakeMap

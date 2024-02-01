@@ -4,7 +4,9 @@ import com.hamosad1657.lib.Telemetry
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
@@ -18,38 +20,47 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-    var robotTelemetry = Telemetry.Competition
+	var robotTelemetry = Telemetry.Testing.apply { SmartDashboard.putString("Telemetry", this.name) }
+		set(value) {
+			field = value
+			SmartDashboard.putString("Telemetry", field.name)
+		}
 
-    private var autonomousCommand: Command? = null
-    private var commandScheduler = CommandScheduler.getInstance()
+	private var autonomousCommand: Command? = null
+	private var commandScheduler = CommandScheduler.getInstance()
 
-    override fun robotInit() {
-        // Report the use of the Kotlin Language for "FRC Usage Report" statistics
-        HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
-        // Access the RobotContainer object so that it is initialized. This will perform all our
-        // button bindings, set default commands, and put our autonomous chooser on the dashboard.
-        RobotContainer
-    }
+	fun <E> debugPrint(thing: E): E {
+		DriverStation.reportWarning(thing.toString(), false)
+		return thing
+	}
 
-    override fun robotPeriodic() {
-        commandScheduler.run()
-    }
+	override fun robotInit() {
+		// Report the use of the Kotlin Language for "FRC Usage Report" statistics
+		HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
+		// Access the RobotContainer object so that it is initialized. This will perform all our
+		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
+		RobotContainer
+	}
 
-    override fun autonomousInit() {
-        autonomousCommand = RobotContainer.getAutonomousCommand()
-        autonomousCommand?.schedule()
-    }
+	override fun robotPeriodic() {
+		commandScheduler.run()
+	}
 
-    override fun teleopInit() {
-        autonomousCommand?.cancel()
-    }
+	override fun autonomousInit() {
+		autonomousCommand = RobotContainer.getAutonomousCommand()
+		autonomousCommand?.schedule()
+	}
 
-    override fun testInit() {
-        // Cancels all running commands at the start of test mode.
-        commandScheduler.cancelAll()
-    }
+	override fun teleopInit() {
+		autonomousCommand?.cancel()
+	}
 
-    override fun simulationInit() {
-        robotTelemetry = Telemetry.Simulation
-    }
+	override fun testInit() {
+		// Cancels all running commands at the start of test mode.
+		commandScheduler.cancelAll()
+	}
+
+	override fun simulationInit() {
+		robotTelemetry = Telemetry.Simulation
+	}
 }

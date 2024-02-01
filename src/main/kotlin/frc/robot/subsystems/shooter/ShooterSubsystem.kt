@@ -5,12 +5,8 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.FeedbackConfigs
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.CANcoder
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
-import com.ctre.phoenix6.signals.NeutralModeValue
-import com.ctre.phoenix6.signals.SensorDirectionValue
+import com.ctre.phoenix6.signals.*
 import com.hamosad1657.lib.motors.HaTalonFX
-import com.hamosad1657.lib.subsystemutils.setNameToClassName
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.toIdleMode
 import com.revrobotics.CANSparkBase
