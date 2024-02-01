@@ -205,7 +205,8 @@ replay_pid*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -332,3 +333,6 @@ bin/
 # End entries from WPI Lib team
 
 src/main/deploy/pathplanner/navgrid.json
+.idea/codeStyles/Project.xml
+.idea/codeStyles/codeStyleConfig.xml
+ctre_sim/

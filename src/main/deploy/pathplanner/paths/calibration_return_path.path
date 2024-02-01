@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.811115985868335,
+        "y": 1.4272981273235277
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.318516637033274,
+        "y": 1.4272981273235277
+      },
+      "isLocked": false,
+      "linkedName": "calibration_end"
+    },
+    {
+      "anchor": {
+        "x": 0.48,
+        "y": 1.4272981273235277
+      },
+      "prevControl": {
+        "x": 1.6181070034867329,
+        "y": 1.3993118895328704
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "calibration_start"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "calibration",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}
