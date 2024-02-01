@@ -21,7 +21,7 @@ fun calculateShooterState(chassisPosition2dMeters: Translation2d, alliance: Alli
 	val shooterToSpeakerFlatDistanceMeters =
 		shooterPosition3dMeters.toTranslation2d()
 			.getDistance(
-				shooterPosition3dMeters.toTranslation2d()
+				speakerPosition3dMeters.toTranslation2d()
 			)
 
 	val shooterToSpeakerHeightDifferenceMeters = SPEAKER_HEIGHT.meters - shooterPosition3dMeters.z
