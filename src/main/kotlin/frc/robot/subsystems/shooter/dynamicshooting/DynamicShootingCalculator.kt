@@ -40,7 +40,7 @@ private fun calculateShooterPosition(chassisPosition: Translation2d) =
 	chassisPosition + SHOOTER_PIVOT_TO_CHASSIS_CENTER
 
 private fun calculateRequiredShooterAngle(shooterToSpeakerFlatDistance: Double): Rotation2d {
-	val shooterToSpeakerHeightDifference = SPEAKER_HEIGHT.meters - SHOOTER_HEIGHT.meters
+	val shooterToSpeakerHeightDifference = SPEAKER_HEIGHT.asMeters - SHOOTER_HEIGHT.asMeters
 
 	return Rotation2d.fromRadians(
 		atan2(shooterToSpeakerFlatDistance, shooterToSpeakerHeightDifference)
