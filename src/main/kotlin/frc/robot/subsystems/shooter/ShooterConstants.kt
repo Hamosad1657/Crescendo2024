@@ -7,7 +7,6 @@ import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
-import frc.robot.subsystems.climbing.ClimbingConstants
 
 object ShooterConstants {
 	// TODO: Find velocity and angle tolerances for shooter
@@ -26,15 +25,18 @@ object ShooterConstants {
 	 */
 	const val SHOOT_TIME_SEC = 0.0 // TODO: Measure SHOOT_TIME_SEC
 
-	/** 0 should be the starting position (the lowest possible angle). */
-	const val CANCODER_OFFSET_DEG = 0.0
+	/**
+	 * 1 degree should be the lowest possible angle.
+	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
+	 */
+	val CANCODER_OFFSET = 0.0.degrees
 
+	/** This should eject the note quickly without getting it too far away. */
 	const val EJECT_OUTPUT = 0.0
 
 	// ShooterState is a data class and not an enum, because we might want to make
-	// a continuous function (robot pose3d to target pose3d) if we have the time.
-	// In the meantime, we will shoot from a few constant positions. Keep instances
-	// of ShooterState as constants.
+	// a continuous shooting function if we have the time. In the meantime, we will
+	// shoot from a few constant positions. Keep instances of ShooterState as constants.
 	data class ShooterState(val angle: Rotation2d, val velocity: AngularVelocity) {
 
 		companion object {
@@ -53,14 +55,12 @@ object ShooterConstants {
 
 	val FALCON_HARDWARE_LIMITS_CONFIG = HardwareLimitSwitchConfigs().apply {
 		ForwardLimitEnable = true
-		ForwardLimitAutosetPositionEnable = true
-		ForwardLimitAutosetPositionValue = ClimbingConstants.ClimbingState.REACHING_CHAIN.setpoint
+		ForwardLimitAutosetPositionEnable = false
 		ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
 		ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
 
 		ReverseLimitEnable = true
-		ReverseLimitAutosetPositionEnable = true
-		ReverseLimitAutosetPositionValue = 0.0
+		ReverseLimitAutosetPositionEnable = false
 		ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
 		ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
 	}

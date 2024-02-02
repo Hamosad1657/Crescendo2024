@@ -52,7 +52,7 @@ object ShooterSubsystem : SubsystemBase() {
 	private val angleCANCoder = CANcoder(ShooterMap.Angle.CANCODER_ID).apply {
 		CANcoderConfiguration().apply {
 			MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1
-			MagnetSensor.MagnetOffset = Constants.CANCODER_OFFSET_DEG
+			MagnetSensor.MagnetOffset = Constants.CANCODER_OFFSET.rotations
 
 			// TODO: Verify measurement gets more positive when going up after the minimum
 			MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive
@@ -81,7 +81,7 @@ object ShooterSubsystem : SubsystemBase() {
 	val velocity get() = AngularVelocity.fromRpm(shooterEncoder.velocity)
 
 	/**
-	 * When the shooter is at its lowest possible angle, measurement is 0.
+	 * When the shooter is at its lowest possible angle, measurement is 1 degree.
 	 * When moving away the measurement gets more positive.
 	 *
 	 * - This value does not come directly from the CANCoder, but from the motor controller,
