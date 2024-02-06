@@ -15,7 +15,7 @@ object Vision {
 	private val robotToCamera =
 		Transform3d(
 			Translation3d(0.135, 0.375, -0.465),
-			Rotation3d(0.degrees.radians, 68.degrees.radians, 90.degrees.radians)
+			Rotation3d(0.degrees.radians, 60.degrees.radians, 90.degrees.radians)
 		)
 	private val camera = PhotonCamera("AprilTag-Cam")
 
