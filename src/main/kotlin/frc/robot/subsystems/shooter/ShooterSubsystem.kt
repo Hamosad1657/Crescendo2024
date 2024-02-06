@@ -5,9 +5,13 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.FeedbackConfigs
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.CANcoder
-import com.ctre.phoenix6.signals.*
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
+import com.ctre.phoenix6.signals.NeutralModeValue
+import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.FractionalOutput
 import com.hamosad1657.lib.units.toIdleMode
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
@@ -135,13 +139,13 @@ object ShooterSubsystem : SubsystemBase() {
 	// --- Testing and Manual Overrides ---
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-	fun setShooterMotorsOutput(percentOutput: Double) {
-		shooterMainMotor.set(percentOutput)
+	fun setShooterMotorsOutput(output: FractionalOutput) {
+		shooterMainMotor.set(output)
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-	fun increaseShooterMotorsOutputBy(percentOutput: Double) {
-		shooterMainMotor.set(shooterMainMotor.get() + percentOutput)
+	fun increaseShooterMotorsOutputBy(output: FractionalOutput) {
+		shooterMainMotor.set(shooterMainMotor.get() + output)
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
@@ -150,8 +154,8 @@ object ShooterSubsystem : SubsystemBase() {
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-	fun setAngleMotorOutput(percentOutput: Double) {
-		angleMotor.set(percentOutput)
+	fun setAngleMotorOutput(output: FractionalOutput) {
+		angleMotor.set(output)
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */

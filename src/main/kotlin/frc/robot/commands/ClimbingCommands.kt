@@ -4,6 +4,7 @@ import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.commands.finallyDo
 import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.commands.withName
+import com.hamosad1657.lib.units.FractionalOutput
 import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState.*
@@ -96,10 +97,10 @@ fun ClimbingSubsystem.foldAndStayFolded(): Command =
  *
  * - Requirements: climbing.
  */
-fun ClimbingSubsystem.openLoopTeleopCommand(percentOutput: () -> Double): Command =
+fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> FractionalOutput): Command =
 	withName("climbing open loop teleop") {
 		run {
-			set(percentOutput())
+			set(output())
 		} finallyDo {
 			set(0.0)
 		}
@@ -133,7 +134,10 @@ fun ClimbingSubsystem.maintainSetpointCommand(setpoint: Rotations): Command =
  * To be used in testing or in other command groups.
  * - Requirements: climbing.
  */
-private fun ClimbingSubsystem.openLoopGetToPositionCommand(desiredPosition: Rotations, output: Double): Command {
+private fun ClimbingSubsystem.openLoopGetToPositionCommand(
+	desiredPosition: Rotations,
+	output: FractionalOutput
+): Command {
 	val endCondition: (() -> Boolean)
 
 	if (output < 0.0) {

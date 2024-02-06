@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climbing
 
 import com.hamosad1657.lib.math.PIDGains
+import com.hamosad1657.lib.units.FractionalOutput
 import com.hamosad1657.lib.units.Rotations
 
 object ClimbingConstants {
@@ -14,9 +15,9 @@ object ClimbingConstants {
 	const val MIN_POSSIBLE_POSITION: Rotations = 0.0
 	const val MAX_POSSIBLE_POSITION: Rotations = 0.0
 
-	const val STAY_FOLDED_OUTPUT = 0.0
+	const val STAY_FOLDED_OUTPUT: FractionalOutput = 0.0
 
-	enum class ClimbingState(val setpoint: Rotations, val output: Double, val bearingWeight: Boolean) {
+	enum class ClimbingState(val setpoint: Rotations, val output: FractionalOutput, val bearingWeight: Boolean) {
 		REACHING_CHAIN(
 			setpoint = 0.0,
 			output = 0.0,

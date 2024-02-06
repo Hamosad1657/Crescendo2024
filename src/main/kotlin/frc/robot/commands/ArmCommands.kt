@@ -4,6 +4,7 @@ import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.commands.finallyDo
 import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.commands.withName
+import com.hamosad1657.lib.units.FractionalOutput
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.arm.ArmConstants.FOLD_OUTPUT
 import frc.robot.subsystems.arm.ArmConstants.OPEN_OUTPUT
@@ -32,7 +33,10 @@ fun ArmSubsystem.stayFoldedCommand(): Command =
 fun ArmSubsystem.foldAndStayFoldedCommand(): Command =
 	withName("fold & stay folded") { foldCommand() andThen stayFoldedCommand() }
 
-fun ArmSubsystem.separateSidesTeleopCommand(leftOutput: () -> Double, rightOutput: () -> Double): Command =
+fun ArmSubsystem.separateSidesTeleopCommand(
+	leftOutput: () -> FractionalOutput,
+	rightOutput: () -> FractionalOutput
+): Command =
 	withName("separate sides teleop") {
 		run {
 			setLeftMotorWithLimits(leftOutput())
@@ -40,7 +44,7 @@ fun ArmSubsystem.separateSidesTeleopCommand(leftOutput: () -> Double, rightOutpu
 		} finallyDo { setBothMotors(0.0) }
 	}
 
-fun ArmSubsystem.bothSidesTeleopCommand(output: () -> Double) =
+fun ArmSubsystem.bothSidesTeleopCommand(output: () -> FractionalOutput) =
 	withName("both sides teleop") {
 		separateSidesTeleopCommand(output, output)
 	}

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs
+import com.hamosad1657.lib.units.FractionalOutput
 
 object IntakeConstants {
 	// TODO: decide optimal intake current limit configs
@@ -12,5 +13,5 @@ object IntakeConstants {
 	}
 
 	// TODO: Do tests and decide optimal intake output
-	const val MOTOR_OUTPUT = 0.0
+	const val MOTOR_OUTPUT: FractionalOutput = 0.0
 }

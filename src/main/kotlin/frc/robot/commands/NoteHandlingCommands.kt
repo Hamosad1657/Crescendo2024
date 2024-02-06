@@ -4,6 +4,7 @@ package frc.robot.commands
 
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.FractionalOutput
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
@@ -107,10 +108,10 @@ fun loadIntoShooterCommand(): Command =
 // ---
 
 /** - Requirements: shooter. */
-fun ShooterSubsystem.openLoopTeleop_shooterAngle(percentOutput: () -> Double): Command =
+fun ShooterSubsystem.openLoopTeleop_shooterAngle(output: () -> FractionalOutput): Command =
 	withName("angle open loop teleop") {
 		run {
-			setAngleMotorOutput(percentOutput())
+			setAngleMotorOutput(output())
 		} finallyDo { _ ->
 			setAngleMotorOutput(0.0)
 		}
@@ -132,10 +133,10 @@ fun ShooterSubsystem.closedLoopTeleop_shooterAngle(changeInAngle: () -> Double, 
 	}
 
 /** - Requirements: shooter. */
-fun ShooterSubsystem.openLoopTeleop_shooterVelocity(percentOutput: () -> Double): Command =
+fun ShooterSubsystem.openLoopTeleop_shooterVelocity(output: () -> FractionalOutput): Command =
 	withName("velocity open loop teleop") {
 		run {
-			increaseShooterMotorsOutputBy(percentOutput())
+			increaseShooterMotorsOutputBy(output())
 		} finallyDo { _ ->
 			setShooterMotorsOutput(0.0)
 		}

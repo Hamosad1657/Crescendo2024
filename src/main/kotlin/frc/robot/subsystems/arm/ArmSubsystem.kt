@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm
 
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.hamosad1657.lib.motors.HaCANSparkMax
+import com.hamosad1657.lib.units.FractionalOutput
 import com.hamosad1657.lib.units.toIdleMode
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
@@ -47,46 +48,46 @@ object ArmSubsystem : SubsystemBase() {
 			field = value
 		}
 
-	fun setLeftMotor(percentOutput: Double) {
-		leftMotor.set(percentOutput)
+	fun setLeftMotor(output: FractionalOutput) {
+		leftMotor.set(output)
 	}
 
-	fun setRightMotor(percentOutput: Double) {
-		rightMotor.set(percentOutput)
+	fun setRightMotor(output: FractionalOutput) {
+		rightMotor.set(output)
 	}
 
-	fun setLeftMotorWithLimits(percentOutput: Double) {
-		if (percentOutput < 0.0 && isLeftAtReverseLimit) {
+	fun setLeftMotorWithLimits(output: FractionalOutput) {
+		if (output < 0.0 && isLeftAtReverseLimit) {
 			setLeftMotor(0.0)
 			return
 		}
-		if (percentOutput > 0.0 && isLeftAtForwardLimit) {
+		if (output > 0.0 && isLeftAtForwardLimit) {
 			setLeftMotor(0.0)
 			return
 		}
-		setLeftMotor(percentOutput)
+		setLeftMotor(output)
 	}
 
-	fun setRightMotorWithLimits(percentOutput: Double) {
-		if (percentOutput < 0.0 && isRightAtReverseLimit) {
+	fun setRightMotorWithLimits(output: FractionalOutput) {
+		if (output < 0.0 && isRightAtReverseLimit) {
 			setRightMotor(0.0)
 			return
 		}
-		if (percentOutput > 0.0 && isRightAtForwardLimit) {
+		if (output > 0.0 && isRightAtForwardLimit) {
 			setRightMotor(0.0)
 			return
 		}
-		setRightMotor(percentOutput)
+		setRightMotor(output)
 	}
 
-	fun setBothMotors(percentOutput: Double) {
-		setLeftMotor(percentOutput)
-		setRightMotor(percentOutput)
+	fun setBothMotors(output: FractionalOutput) {
+		setLeftMotor(output)
+		setRightMotor(output)
 	}
 
-	fun setBothMotorsWithLimits(percentOutput: Double) {
-		setLeftMotorWithLimits(percentOutput)
-		setRightMotorWithLimits(percentOutput)
+	fun setBothMotorsWithLimits(output: FractionalOutput) {
+		setLeftMotorWithLimits(output)
+		setRightMotorWithLimits(output)
 	}
 
 	override fun initSendable(builder: SendableBuilder) {

@@ -2,6 +2,7 @@ package frc.robot.subsystems.climbing
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.PIDGains
+import com.hamosad1657.lib.units.FractionalOutput
 import com.hamosad1657.lib.units.Rotations
 import com.hamosad1657.lib.units.toIdleMode
 import com.revrobotics.CANSparkFlex
@@ -128,9 +129,9 @@ object ClimbingSubsystem : SubsystemBase() {
 		setPositionSetpoint(currentPosition + desiredChangeInPosition)
 	}
 
-	fun set(percentOutput: Double) {
-		setLeft(percentOutput)
-		setRight(percentOutput)
+	fun set(output: FractionalOutput) {
+		setLeft(output)
+		setRight(output)
 	}
 
 	private fun PIDController.configPID(gains: PIDGains) {
@@ -140,28 +141,28 @@ object ClimbingSubsystem : SubsystemBase() {
 		iZone = gains.kIZone
 	}
 
-	private fun setLeft(percentOutput: Double) {
-		if (isLeftAtOpenedLimit && percentOutput > 0.0) {
+	private fun setLeft(output: FractionalOutput) {
+		if (isLeftAtOpenedLimit && output > 0.0) {
 			leftMainMotor.set(0.0)
 			return
 		}
-		if (isLeftAtClosedLimit && percentOutput < 0.0) {
+		if (isLeftAtClosedLimit && output < 0.0) {
 			leftMainMotor.set(STAY_FOLDED_OUTPUT)
 			return
 		}
-		leftMainMotor.set(percentOutput)
+		leftMainMotor.set(output)
 	}
 
-	private fun setRight(percentOutput: Double) {
-		if (isRightAtOpenedLimit && percentOutput > 0.0) {
+	private fun setRight(output: FractionalOutput) {
+		if (isRightAtOpenedLimit && output > 0.0) {
 			rightMainMotor.set(0.0)
 			return
 		}
-		if (isRightAtClosedLimit && percentOutput < 0.0) {
+		if (isRightAtClosedLimit && output < 0.0) {
 			rightMainMotor.set(STAY_FOLDED_OUTPUT)
 			return
 		}
-		rightMainMotor.set(percentOutput)
+		rightMainMotor.set(output)
 	}
 
 	override fun initSendable(builder: SendableBuilder) {
