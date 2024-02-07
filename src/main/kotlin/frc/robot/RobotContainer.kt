@@ -24,7 +24,9 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-	private val controller = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
+	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
+	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
+	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
 	private val swerve = SwerveSubsystem
 	private val autoChooser = AutoBuilder.buildAutoChooser().apply { SmartDashboard.putData("Auto Chooser", this) }
 
@@ -36,17 +38,17 @@ object RobotContainer {
 
 	/** Use this method to define your `trigger->command` mappings. */
 	private fun configureBindings() {
-		autoChooser.onChange { controller.triangle().onTrue(it) }
-		controller.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
-		controller.square().onTrue(InstantCommand({}, swerve))
+		autoChooser.onChange { controllerA.triangle().onTrue(it) }
+		controllerA.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
+		controllerA.square().onTrue(InstantCommand({}, swerve))
 	}
 
 	private fun setDefaultCommands() {
 		swerve.defaultCommand = TeleopDriveCommand(
 			swerve,
-			vX = { simpleDeadband(controller.leftY, 0.1) },
-			vY = { simpleDeadband(controller.leftX, 0.1) },
-			omega = { simpleDeadband(controller.rightX * 1.0, 0.1) },
+			vX = { simpleDeadband(controllerA.leftY, 0.1) },
+			vY = { simpleDeadband(controllerA.leftX, 0.1) },
+			omega = { simpleDeadband(controllerA.rightX * 1.0, 0.1) },
 			isFieldRelative = { true },
 			headingCorrection = false
 		)

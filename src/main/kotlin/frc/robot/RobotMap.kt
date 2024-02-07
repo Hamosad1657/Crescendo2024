@@ -6,6 +6,7 @@ package frc.robot
 object RobotMap {
 	const val DRIVER_A_CONTROLLER_PORT = 0
 	const val DRIVER_B_CONTROLLER_PORT = 1
+	const val TESTING_CONTROLLER_PORT = 5
 
 	object Climbing {
 		const val RIGHT_MAIN_MOTOR_ID = 0
