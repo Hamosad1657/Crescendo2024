@@ -29,6 +29,7 @@ object IntakeSubsystem : SubsystemBase() {
 	var neutralMode = NeutralModeValue.Coast
 		set(value) {
 			intakeToLoaderMotor.setNeutralMode(value)
+			floorIntakeMotor.setNeutralMode(value)
 			field = value
 		}
 
