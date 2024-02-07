@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.PrintCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
+import frc.robot.commands.openLoopTeleop_shooterAngle
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.arm.ArmSubsystem
 import frc.robot.subsystems.climbing.ClimbingSubsystem
@@ -52,6 +53,33 @@ object RobotContainer {
 			isFieldRelative = { true },
 			headingCorrection = false
 		)
+
+		// --- For initial testing, delete later --- //
+
+		// Test 1 thing at a time.
+		// For a list of things to test follow the link:
+		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
+		
+		with(ShooterSubsystem) {
+			defaultCommand = openLoopTeleop_shooterAngle { testingController.leftY }
+//			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
+		}
+
+//		with(IntakeSubsystem) {
+//			defaultCommand = run {
+//				set(IntakeConstants.MOTOR_OUTPUT)
+//			} finallyDo {
+//				set(0.0)
+//			}
+//		}
+
+//		with(LoaderSubsystem) {
+//			defaultCommand = run {
+//				set(LoaderConstants.MOTOR_OUTPUT)
+//			} finallyDo {
+//				set(0.0)
+//			}
+//		}
 	}
 
 	private fun registerAutoCommands() {
