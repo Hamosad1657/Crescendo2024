@@ -1,6 +1,6 @@
 package frc.robot.subsystems.arm
 
-import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.motors.HaCANSparkMax
 import com.hamosad1657.lib.units.FractionalOutput
 import com.hamosad1657.lib.units.toIdleMode
@@ -41,7 +41,7 @@ object ArmSubsystem : SubsystemBase() {
 	val isAtForwardLimit get() = isLeftAtForwardLimit || isRightAtForwardLimit
 	val isAtReverseLimit get() = isLeftAtReverseLimit || isRightAtReverseLimit
 
-	var neutralMode: NeutralMode = NeutralMode.Brake
+	var neutralMode: NeutralModeValue = NeutralModeValue.Brake
 		set(value) {
 			leftMotor.setIdleMode(value.toIdleMode())
 			rightMotor.setIdleMode(value.toIdleMode())

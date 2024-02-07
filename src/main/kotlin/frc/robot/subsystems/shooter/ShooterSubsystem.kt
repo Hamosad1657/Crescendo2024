@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter
 
-import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.FeedbackConfigs
 import com.ctre.phoenix6.controls.PositionVoltage
@@ -66,7 +65,7 @@ object ShooterSubsystem : SubsystemBase() {
 
 	// --- Motors Configuration ---
 
-	var shooterNeutralMode = NeutralMode.Coast
+	var shooterNeutralMode = NeutralModeValue.Coast
 		set(value) {
 			shooterMainMotor.idleMode = value.toIdleMode()
 			shooterSecondaryMotor.idleMode = value.toIdleMode()
