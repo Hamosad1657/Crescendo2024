@@ -332,6 +332,7 @@ bin/
 
 # End entries from WPI Lib team
 
+src/main/deploy/pathplanner/navgrid.json
 .idea/codeStyles/Project.xml
 .idea/codeStyles/codeStyleConfig.xml
 ctre_sim/

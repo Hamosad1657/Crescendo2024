@@ -1,5 +1,6 @@
 package frc.robot
 
+import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -9,6 +10,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.PrintCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.swerve.TeleopDriveCommand
+import frc.robot.subsystems.arm.ArmSubsystem
+import frc.robot.subsystems.climbing.ClimbingSubsystem
+import frc.robot.subsystems.intake.IntakeSubsystem
+import frc.robot.subsystems.loader.LoaderSubsystem
+import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
@@ -18,7 +24,9 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-	private val controller = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
+	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
+	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
+	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
 	private val swerve = SwerveSubsystem
 	private val autoChooser = AutoBuilder.buildAutoChooser().apply { SmartDashboard.putData("Auto Chooser", this) }
 
@@ -30,17 +38,17 @@ object RobotContainer {
 
 	/** Use this method to define your `trigger->command` mappings. */
 	private fun configureBindings() {
-		autoChooser.onChange { controller.triangle().onTrue(it) }
-		controller.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
-		controller.square().onTrue(InstantCommand({}, swerve))
+		autoChooser.onChange { controllerA.triangle().onTrue(it) }
+		controllerA.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
+		controllerA.square().onTrue(InstantCommand({}, swerve))
 	}
 
 	private fun setDefaultCommands() {
 		swerve.defaultCommand = TeleopDriveCommand(
 			swerve,
-			vX = { simpleDeadband(controller.leftY, 0.1) },
-			vY = { simpleDeadband(controller.leftX, 0.1) },
-			omega = { simpleDeadband(controller.rightX * 1.0, 0.1) },
+			vX = { simpleDeadband(controllerA.leftY, 0.1) },
+			vY = { simpleDeadband(controllerA.leftX, 0.1) },
+			omega = { simpleDeadband(controllerA.rightX * 1.0, 0.1) },
 			isFieldRelative = { true },
 			headingCorrection = false
 		)
@@ -53,5 +61,23 @@ object RobotContainer {
 	fun getAutonomousCommand(): Command {
 		// TODO: Implement properly
 		return swerve.pathFindToPathCommand("example_path")
+	}
+
+	fun setAllMechanismsToCoast() {
+		ShooterSubsystem.angleNeutralMode = NeutralModeValue.Coast
+		ShooterSubsystem.shooterNeutralMode = NeutralModeValue.Coast
+		LoaderSubsystem.neutralMode = NeutralModeValue.Coast
+		IntakeSubsystem.neutralMode = NeutralModeValue.Coast
+		ArmSubsystem.neutralMode = NeutralModeValue.Coast
+		ClimbingSubsystem.neutralMode = NeutralModeValue.Coast
+	}
+
+	fun setAllMechanismsNeutralMode() {
+		ShooterSubsystem.angleNeutralMode = NeutralModeValue.Brake
+		ShooterSubsystem.shooterNeutralMode = NeutralModeValue.Coast
+		LoaderSubsystem.neutralMode = NeutralModeValue.Brake
+		IntakeSubsystem.neutralMode = NeutralModeValue.Brake
+		ArmSubsystem.neutralMode = NeutralModeValue.Brake
+		ClimbingSubsystem.neutralMode = NeutralModeValue.Brake
 	}
 }

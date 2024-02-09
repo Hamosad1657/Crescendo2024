@@ -40,6 +40,11 @@ object Robot : TimedRobot() {
 		// Access the RobotContainer object so that it is initialized. This will perform all our
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
 		RobotContainer
+		RobotContainer.setAllMechanismsToCoast()
+	}
+
+	override fun disabledExit() {
+		RobotContainer.setAllMechanismsNeutralMode()
 	}
 
 	override fun robotPeriodic() {
