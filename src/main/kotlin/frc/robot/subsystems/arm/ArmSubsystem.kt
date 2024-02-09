@@ -1,9 +1,10 @@
 package frc.robot.subsystems.arm
 
 import com.ctre.phoenix6.signals.NeutralModeValue
-import com.hamosad1657.lib.motors.HaCANSparkMax
 import com.hamosad1657.lib.units.FractionalOutput
 import com.hamosad1657.lib.units.toIdleMode
+import com.revrobotics.CANSparkFlex
+import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -12,8 +13,8 @@ import frc.robot.RobotMap.Arm as ArmMap
 
 object ArmSubsystem : SubsystemBase() {
 
-	private val leftMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
-	private val rightMotor = HaCANSparkMax(ArmMap.MOTOR_ID)
+	private val leftMotor = CANSparkFlex(ArmMap.MOTOR_ID, MotorType.kBrushless)
+	private val rightMotor = CANSparkFlex(ArmMap.MOTOR_ID, MotorType.kBrushless)
 
 	init {
 		leftMotor.inverted = false // TODO: Verify positive output opens arm.
