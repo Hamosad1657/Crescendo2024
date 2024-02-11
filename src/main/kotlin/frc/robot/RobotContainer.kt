@@ -5,12 +5,9 @@ import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import edu.wpi.first.wpilibj2.command.PrintCommand
+import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.swerve.TeleopDriveCommand
-import frc.robot.subsystems.arm.ArmSubsystem
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderSubsystem
@@ -68,7 +65,6 @@ object RobotContainer {
 		ShooterSubsystem.shooterNeutralMode = NeutralModeValue.Coast
 		LoaderSubsystem.neutralMode = NeutralModeValue.Coast
 		IntakeSubsystem.neutralMode = NeutralModeValue.Coast
-		ArmSubsystem.neutralMode = NeutralModeValue.Coast
 		ClimbingSubsystem.neutralMode = NeutralModeValue.Coast
 	}
 
@@ -77,7 +73,6 @@ object RobotContainer {
 		ShooterSubsystem.shooterNeutralMode = NeutralModeValue.Coast
 		LoaderSubsystem.neutralMode = NeutralModeValue.Brake
 		IntakeSubsystem.neutralMode = NeutralModeValue.Brake
-		ArmSubsystem.neutralMode = NeutralModeValue.Brake
 		ClimbingSubsystem.neutralMode = NeutralModeValue.Brake
 	}
 }
