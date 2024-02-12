@@ -43,6 +43,11 @@ object Robot : TimedRobot() {
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
 		Vision.estimatedGlobalPose?.let { SwerveSubsystem.setGyro(it.estimatedPose.rotation.toRotation2d()) }
 		RobotContainer
+		RobotContainer.setAllMechanismsToCoast()
+	}
+
+	override fun disabledExit() {
+		RobotContainer.setAllMechanismsNeutralMode()
 	}
 
 	override fun robotPeriodic() {

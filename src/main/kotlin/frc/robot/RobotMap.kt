@@ -6,21 +6,36 @@ package frc.robot
 object RobotMap {
 	const val DRIVER_A_CONTROLLER_PORT = 0
 	const val DRIVER_B_CONTROLLER_PORT = 1
-
-	object Arm
+	const val TESTING_CONTROLLER_PORT = 5
 
 	object Climbing {
 		const val RIGHT_MAIN_MOTOR_ID = 0
 		const val RIGHT_SECONDARY_MOTOR_ID = 0
 		const val LEFT_MAIN_MOTOR_ID = 0
 		const val LEFT_SECONDARY_MOTOR_ID = 0
+		const val LEFT_OPENED_LIMIT_CHANNEL = 0
+		const val LEFT_CLOSED_LIMIT_CHANNEL = 0
+		const val RIGHT_OPENED_LIMIT_CHANNEL = 0
+		const val RIGHT_CLOSED_LIMIT_CHANNEL = 0
 	}
 
-	object Grabber
+	object Intake {
+		const val INTAKE_TO_LOADER_MOTOR_ID = 0
+		const val GROUND_INTAKE_MOTOR_ID = 0
+	}
 
-	object Intake
+	object Shooter {
+		const val MAIN_MOTOR_ID = 0
+		const val SECONDARY_MOTOR_ID = 0
 
-	object Shooter
+		object Angle {
+			const val MOTOR_ID = 0
+			const val CANCODER_ID = 0
+		}
+	}
 
-	object Swerve
+	object Loader {
+		const val MOTOR_ID = 0
+		const val BEAM_BREAK_CHANNEL = 0
+	}
 }
