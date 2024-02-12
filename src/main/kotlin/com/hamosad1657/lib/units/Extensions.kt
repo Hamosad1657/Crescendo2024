@@ -52,21 +52,14 @@ inline val Int.rotations: Rotation2d get() = Rotation2d.fromRotations(this.toDou
 
 /// --- NeutralMode and IdleMode
 
+fun IdleMode.toNeutralModeValue(): NeutralModeValue =
+	when (this) {
+		IdleMode.kCoast -> NeutralModeValue.Coast
+		IdleMode.kBrake -> NeutralModeValue.Brake
+	}
+
 fun IdleMode.toNeutralMode(): NeutralMode =
 	when (this) {
 		IdleMode.kCoast -> NeutralMode.Coast
 		IdleMode.kBrake -> NeutralMode.Brake
-	}
-
-fun NeutralMode.toIdleMode(): IdleMode =
-	when (this) {
-		NeutralMode.Coast -> IdleMode.kCoast
-		NeutralMode.Brake -> IdleMode.kBrake
-		NeutralMode.EEPROMSetting -> throw IllegalStateException("can't convert `NeutralMode.EEPROMSetting` to IdleMode")
-	}
-
-fun NeutralModeValue.toIdleMode(): IdleMode =
-	when (this) {
-		NeutralModeValue.Coast -> IdleMode.kCoast
-		NeutralModeValue.Brake -> IdleMode.kBrake
 	}

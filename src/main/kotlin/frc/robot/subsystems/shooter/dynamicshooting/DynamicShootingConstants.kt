@@ -1,8 +1,6 @@
 package frc.robot.subsystems.shooter.dynamicshooting
 
-import com.hamosad1657.lib.units.centimeters
-import com.hamosad1657.lib.units.degrees
-import com.hamosad1657.lib.units.feet
+import com.hamosad1657.lib.units.*
 import edu.wpi.first.math.geometry.Translation2d
 
 object DynamicShootingConstants {
@@ -44,5 +42,5 @@ object DynamicShootingConstants {
 	 */
 	val SHOOTER_ANGLE_OFFSET = 0.degrees
 
-	val SHOOTER_VELOCITY_SCALE_FACTOR = 0.0
+	const val SHOOTER_VELOCITY_SCALE_FACTOR = 0.0
 }

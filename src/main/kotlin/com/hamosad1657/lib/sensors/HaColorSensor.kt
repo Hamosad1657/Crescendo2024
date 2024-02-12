@@ -25,7 +25,7 @@ class HaColorSensor(port: I2C.Port) : Sendable {
 	/** The blue value of the raw detected color. */
 	val blueRaw get() = colorSensor.blue
 
-	/** The IR value of the raw detected color (in CIE 1931 XYZ colorspace). */
+	/** The IR value of the raw detected color (in CIE 1931 XYZ color-space). */
 	val ir get() = colorSensor.ir
 
 	/** The proximity value of the sensor ranging from 0 (object is close) to 2047 (object is far away). */

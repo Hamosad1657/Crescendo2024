@@ -2,15 +2,12 @@ package frc.robot.subsystems.vision
 
 import edu.wpi.first.apriltag.AprilTag
 import edu.wpi.first.apriltag.AprilTagFieldLayout
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.geometry.Translation3d
+import edu.wpi.first.math.geometry.*
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import org.photonvision.EstimatedRobotPose
-import org.photonvision.PhotonCamera
-import org.photonvision.PhotonPoseEstimator
+import org.photonvision.*
 import org.photonvision.PhotonPoseEstimator.PoseStrategy
+import org.photonvision.targeting.PhotonPipelineResult
+import org.photonvision.targeting.PhotonTrackedTarget
 import kotlin.math.PI
 
 object Vision : SubsystemBase() {
@@ -46,9 +43,9 @@ object Vision : SubsystemBase() {
 	 */
 	var estimatedGlobalPose: EstimatedRobotPose? = poseEstimator.update().orElse(null)
 
-	val latestResult get() = camera.latestResult
+	val latestResult: PhotonPipelineResult get() = camera.latestResult
 
-	val bestTag get() = latestResult.bestTarget
+	val bestTag: PhotonTrackedTarget get() = latestResult.bestTarget
 
 	fun calibrateTagPositions(transform: Transform3d) {
 		aprilTags = AprilTagFieldLayout(

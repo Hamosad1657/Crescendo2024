@@ -21,7 +21,7 @@ object RobotMap {
 
 	object Intake {
 		const val INTAKE_TO_LOADER_MOTOR_ID = 0
-		const val GROUND_INTAKE_MOTOR_ID = 0
+		const val FLOOR_INTAKE_MOTOR_ID = 0
 	}
 
 	object Shooter {

@@ -4,20 +4,18 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.FeedbackConfigs
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.CANcoder
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
-import com.ctre.phoenix6.signals.NeutralModeValue
-import com.ctre.phoenix6.signals.SensorDirectionValue
+import com.ctre.phoenix6.signals.*
+import com.hamosad1657.lib.commands.andThen
+import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.FractionalOutput
-import com.hamosad1657.lib.units.toIdleMode
+import com.hamosad1657.lib.units.PercentOutput
 import com.revrobotics.CANSparkBase
-import com.revrobotics.CANSparkFlex
-import com.revrobotics.CANSparkLowLevel.MotorType
+import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.*
+import frc.robot.Robot
 import frc.robot.subsystems.shooter.ShooterConstants.ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.RobotMap.Shooter as ShooterMap
@@ -27,13 +25,17 @@ object ShooterSubsystem : SubsystemBase() {
 
 	// --- Motors and Sensors ---
 
-	private val shooterMainMotor = CANSparkFlex(ShooterMap.MAIN_MOTOR_ID, MotorType.kBrushless).apply {
+	private val shooterMainMotor = HaSparkFlex(ShooterMap.MAIN_MOTOR_ID).apply {
 		// TODO: Verify positive output shoots
 		inverted = false
+		idleMode = IdleMode.kCoast
 	}
 
-	private val shooterSecondaryMotor = CANSparkFlex(ShooterMap.SECONDARY_MOTOR_ID, MotorType.kBrushless).apply {
-		follow(shooterMainMotor, true) // TODO: Check if follower needs to be inverted from the main motor
+	private val shooterSecondaryMotor = HaSparkFlex(ShooterMap.SECONDARY_MOTOR_ID).apply {
+		inverted = false
+		idleMode = IdleMode.kCoast
+		// TODO: Check if follower needs to be inverted from the main motor
+		follow(shooterMainMotor, true)
 	}
 
 	private val shooterEncoder = shooterMainMotor.getEncoder()
@@ -41,6 +43,7 @@ object ShooterSubsystem : SubsystemBase() {
 	private val angleMotor = HaTalonFX(ShooterMap.Angle.MOTOR_ID).apply {
 		// TODO: Verify positive output raises angle
 		inverted = false
+		idleMode = IdleMode.kBrake
 
 		configurator.apply(
 			FeedbackConfigs().apply {
@@ -64,19 +67,19 @@ object ShooterSubsystem : SubsystemBase() {
 
 
 	// --- Motors Configuration ---
+	private val angleDisabledCoastCommand =
+		WaitUntilCommand(Robot.DISABLED_COAST_DELAY_SECONDS) andThen
+			InstantCommand({ angleMotor.idleMode = IdleMode.kCoast })
 
-	var shooterNeutralMode = NeutralModeValue.Coast
-		set(value) {
-			shooterMainMotor.idleMode = value.toIdleMode()
-			shooterSecondaryMotor.idleMode = value.toIdleMode()
-			field = value
-		}
+	// TODO: Check if works as expected.
+	fun disabledInit() {
+		CommandScheduler.getInstance().schedule(angleDisabledCoastCommand)
+	}
 
-	var angleNeutralMode = NeutralModeValue.Brake
-		set(value) {
-			angleMotor.setNeutralMode(value)
-			field = value
-		}
+	fun disabledExit() {
+		CommandScheduler.getInstance().cancel(angleDisabledCoastCommand)
+		angleMotor.idleMode = IdleMode.kBrake
+	}
 
 
 	// --- Motors Properties ---
@@ -91,14 +94,14 @@ object ShooterSubsystem : SubsystemBase() {
 	 * which uses the CANCoder for feedback. Essentially, this is the position that the motor
 	 * controller thinks it's at.
 	 */
-	val angle get() = Rotation2d.fromRotations(angleMotor.position.value)
+	val angle: Rotation2d get() = Rotation2d.fromRotations(angleMotor.position.value)
 
 	// I have to track this myself because there is no getter for it in SparkPIDController :(
 	var velocitySetpoint = AngularVelocity.fromRpm(0.0)
 		private set
 
 	// TODO: Verify this really is in rotations and not degrees.
-	val angleSetpoint get() = Rotation2d.fromRotations(angleMotor.closedLoopReference.value)
+	val angleSetpoint: Rotation2d get() = Rotation2d.fromRotations(angleMotor.closedLoopReference.value)
 
 
 	// --- Motor control ---
@@ -138,12 +141,12 @@ object ShooterSubsystem : SubsystemBase() {
 	// --- Testing and Manual Overrides ---
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-	fun setShooterMotorsOutput(output: FractionalOutput) {
+	fun setShooterMotorsOutput(output: PercentOutput) {
 		shooterMainMotor.set(output)
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-	fun increaseShooterMotorsOutputBy(output: FractionalOutput) {
+	fun increaseShooterMotorsOutputBy(output: PercentOutput) {
 		shooterMainMotor.set(shooterMainMotor.get() + output)
 	}
 
@@ -153,7 +156,7 @@ object ShooterSubsystem : SubsystemBase() {
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-	fun setAngleMotorOutput(output: FractionalOutput) {
+	fun setAngleMotorOutput(output: PercentOutput) {
 		angleMotor.set(output)
 	}
 

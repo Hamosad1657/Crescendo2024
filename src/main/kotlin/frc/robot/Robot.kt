@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import frc.robot.subsystems.intake.IntakeSubsystem
+import frc.robot.subsystems.loader.LoaderSubsystem
+import frc.robot.subsystems.shooter.ShooterSubsystem
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -40,11 +43,18 @@ object Robot : TimedRobot() {
 		// Access the RobotContainer object so that it is initialized. This will perform all our
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
 		RobotContainer
-		RobotContainer.setAllMechanismsToCoast()
+	}
+
+	override fun disabledInit() {
+		IntakeSubsystem.disabledInit()
+		LoaderSubsystem.disabledInit()
+		ShooterSubsystem.disabledInit()
 	}
 
 	override fun disabledExit() {
-		RobotContainer.setAllMechanismsNeutralMode()
+		IntakeSubsystem.disabledExit()
+		LoaderSubsystem.disabledExit()
+		ShooterSubsystem.disabledExit()
 	}
 
 	override fun robotPeriodic() {
@@ -68,4 +78,7 @@ object Robot : TimedRobot() {
 	override fun simulationInit() {
 		robotTelemetry = Telemetry.Simulation
 	}
+
+	// TODO: Check if this is the right delay.
+	const val DISABLED_COAST_DELAY_SECONDS = 5.0
 }

@@ -1,5 +1,7 @@
 package com.hamosad1657.lib.units
 
+import com.hamosad1657.lib.units.AngularVelocity.Unit as AngularVelocityUnit
+
 /** Represents an angular velocity.
  *
  * Can be created from or converted to any of the following units:
@@ -13,7 +15,7 @@ package com.hamosad1657.lib.units
  * - Falcon's Integrated Encoder Ticks per 100ms
  */
 class AngularVelocity
-private constructor(velocity: Double, velocityUnit: AngularVelocity.Unit) : Comparable<AngularVelocity> {
+private constructor(velocity: Double, velocityUnit: AngularVelocityUnit) : Comparable<AngularVelocity> {
 	var rpm = 0.0
 		set(value) {
 			require(!value.isNaN())
@@ -21,22 +23,22 @@ private constructor(velocity: Double, velocityUnit: AngularVelocity.Unit) : Comp
 			field = value
 		}
 
-	var rps = this.inUnit(AngularVelocity.Unit.Rps)
-		get() = this.inUnit(AngularVelocity.Unit.Rps)
+	var rps = this.inUnit(AngularVelocityUnit.Rps)
+		get() = this.inUnit(AngularVelocityUnit.Rps)
 		set(value) {
 			rpm = rpsToRpm(value)
 			field = value
 		}
 
-	var radPs = this.inUnit(AngularVelocity.Unit.RadPs)
-		get() = this.inUnit(AngularVelocity.Unit.RadPs)
+	var radPs = this.inUnit(AngularVelocityUnit.RadPs)
+		get() = this.inUnit(AngularVelocityUnit.RadPs)
 		set(value) {
 			rpm = radPsToRpm(value)
 			field = value
 		}
 
-	var degPs = this.inUnit(AngularVelocity.Unit.DegPs)
-		get() = this.inUnit(AngularVelocity.Unit.DegPs)
+	var degPs = this.inUnit(AngularVelocityUnit.DegPs)
+		get() = this.inUnit(AngularVelocityUnit.DegPs)
 		set(value) {
 			rpm = degPsToRpm(value)
 			field = value
@@ -44,19 +46,19 @@ private constructor(velocity: Double, velocityUnit: AngularVelocity.Unit) : Comp
 
 	init {
 		rpm = when (velocityUnit) {
-			AngularVelocity.Unit.Rpm -> velocity
-			AngularVelocity.Unit.Rps -> rpsToRpm(velocity)
-			AngularVelocity.Unit.RadPs -> radPsToRpm(velocity)
-			AngularVelocity.Unit.DegPs -> degPsToRpm(velocity)
+			AngularVelocityUnit.Rpm -> velocity
+			AngularVelocityUnit.Rps -> rpsToRpm(velocity)
+			AngularVelocityUnit.RadPs -> radPsToRpm(velocity)
+			AngularVelocityUnit.DegPs -> degPsToRpm(velocity)
 		}
 	}
 
-	private fun inUnit(velocityUnit: AngularVelocity.Unit) =
+	private fun inUnit(velocityUnit: AngularVelocityUnit) =
 		when (velocityUnit) {
-			Unit.Rpm -> rpm
-			Unit.Rps -> rpmToRps(rpm)
-			Unit.RadPs -> rpmToRadPs(rpm)
-			Unit.DegPs -> rpmToDegPs(rpm)
+			AngularVelocityUnit.Rpm -> rpm
+			AngularVelocityUnit.Rps -> rpmToRps(rpm)
+			AngularVelocityUnit.RadPs -> rpmToRadPs(rpm)
+			AngularVelocityUnit.DegPs -> rpmToDegPs(rpm)
 		}
 
 	override fun toString() = "RPM=$rpm"
@@ -78,10 +80,10 @@ private constructor(velocity: Double, velocityUnit: AngularVelocity.Unit) : Comp
 	}
 
 	companion object {
-		fun fromRpm(rpm: Double) = AngularVelocity(rpm, AngularVelocity.Unit.Rpm)
-		fun fromRps(rps: Double) = AngularVelocity(rps, AngularVelocity.Unit.Rps)
-		fun fromRadPs(radPs: Double) = AngularVelocity(radPs, AngularVelocity.Unit.RadPs)
-		fun fromDegPs(degPs: Double) = AngularVelocity(degPs, AngularVelocity.Unit.DegPs)
+		fun fromRpm(rpm: Double) = AngularVelocity(rpm, AngularVelocityUnit.Rpm)
+		fun fromRps(rps: Double) = AngularVelocity(rps, AngularVelocityUnit.Rps)
+		fun fromRadPs(radPs: Double) = AngularVelocity(radPs, AngularVelocityUnit.RadPs)
+		fun fromDegPs(degPs: Double) = AngularVelocity(degPs, AngularVelocityUnit.DegPs)
 		fun fromMps(mps: Double, wheelRadius: Length) = fromRpm(mpsToRpm(mps, wheelRadius))
 		fun fromFalconTicksPer100ms(ticksPer100ms: Double, gearRatio: Double = 1.0) =
 			fromRpm(falconTicksPer100msToRpm(ticksPer100ms, gearRatio))
