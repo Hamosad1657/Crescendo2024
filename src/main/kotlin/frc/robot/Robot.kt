@@ -23,18 +23,17 @@ import frc.robot.subsystems.shooter.ShooterSubsystem
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	var robotTelemetry = Telemetry.Testing.apply { SmartDashboard.putString("Telemetry", this.name) }
+	var robotTelemetry = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
 		set(value) {
-			field = value
 			SmartDashboard.putString("Telemetry", field.name)
+			field = value
 		}
 
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
 
-	fun <E> debugPrint(thing: E): E {
-		DriverStation.reportWarning(thing.toString(), false)
-		return thing
+	fun <T> debugPrint(value: T) = value.also {
+		DriverStation.reportWarning(it.toString(), false)
 	}
 
 	override fun robotInit() {
