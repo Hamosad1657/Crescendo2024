@@ -6,7 +6,7 @@ import com.hamosad1657.lib.units.toIdleMode
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import kotlin.math.abs
 import frc.robot.RobotMap.Loader as LoaderMap
@@ -14,7 +14,7 @@ import frc.robot.RobotMap.Loader as LoaderMap
 object LoaderSubsystem : SubsystemBase() {
 
 	private val motor = CANSparkFlex(LoaderMap.MOTOR_ID, MotorType.kBrushless)
-	private val beamBreak = DigitalInput(LoaderMap.BEAM_BREAK_CHANNEL)
+	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)
 
 	var neutralMode = NeutralModeValue.Brake
 		set(value) {
@@ -24,7 +24,8 @@ object LoaderSubsystem : SubsystemBase() {
 
 	// TODO: Check if beam-break sensor is wired normally-true or normally-false
 	/** Beam-break is positioned between loader and shooter. */
-	val isNoteDetected get() = beamBreak.get()
+	val isNoteDetected: Boolean
+		get() = beamBreak.value >= LoaderConstants.ANALOG_INPUT_THRESHOLD
 
 	fun set(output: FractionalOutput) {
 		motor.set(output)
