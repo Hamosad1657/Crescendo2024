@@ -24,16 +24,15 @@ import frc.robot.subsystems.vision.Vision
 object Robot : TimedRobot() {
 	var robotTelemetry = Telemetry.Competition.apply { SmartDashboard.putString("Telemetry", this.name) }
 		set(value) {
-			field = value
 			SmartDashboard.putString("Telemetry", field.name)
+			field = value
 		}
 
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
 
-	fun <E> debugPrint(thing: E): E {
-		DriverStation.reportWarning(thing.toString(), false)
-		return thing
+	fun <T> debugPrint(value: T) = value.also {
+		DriverStation.reportWarning(it.toString(), false)
 	}
 
 	override fun robotInit() {
@@ -43,11 +42,6 @@ object Robot : TimedRobot() {
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
 		Vision.estimatedGlobalPose?.let { SwerveSubsystem.setGyro(it.estimatedPose.rotation.toRotation2d()) }
 		RobotContainer
-		RobotContainer.setAllMechanismsToCoast()
-	}
-
-	override fun disabledExit() {
-		RobotContainer.setAllMechanismsNeutralMode()
 	}
 
 	override fun robotPeriodic() {

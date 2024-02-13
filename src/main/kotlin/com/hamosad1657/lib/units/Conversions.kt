@@ -134,6 +134,7 @@ fun degToCANCoderTicks(mechanismDeg: Number, gearRatio: Number = 1.0) =
  *
  * @return The angle of the mechanism in degrees.
  */
+@Suppress("FunctionName")
 fun CANCoderTicksToDeg(ticks: Number, gearRatio: Number = 1.0) =
 	ticks.toDouble() / CANCODER_TICKS_PER_ROTATION / gearRatio.toDouble() * 360.0
 

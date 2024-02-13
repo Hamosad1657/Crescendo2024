@@ -1,39 +1,37 @@
 package frc.robot.subsystems.climbing
 
-import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.PIDGains
-import com.hamosad1657.lib.units.FractionalOutput
+import com.hamosad1657.lib.math.configPID
+import com.hamosad1657.lib.motors.HaSparkFlex
+import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.Rotations
-import com.hamosad1657.lib.units.toIdleMode
+import com.revrobotics.CANSparkBase.IdleMode
 import com.revrobotics.CANSparkFlex
-import com.revrobotics.CANSparkLowLevel.MotorType
-import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.subsystems.climbing.ClimbingConstants.MAX_POSSIBLE_POSITION
-import frc.robot.subsystems.climbing.ClimbingConstants.STAY_FOLDED_OUTPUT
-import frc.robot.subsystems.climbing.ClimbingConstants.WEIGHT_BEARING_PID_GAINS
 import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
 
-	// --- Motors and sensors ---
+	// --- Motors and Sensors ---
 
-	private val leftMainMotor = CANSparkFlex(ClimbingMap.LEFT_MAIN_MOTOR_ID, MotorType.kBrushless)
-		.apply { configMainMotor() }
+	private val leftMainMotor = HaSparkFlex(ClimbingMap.LEFT_MAIN_MOTOR_ID).apply {
+		configMainMotor()
+	}
+	private val leftSecondaryMotor = HaSparkFlex(ClimbingMap.LEFT_SECONDARY_MOTOR_ID).apply {
+		configSecondaryMotor(leftMainMotor)
+	}
 
-	private val leftSecondaryMotor = CANSparkFlex(ClimbingMap.LEFT_SECONDARY_MOTOR_ID, MotorType.kBrushless)
-		.apply { configSecondaryMotor(leftMainMotor) }
+	private val rightMainMotor = HaSparkFlex(ClimbingMap.RIGHT_MAIN_MOTOR_ID).apply {
+		configMainMotor()
+	}
+	private val rightSecondaryMotor = HaSparkFlex(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID).apply {
+		configSecondaryMotor(rightMainMotor)
+	}
 
-	private val rightMainMotor = CANSparkFlex(ClimbingMap.RIGHT_MAIN_MOTOR_ID, MotorType.kBrushless)
-		.apply { configMainMotor() }
-
-	private val rightSecondaryMotor = CANSparkFlex(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID, MotorType.kBrushless)
-		.apply { configSecondaryMotor(rightMainMotor) }
-
-	private val pidController = WEIGHT_BEARING_PID_GAINS.toPIDController()
+	private val pidController = Constants.PID_GAINS_NOT_HOLDING_ROBOT.toPIDController()
 	private var feedForwardPercentOutput = 0.0
 
 	private val leftEncoder = leftMainMotor.encoder
@@ -46,31 +44,26 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	private var lastSetpoint: Rotations = 0.0
 
+
 	// --- Motors Configuration ---
 
 	private fun CANSparkFlex.configMainMotor() =
 		apply {
 			// TODO: Verify positive output raises climber
 			inverted = false
+			idleMode = IdleMode.kBrake
 		}
 
 	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
 		apply {
+			inverted = false
+			idleMode = IdleMode.kBrake
 			// TODO: Check if follower motor should oppose master motor or not
-			this.follow(mainMotor, false)
+			follow(mainMotor, false)
 		}
 
 
 	// --- Motors Properties ---
-
-	var neutralMode = NeutralModeValue.Brake
-		set(value) {
-			leftMainMotor.setIdleMode(value.toIdleMode())
-			leftSecondaryMotor.setIdleMode(value.toIdleMode())
-			rightMainMotor.setIdleMode(value.toIdleMode())
-			rightSecondaryMotor.setIdleMode(value.toIdleMode())
-			field = value
-		}
 
 	val closedLoopError: Rotations
 		get() = lastSetpoint - currentPosition
@@ -83,32 +76,28 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// TODO: Check if switches are wired normally open or normally closed.
 
-	val isLeftAtClosedLimit: Boolean
-		get() = leftClosedLimitSwitch.get()
+	private val isLeftAtClosedLimit get() = leftClosedLimitSwitch.get()
+	private val isRightAtClosedLimit get() = rightClosedLimitSwitch.get()
 
-	val isRightAtClosedLimit: Boolean
-		get() = rightClosedLimitSwitch.get()
+	private val isLeftAtOpenedLimit
+		get() = leftOpenedLimitSwitch.get()
+			|| currentPosition >= Constants.MAX_POSSIBLE_POSITION
 
-	val isLeftAtOpenedLimit: Boolean
-		get() {
-			return leftOpenedLimitSwitch.get() || currentPosition >= MAX_POSSIBLE_POSITION
-		}
+	private val isRightAtOpenedLimit
+		get() = rightOpenedLimitSwitch.get()
+			|| currentPosition >= Constants.MAX_POSSIBLE_POSITION
 
-	val isRightAtOpenedLimit: Boolean
-		get() {
-			return rightOpenedLimitSwitch.get() || currentPosition >= MAX_POSSIBLE_POSITION
-		}
-
-	val isAtOpenedLimit: Boolean
-		get() = isLeftAtOpenedLimit || isRightAtOpenedLimit
-
-	val isAtClosedLimit: Boolean
-		get() = isLeftAtClosedLimit || isRightAtClosedLimit
+	val isAtClosedLimit get() = isLeftAtClosedLimit || isRightAtClosedLimit
+	val isAtOpenedLimit get() = isLeftAtOpenedLimit || isRightAtOpenedLimit
 
 
 	// --- Motors Control ---
 
-	fun configPIDF(gains: PIDGains) {
+	fun configPIDF(isHoldingRobot: Boolean) =
+		if (isHoldingRobot) configPIDF(Constants.PID_GAINS_HOLDING_ROBOT)
+		else configPIDF(Constants.PID_GAINS_NOT_HOLDING_ROBOT)
+
+	private fun configPIDF(gains: PIDGains) {
 		feedForwardPercentOutput = gains.kFF()
 		pidController.configPID(gains)
 	}
@@ -129,40 +118,27 @@ object ClimbingSubsystem : SubsystemBase() {
 		setPositionSetpoint(currentPosition + desiredChangeInPosition)
 	}
 
-	fun set(output: FractionalOutput) {
+	fun set(output: PercentOutput) {
 		setLeft(output)
 		setRight(output)
 	}
 
-	private fun PIDController.configPID(gains: PIDGains) {
-		p = gains.kP
-		i = gains.kI
-		d = gains.kD
-		iZone = gains.kIZone
+	private fun setLeft(output: PercentOutput) {
+		if (isLeftAtOpenedLimit && output > 0.0) leftMainMotor.set(0.0)
+		else if (isLeftAtClosedLimit && output < 0.0) leftMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
+		else leftMainMotor.set(output)
 	}
 
-	private fun setLeft(output: FractionalOutput) {
-		if (isLeftAtOpenedLimit && output > 0.0) {
-			leftMainMotor.set(0.0)
-			return
-		}
-		if (isLeftAtClosedLimit && output < 0.0) {
-			leftMainMotor.set(STAY_FOLDED_OUTPUT)
-			return
-		}
-		leftMainMotor.set(output)
+	private fun setRight(output: PercentOutput) {
+		if (isRightAtOpenedLimit && output > 0.0) rightMainMotor.set(0.0)
+		else if (isRightAtClosedLimit && output < 0.0) rightMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
+		else rightMainMotor.set(output)
 	}
 
-	private fun setRight(output: FractionalOutput) {
-		if (isRightAtOpenedLimit && output > 0.0) {
-			rightMainMotor.set(0.0)
-			return
-		}
-		if (isRightAtClosedLimit && output < 0.0) {
-			rightMainMotor.set(STAY_FOLDED_OUTPUT)
-			return
-		}
-		rightMainMotor.set(output)
+
+	override fun periodic() {
+		if (isLeftAtClosedLimit) leftEncoder.position = 0.0
+		if (isRightAtClosedLimit) rightEncoder.position = 0.0
 	}
 
 	override fun initSendable(builder: SendableBuilder) {
@@ -174,14 +150,5 @@ object ClimbingSubsystem : SubsystemBase() {
 		builder.addDoubleProperty("Position rotations", { currentPosition }, null)
 		builder.addDoubleProperty("Position setpoint rotations", { lastSetpoint }, null)
 		builder.addBooleanProperty("In tolerance", { isWithinTolerance }, null)
-	}
-
-	override fun periodic() {
-		if (isLeftAtClosedLimit) {
-			leftEncoder.position = 0.0
-		}
-		if (isRightAtClosedLimit) {
-			rightEncoder.position = 0.0
-		}
 	}
 }

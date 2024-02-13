@@ -47,7 +47,7 @@ class HaEncoder : Sendable {
 
 	/**
 	 * @param gearRatio - The gear reduction ratio between the encoder shaft and the
-	 * wheel/mechanism. For example, for a 4:1 speed reduction passs
+	 * wheel/mechanism. For example, for a 4:1 speed reduction pass
 	 * 0.25, not 4. If not set, it defaults to 1.
 	 */
 	fun setGearRatio(gearRatio: Double) {

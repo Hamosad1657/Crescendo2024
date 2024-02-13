@@ -21,7 +21,7 @@ object RobotMap {
 
 	object Intake {
 		const val INTAKE_TO_LOADER_MOTOR_ID = 0
-		const val GROUND_INTAKE_MOTOR_ID = 0
+		const val FLOOR_INTAKE_MOTOR_ID = 0
 	}
 
 	object Shooter {
@@ -31,7 +31,18 @@ object RobotMap {
 		object Angle {
 			const val MOTOR_ID = 0
 			const val CANCODER_ID = 0
+
+			const val MIN_ANGLE_LIMIT_CHANNEL = 0
+			const val MAX_ANGLE_LIMIT_CHANNEL = 0
 		}
+	}
+
+	object Arm {
+		const val MOTOR_ID = 0
+		const val LEFT_FORWARD_LIMIT_CHANNEL = 0
+		const val LEFT_REVERSE_LIMIT_CHANNEL = 0
+		const val RIGHT_FORWARD_LIMIT_CHANNEL = 0
+		const val RIGHT_REVERSE_LIMIT_CHANNEL = 0
 	}
 
 	object Loader {

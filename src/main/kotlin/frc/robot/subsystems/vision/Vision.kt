@@ -3,13 +3,11 @@ package frc.robot.subsystems.vision
 import com.hamosad1657.lib.units.degrees
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.geometry.Translation3d
-import org.photonvision.EstimatedRobotPose
-import org.photonvision.PhotonCamera
-import org.photonvision.PhotonPoseEstimator
+import edu.wpi.first.math.geometry.*
+import org.photonvision.*
 import org.photonvision.PhotonPoseEstimator.PoseStrategy
+import org.photonvision.targeting.PhotonPipelineResult
+import org.photonvision.targeting.PhotonTrackedTarget
 
 object Vision {
 	private val robotToCamera =
@@ -38,11 +36,9 @@ object Vision {
 	 */
 	val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator.update().orElse(null)
 
-	val latestResult get() = camera.latestResult
+	val latestResult: PhotonPipelineResult get() = camera.latestResult
 
-	val bestTag get() = latestResult.bestTarget
+	val bestTag: PhotonTrackedTarget get() = latestResult.bestTarget
 
 	fun getTag(tagID: Int) = latestResult.getTargets().getOrNull(tagID)
-
-
 }

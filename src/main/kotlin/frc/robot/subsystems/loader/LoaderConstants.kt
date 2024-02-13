@@ -1,6 +1,7 @@
 package frc.robot.subsystems.loader
 
-import com.hamosad1657.lib.units.FractionalOutput
+import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Volts
 
 object LoaderConstants {
 	/**
@@ -9,5 +10,7 @@ object LoaderConstants {
 	 */
 	const val LOAD_FROM_INTAKE_TIME_SEC = 0.0 // TODO: Measure LOAD_FROM_INTAKE_TIME_SEC
 
-	const val MOTOR_OUTPUT: FractionalOutput = 0.0
+	const val MOTOR_OUTPUT: PercentOutput = 0.0
+
+	const val ANALOG_INPUT_THRESHOLD: Volts = 1.0
 }

@@ -1,12 +1,6 @@
 package frc.robot.subsystems.shooter
 
-import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs
-import com.ctre.phoenix6.signals.ForwardLimitSourceValue
-import com.ctre.phoenix6.signals.ForwardLimitTypeValue
-import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.FractionalOutput
-import com.hamosad1657.lib.units.degrees
-import com.hamosad1657.lib.units.rpm
+import com.hamosad1657.lib.units.*
 import edu.wpi.first.math.geometry.Rotation2d
 
 object ShooterConstants {
@@ -33,7 +27,12 @@ object ShooterConstants {
 	val CANCODER_OFFSET = 0.0.degrees
 
 	/** This should eject the note quickly without getting it too far away. */
-	const val EJECT_OUTPUT: FractionalOutput = 0.0
+	const val EJECT_OUTPUT: PercentOutput = 0.0
+
+	enum class AngleMotorDirection {
+		TOWARDS_MIN,
+		TOWARDS_MAX;
+	}
 
 	// ShooterState is a data class and not an enum, because we might want to make
 	// a continuous shooting function if we have the time. In the meantime, we will
@@ -52,17 +51,5 @@ object ShooterConstants {
 
 			val COLLECT = ShooterState(Rotation2d(), 0.0.rpm)
 		}
-	}
-
-	val FALCON_HARDWARE_LIMITS_CONFIG = HardwareLimitSwitchConfigs().apply {
-		ForwardLimitEnable = true
-		ForwardLimitAutosetPositionEnable = false
-		ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
-		ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
-
-		ReverseLimitEnable = true
-		ReverseLimitAutosetPositionEnable = false
-		ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
-		ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
 	}
 }

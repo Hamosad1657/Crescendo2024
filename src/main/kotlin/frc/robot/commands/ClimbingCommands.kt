@@ -1,10 +1,7 @@
 package frc.robot.commands
 
-import com.hamosad1657.lib.commands.andThen
-import com.hamosad1657.lib.commands.finallyDo
-import com.hamosad1657.lib.commands.until
-import com.hamosad1657.lib.commands.withName
-import com.hamosad1657.lib.units.FractionalOutput
+import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState.*
@@ -13,91 +10,92 @@ import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 /**
  * A small constant output is applied to keep the climbing mechanism in place.
- * Command has no end condition.
- * - Requirements: climbing.
+ * - Command has no end condition.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command =
-	withName("open loop stay folded") {
-		run {
-			set(Constants.STAY_FOLDED_OUTPUT)
-		}
+fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command = withName("open loop stay folded") {
+	run {
+		set(Constants.STAY_FOLDED_OUTPUT)
 	}
+}
 
 /**
- * PID is performed to keep climbing mechanism at [FOLDING.setpoint].
- * Command has no end condition.
+ * PID is performed to keep climbing mechanism at [FOLDING].
+ * - Command has no end condition.
  */
-fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command =
-	withName("closed loop stay folded") {
-		runOnce {
-			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
-		} andThen maintainSetpointCommand(FOLDING.setpoint)
-	}
+fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command = withName("closed loop stay folded") {
+	runOnce {
+		configPIDF(isHoldingRobot = FOLDING.isHoldingRobot)
+	} andThen
+		maintainSetpointCommand(FOLDING.setpoint)
+}
 
 /**
- * Climbing mechanism extends open-loop until it passed [REACHING_CHAIN.setpoint], then the command ends.
- * - Requirements: climbing.
+ * Climbing mechanism extends open-loop until it passed [REACHING_CHAIN], then the command ends.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.reachChainCommand(): Command =
-	withName("reach chain") {
-		runOnce {
-			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
-		} andThen openLoopGetToPositionCommand(REACHING_CHAIN.setpoint, REACHING_CHAIN.output)
-	}
+fun ClimbingSubsystem.reachChainCommand(): Command = withName("reach chain") {
+	runOnce {
+		configPIDF(isHoldingRobot = REACHING_CHAIN.isHoldingRobot)
+	} andThen
+		openLoopGetToPositionCommand(REACHING_CHAIN.setpoint, REACHING_CHAIN.output)
+}
 
 /**
- * Climbing mechanism retracts open-loop until it passed [PULLING_UP_ROBOT.setpoint],
- * then performs PID control to maintain that setpoint. Command has no end condition.
- * - Requirements: climbing.
+ * Climbing mechanism retracts open-loop until it passed [PULLING_UP_ROBOT],
+ * then performs PID control to maintain that setpoint.
+ * - Command has no end condition.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.pullUpRobotCommand(): Command =
-	withName("pull up robot") {
-		runOnce {
-			configPIDF(Constants.WEIGHT_BEARING_PID_GAINS)
-		} andThen openLoopGetToPositionCommand(PULLING_UP_ROBOT.setpoint, PULLING_UP_ROBOT.output) andThen
-				maintainSetpointCommand(PULLING_UP_ROBOT.setpoint)
-	}
+fun ClimbingSubsystem.pullUpRobotCommand(): Command = withName("pull up robot") {
+	runOnce {
+		configPIDF(isHoldingRobot = PULLING_UP_ROBOT.isHoldingRobot)
+	} andThen
+		openLoopGetToPositionCommand(PULLING_UP_ROBOT.setpoint, PULLING_UP_ROBOT.output) andThen
+		maintainSetpointCommand(PULLING_UP_ROBOT.setpoint)
+}
 
 /**
- * Climbing mechanism extends open-loop until it passed [CLIMBING_DOWN.setpoint],
- * then performs PID to maintain that setpoint. Command has no end condition.
- * - Requirements: climbing.
+ * Climbing mechanism extends open-loop until it passed [CLIMBING_DOWN],
+ * then performs PID to maintain that setpoint.
+ * - Command has no end condition.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.climbDownCommand(): Command =
-	withName("climb down") {
-		runOnce {
-			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
-		} andThen openLoopGetToPositionCommand(CLIMBING_DOWN.setpoint, CLIMBING_DOWN.output) andThen
-				maintainSetpointCommand(CLIMBING_DOWN.setpoint)
-	}
+fun ClimbingSubsystem.climbDownCommand(): Command = withName("climb down") {
+	runOnce {
+		configPIDF(isHoldingRobot = CLIMBING_DOWN.isHoldingRobot)
+	} andThen
+		openLoopGetToPositionCommand(CLIMBING_DOWN.setpoint, CLIMBING_DOWN.output) andThen
+		maintainSetpointCommand(CLIMBING_DOWN.setpoint)
+}
 
 /**
- * Climbing mechanism retracts open-loop until it passed [FOLDING.setpoint].
- * - Requirements: climbing.
+ * Climbing mechanism retracts open-loop until it passed [FOLDING].
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.foldCommand(): Command =
-	withName("fold") {
-		runOnce {
-			configPIDF(Constants.NO_WEIGHT_BEARING_PID_GAINS)
-		} andThen openLoopGetToPositionCommand(FOLDING.setpoint, FOLDING.output)
-	}
+fun ClimbingSubsystem.foldCommand(): Command = withName("fold") {
+	runOnce {
+		configPIDF(isHoldingRobot = FOLDING.isHoldingRobot)
+	} andThen
+		openLoopGetToPositionCommand(FOLDING.setpoint, FOLDING.output)
+}
 
 /**
- * Climbing mechanism retracts open-loop until it passed [FOLDING.setpoint],
- * then performs PID to maintain that setpoint. Command has no end condition.
- * - Requirements: climbing.
+ * Climbing mechanism retracts open-loop until it passed [FOLDING],
+ * then performs PID to maintain that setpoint.
+ * - Command has no end condition.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.foldAndStayFolded(): Command =
-	withName("fold and stay folded") {
-		foldCommand() andThen closedLoopStayFoldedCommand()
-	}
+fun ClimbingSubsystem.foldAndStayFolded(): Command = withName("fold and stay folded") {
+	foldCommand() andThen
+		closedLoopStayFoldedCommand()
+}
 
 /**
- * [percentOutput] is assumed -1 to 1, will come from joysticks.
- *
- * - Requirements: climbing.
+ * [output] is assumed -1 to 1, will come from joysticks.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> FractionalOutput): Command =
+fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> PercentOutput): Command =
 	withName("climbing open loop teleop") {
 		run {
 			set(output())
@@ -106,12 +104,12 @@ fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> FractionalOutput): Com
 		}
 	}
 
-/** [changeInPosition] is assumed -1 to 1, will come from joysticks.
+/**
+ * [changeInPosition] is assumed -1 to 1, will come from joysticks.
  * Modify the rate of change using [multiplier].
- *
- * - Requirements: climbing.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> Double, multiplier: Double): Command =
+fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> PercentOutput, multiplier: Double): Command =
 	withName("climbing closed loop teleop") {
 		run {
 			val delta = changeInPosition() * multiplier
@@ -123,28 +121,28 @@ fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> Double, mu
 
 /**
  * To be used in testing or in other command groups.
- * - Requirements: climbing.
+ * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.maintainSetpointCommand(setpoint: Rotations): Command =
-	withName("maintain setpoint") {
-		run { setPositionSetpoint(setpoint) }
+fun ClimbingSubsystem.maintainSetpointCommand(setpoint: Rotations): Command = withName("maintain setpoint") {
+	run {
+		setPositionSetpoint(setpoint)
 	}
+}
 
 /**
  * To be used in testing or in other command groups.
- * - Requirements: climbing.
+ * - Requirements: Climbing.
  */
 private fun ClimbingSubsystem.openLoopGetToPositionCommand(
 	desiredPosition: Rotations,
-	output: FractionalOutput
+	output: PercentOutput
 ): Command {
-	val endCondition: (() -> Boolean)
-
-	if (output < 0.0) {
-		endCondition = { currentPosition <= desiredPosition }
-	} else {
-		endCondition = { currentPosition >= desiredPosition }
-	}
+	val endCondition =
+		if (output < 0.0) {
+			{ currentPosition <= desiredPosition }
+		} else {
+			{ currentPosition >= desiredPosition }
+		}
 
 	return withName("get to setpoint") {
 		run {

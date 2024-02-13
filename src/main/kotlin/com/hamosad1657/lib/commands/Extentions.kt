@@ -1,8 +1,6 @@
 package com.hamosad1657.lib.commands
 
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand
+import edu.wpi.first.wpilibj2.command.*
 
 fun waitUntil(until: () -> Boolean) = WaitUntilCommand(until)
 
@@ -15,16 +13,24 @@ infix fun Command.raceWith(parallel: Command): Command = this.raceWith(parallel)
 
 infix fun Command.withTimeout(seconds: Double): Command = this.withTimeout(seconds)
 
-/** Good for multi-subsystem commands.
+/**
+ * Good for multi-subsystem commands.
  * For single-subsystem commands, use [SubsystemBase.withName].
  */
 infix fun Command.withName(commandName: String): Command = this.withName(commandName)
 
 /**
+ * Good for multi-subsystem commands.
+ * For single-subsystem commands, use [SubsystemBase.withName].
+ */
+fun withName(commandName: String, commandSupplier: () -> Command): Command =
+	commandSupplier().also { it.name = commandName }
+
+/**
  * Good for single-subsystem commands.
  * Appends the name of the subsystem to the String in [commandName : subsystemName] format.
  *
- * For multi-subsystem commands, use [Command.withName].
+ * For multi-subsystem commands, use [withName].
  */
 fun SubsystemBase.withName(commandName: String, commandSupplier: () -> Command): Command =
-    commandSupplier().also { it.name = "$commandName : ${this.name}" }
+	commandSupplier().also { it.name = "$commandName : ${this.name}" }

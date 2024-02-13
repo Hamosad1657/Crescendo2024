@@ -1,6 +1,5 @@
 package frc.robot
 
-import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -9,10 +8,6 @@ import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.openLoopTeleop_shooterAngle
 import frc.robot.commands.swerve.TeleopDriveCommand
-import frc.robot.subsystems.climbing.ClimbingSubsystem
-import frc.robot.subsystems.intake.IntakeSubsystem
-import frc.robot.subsystems.loader.LoaderSubsystem
-import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
@@ -85,21 +80,5 @@ object RobotContainer {
 
 	fun getAutonomousCommand(): Command {
 		return swerve.pathFindToPathCommand("to_speaker")
-	}
-
-	fun setAllMechanismsToCoast() {
-		ShooterSubsystem.angleNeutralMode = NeutralModeValue.Coast
-		ShooterSubsystem.shooterNeutralMode = NeutralModeValue.Coast
-		LoaderSubsystem.neutralMode = NeutralModeValue.Coast
-		IntakeSubsystem.neutralMode = NeutralModeValue.Coast
-		ClimbingSubsystem.neutralMode = NeutralModeValue.Coast
-	}
-
-	fun setAllMechanismsNeutralMode() {
-		ShooterSubsystem.angleNeutralMode = NeutralModeValue.Brake
-		ShooterSubsystem.shooterNeutralMode = NeutralModeValue.Coast
-		LoaderSubsystem.neutralMode = NeutralModeValue.Brake
-		IntakeSubsystem.neutralMode = NeutralModeValue.Brake
-		ClimbingSubsystem.neutralMode = NeutralModeValue.Brake
 	}
 }
