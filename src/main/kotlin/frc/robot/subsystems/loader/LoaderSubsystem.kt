@@ -1,14 +1,12 @@
 package frc.robot.subsystems.loader
 
-import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.units.PercentOutput
 import com.revrobotics.CANSparkBase.IdleMode
 import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj2.command.*
-import frc.robot.Robot
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import kotlin.math.abs
 import frc.robot.RobotMap.Loader as LoaderMap
 
@@ -30,20 +28,6 @@ object LoaderSubsystem : SubsystemBase() {
 
 	val isRunning: Boolean
 		get() = abs(motor.get()) > 0.0
-
-	private val disabledCoastCommand =
-		WaitUntilCommand(Robot.DISABLED_COAST_DELAY_SECONDS) andThen
-			InstantCommand({ motor.idleMode = IdleMode.kCoast })
-
-	// TODO: Check if works as expected.
-	fun disabledInit() {
-		CommandScheduler.getInstance().schedule(disabledCoastCommand)
-	}
-
-	fun disabledExit() {
-		CommandScheduler.getInstance().cancel(disabledCoastCommand)
-		motor.idleMode = IdleMode.kBrake
-	}
 
 	override fun initSendable(builder: SendableBuilder) {
 		super.initSendable(builder)

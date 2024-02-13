@@ -5,6 +5,7 @@ import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderConstants
@@ -17,8 +18,10 @@ import frc.robot.subsystems.shooter.ShooterSubsystem
 fun collectCommand(): Command = withName("collect") {
 	(ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
 		LoaderSubsystem.runLoaderCommand() alongWith
-		IntakeSubsystem.runIntakeCommand()) until
-		LoaderSubsystem::isNoteDetected
+		IntakeSubsystem.runIntakeCommand()
+		).apply {
+			raceWith(waitForNoteToPassCommand())
+		}
 }
 
 /** SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM */
@@ -50,6 +53,21 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = wi
 // Other than for testing, the commands below should only be used in other command groups in this file.
 //
 // ---
+
+/**
+ * Apart from testing, should only be used in [collectCommand].
+ *
+ * Waits for a note to pass the beam-breaker (get detected and then not).
+ * - Requirements: None.
+ */
+fun waitForNoteToPassCommand() = withName("wait for note to pass") {
+	var hasNotePassed = false
+	Commands.run({
+		if (LoaderSubsystem.isNoteDetected && !hasNotePassed) hasNotePassed = true
+	}) until {
+		hasNotePassed && !LoaderSubsystem.isNoteDetected
+	}
+}
 
 /**
  * Apart from testing, should only be used in [collectCommand] or in a manual override.

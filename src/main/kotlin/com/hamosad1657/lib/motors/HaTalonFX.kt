@@ -15,7 +15,6 @@ import com.revrobotics.CANSparkBase.IdleMode
  * This number is an educated assumption based on things I found on the internet.
  * https://www.chiefdelphi.com/uploads/short-url/eVYO5tVOYZecwq6Tl2kURlFZFgq.pdf
  * https://www.revrobotics.com/neo-brushless-motor-locked-rotor-testing/
- *
  */
 const val FalconSafeTempC = 90
 
@@ -31,7 +30,7 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 	 * Sets the [NeutralModeValue] of the motor.
 	 *
 	 * Use only as setter.
-	 * */
+	 */
 	var idleMode: IdleMode
 		get() = throw UnsupportedOperationException("use this field only as a setter")
 		set(value) = setNeutralMode(idleMode.toNeutralModeValue())

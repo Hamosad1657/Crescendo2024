@@ -19,6 +19,10 @@ infix fun Command.withTimeout(seconds: Double): Command = this.withTimeout(secon
  */
 infix fun Command.withName(commandName: String): Command = this.withName(commandName)
 
+/**
+ * Good for multi-subsystem commands.
+ * For single-subsystem commands, use [SubsystemBase.withName].
+ */
 fun withName(commandName: String, commandSupplier: () -> Command): Command =
 	commandSupplier().also { it.name = commandName }
 
@@ -26,7 +30,7 @@ fun withName(commandName: String, commandSupplier: () -> Command): Command =
  * Good for single-subsystem commands.
  * Appends the name of the subsystem to the String in [commandName : subsystemName] format.
  *
- * For multi-subsystem commands, use [Command.withName].
+ * For multi-subsystem commands, use [withName].
  */
 fun SubsystemBase.withName(commandName: String, commandSupplier: () -> Command): Command =
 	commandSupplier().also { it.name = "$commandName : ${this.name}" }

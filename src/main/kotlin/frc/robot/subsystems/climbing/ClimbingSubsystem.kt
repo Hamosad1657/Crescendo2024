@@ -93,8 +93,8 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// --- Motors Control ---
 
-	fun configPIDF(holdingRobot: Boolean) =
-		if (holdingRobot) configPIDF(Constants.PID_GAINS_HOLDING_ROBOT)
+	fun configPIDF(isHoldingRobot: Boolean) =
+		if (isHoldingRobot) configPIDF(Constants.PID_GAINS_HOLDING_ROBOT)
 		else configPIDF(Constants.PID_GAINS_NOT_HOLDING_ROBOT)
 
 	private fun configPIDF(gains: PIDGains) {

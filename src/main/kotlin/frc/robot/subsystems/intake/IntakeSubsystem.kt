@@ -1,12 +1,10 @@
 package frc.robot.subsystems.intake
 
 import com.ctre.phoenix6.controls.Follower
-import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.PercentOutput
 import com.revrobotics.CANSparkBase.IdleMode
-import edu.wpi.first.wpilibj2.command.*
-import frc.robot.Robot
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import kotlin.math.abs
 import frc.robot.RobotMap.Intake as IntakeMap
 import frc.robot.subsystems.intake.IntakeConstants as Constants
@@ -40,18 +38,4 @@ object IntakeSubsystem : SubsystemBase() {
 			floorIntakeMotor.idleMode = value
 			field = value
 		}
-
-	private val disabledCoastCommand =
-		WaitUntilCommand(Robot.DISABLED_COAST_DELAY_SECONDS) andThen
-			InstantCommand({ idleMode = IdleMode.kCoast })
-
-	// TODO: Check if works as expected.
-	fun disabledInit() {
-		CommandScheduler.getInstance().schedule(disabledCoastCommand)
-	}
-
-	fun disabledExit() {
-		CommandScheduler.getInstance().cancel(disabledCoastCommand)
-		idleMode = IdleMode.kBrake
-	}
 }

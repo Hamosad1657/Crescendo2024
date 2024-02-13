@@ -25,7 +25,7 @@ fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command = withName("open loop
  */
 fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command = withName("closed loop stay folded") {
 	runOnce {
-		configPIDF(holdingRobot = FOLDING.holdingRobot)
+		configPIDF(isHoldingRobot = FOLDING.isHoldingRobot)
 	} andThen
 		maintainSetpointCommand(FOLDING.setpoint)
 }
@@ -36,7 +36,7 @@ fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command = withName("closed 
  */
 fun ClimbingSubsystem.reachChainCommand(): Command = withName("reach chain") {
 	runOnce {
-		configPIDF(holdingRobot = REACHING_CHAIN.holdingRobot)
+		configPIDF(isHoldingRobot = REACHING_CHAIN.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(REACHING_CHAIN.setpoint, REACHING_CHAIN.output)
 }
@@ -49,7 +49,7 @@ fun ClimbingSubsystem.reachChainCommand(): Command = withName("reach chain") {
  */
 fun ClimbingSubsystem.pullUpRobotCommand(): Command = withName("pull up robot") {
 	runOnce {
-		configPIDF(holdingRobot = PULLING_UP_ROBOT.holdingRobot)
+		configPIDF(isHoldingRobot = PULLING_UP_ROBOT.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(PULLING_UP_ROBOT.setpoint, PULLING_UP_ROBOT.output) andThen
 		maintainSetpointCommand(PULLING_UP_ROBOT.setpoint)
@@ -63,7 +63,7 @@ fun ClimbingSubsystem.pullUpRobotCommand(): Command = withName("pull up robot") 
  */
 fun ClimbingSubsystem.climbDownCommand(): Command = withName("climb down") {
 	runOnce {
-		configPIDF(holdingRobot = CLIMBING_DOWN.holdingRobot)
+		configPIDF(isHoldingRobot = CLIMBING_DOWN.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(CLIMBING_DOWN.setpoint, CLIMBING_DOWN.output) andThen
 		maintainSetpointCommand(CLIMBING_DOWN.setpoint)
@@ -75,7 +75,7 @@ fun ClimbingSubsystem.climbDownCommand(): Command = withName("climb down") {
  */
 fun ClimbingSubsystem.foldCommand(): Command = withName("fold") {
 	runOnce {
-		configPIDF(holdingRobot = FOLDING.holdingRobot)
+		configPIDF(isHoldingRobot = FOLDING.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(FOLDING.setpoint, FOLDING.output)
 }
