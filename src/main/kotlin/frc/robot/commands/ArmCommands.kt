@@ -11,13 +11,13 @@ import frc.robot.subsystems.arm.ArmSubsystem
 /** - Requirements: arm. */
 fun ArmSubsystem.openCommand(): Command =
 	withName("open") {
-		run { setBothMotorsWithLimits(OPEN_OUTPUT) } until ::isAtForwardLimit finallyDo { setBothMotors(0.0) }
+		run { setBothMotors(OPEN_OUTPUT) } until ::isAtLimit finallyDo { setBothMotors(0.0) }
 	}
 
 /** - Requirements: arm. */
 fun ArmSubsystem.foldCommand(): Command =
 	withName("fold") {
-		run { setBothMotorsWithLimits(FOLD_OUTPUT) } until ::isAtReverseLimit finallyDo { setBothMotors(0.0) }
+		run { setBothMotors(FOLD_OUTPUT) } until ::isAtLimit finallyDo { setBothMotors(0.0) }
 	}
 
 
@@ -36,8 +36,8 @@ fun ArmSubsystem.separateSidesTeleopCommand(
 ): Command =
 	withName("separate sides teleop") {
 		run {
-			setLeftMotorWithLimits(leftOutput())
-			setRightMotorWithLimits(rightOutput())
+			setLeftMotor(leftOutput())
+			setRightMotor(rightOutput())
 		} finallyDo { setBothMotors(0.0) }
 	}
 
