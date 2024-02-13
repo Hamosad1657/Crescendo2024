@@ -34,6 +34,14 @@ object RobotMap {
 		}
 	}
 
+	object Arm {
+		const val MOTOR_ID = 0
+		const val LEFT_FORWARD_LIMIT_CHANNEL = 0
+		const val LEFT_REVERSE_LIMIT_CHANNEL = 0
+		const val RIGHT_FORWARD_LIMIT_CHANNEL = 0
+		const val RIGHT_REVERSE_LIMIT_CHANNEL = 0
+	}
+
 	object Loader {
 		const val MOTOR_ID = 0
 		const val BEAM_BREAK_CHANNEL = 0

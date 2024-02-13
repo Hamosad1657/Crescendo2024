@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.swerve.TeleopDriveCommand
+import frc.robot.subsystems.arm.ArmSubsystem
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderSubsystem
@@ -65,6 +66,7 @@ object RobotContainer {
 		LoaderSubsystem.neutralMode = NeutralModeValue.Coast
 		IntakeSubsystem.neutralMode = NeutralModeValue.Coast
 		ClimbingSubsystem.neutralMode = NeutralModeValue.Coast
+		ArmSubsystem.neutralMode = NeutralModeValue.Coast
 	}
 
 	fun setAllMechanismsNeutralMode() {
@@ -73,5 +75,6 @@ object RobotContainer {
 		LoaderSubsystem.neutralMode = NeutralModeValue.Brake
 		IntakeSubsystem.neutralMode = NeutralModeValue.Brake
 		ClimbingSubsystem.neutralMode = NeutralModeValue.Brake
+		ArmSubsystem.neutralMode = NeutralModeValue.Brake
 	}
 }
