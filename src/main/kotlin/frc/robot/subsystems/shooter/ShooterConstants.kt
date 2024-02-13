@@ -1,16 +1,18 @@
 package frc.robot.subsystems.shooter
 
-import com.hamosad1657.lib.units.*
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs
+import com.ctre.phoenix6.signals.ForwardLimitSourceValue
+import com.ctre.phoenix6.signals.ForwardLimitTypeValue
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.FractionalOutput
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 
 object ShooterConstants {
 	// TODO: Find velocity and angle tolerances for shooter
 	val VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
 	val ANGLE_TOLERANCE = 0.25.degrees
-
-	// TODO: Find angle limits
-	val MAX_POSSIBLE_ANGLE = 360.degrees
-	val MIN_POSSIBLE_ANGLE = 0.0.degrees
 
 	val ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
 
@@ -50,5 +52,17 @@ object ShooterConstants {
 
 			val COLLECT = ShooterState(Rotation2d(), 0.0.rpm)
 		}
+	}
+
+	val FALCON_HARDWARE_LIMITS_CONFIG = HardwareLimitSwitchConfigs().apply {
+		ForwardLimitEnable = true
+		ForwardLimitAutosetPositionEnable = false
+		ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
+		ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
+
+		ReverseLimitEnable = true
+		ReverseLimitAutosetPositionEnable = false
+		ForwardLimitType = ForwardLimitTypeValue.NormallyOpen
+		ForwardLimitSource = ForwardLimitSourceValue.LimitSwitchPin
 	}
 }

@@ -4,9 +4,14 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.FeedbackConfigs
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.CANcoder
-import com.ctre.phoenix6.signals.*
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
+import com.ctre.phoenix6.signals.NeutralModeValue
+import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.hamosad1657.lib.motors.HaTalonFX
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.FractionalOutput
+import com.hamosad1657.lib.units.toIdleMode
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel.MotorType
@@ -44,6 +49,7 @@ object ShooterSubsystem : SubsystemBase() {
 				RotorToSensorRatio = ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
 			}
 		)
+		configurator.apply(Constants.FALCON_HARDWARE_LIMITS_CONFIG)
 	}
 
 	private val angleCANCoder = CANcoder(ShooterMap.Angle.CANCODER_ID).apply {
@@ -117,10 +123,10 @@ object ShooterSubsystem : SubsystemBase() {
 	//  If they are wired normally closed, replace the 0 with a 1 and delete this comment.
 
 	val isAtMaxAngleLimit: Boolean
-		get() = angleCANCoder.absolutePosition.value >= Constants.MAX_POSSIBLE_ANGLE.rotations
+		get() = angleMotor.getForwardLimit().value.value == 0
 
 	val isAtMinAngleLimit: Boolean
-		get() = angleCANCoder.absolutePosition.value <= Constants.MIN_POSSIBLE_ANGLE.rotations
+		get() = angleMotor.getReverseLimit().value.value == 0
 
 	val isWithinVelocityTolerance get() = velocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
 
