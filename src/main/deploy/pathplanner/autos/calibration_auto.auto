@@ -22,6 +22,12 @@
           "data": {
             "pathName": "calibration_return_path"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": null
+          }
         }
       ]
     }

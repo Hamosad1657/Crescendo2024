@@ -2,8 +2,11 @@ package frc.robot.subsystems.swerve
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.alliance
+import com.hamosad1657.lib.units.radians
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Rotation3d
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Robot
+import frc.robot.subsystems.vision.Vision
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.parser.SwerveDriveConfiguration
@@ -77,6 +81,7 @@ object SwerveSubsystem : SubsystemBase() {
 
 			Telemetry.Competition -> TelemetryVerbosity.NONE
 		}
+
 
 		configureAutoBuilder()
 	}
@@ -179,7 +184,11 @@ object SwerveSubsystem : SubsystemBase() {
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
 		swerveDrive.resetOdometry(initialHolonomicPose)
-		swerveDrive.setGyro(Rotation3d(0.0, 0.0, initialHolonomicPose.rotation.radians))
+		setGyro(initialHolonomicPose.rotation)
+	}
+
+	fun setGyro(angle: Rotation2d) {
+		swerveDrive.setGyro(Rotation3d(0.0, 0.0, angle.radians))
 	}
 
 	/**
@@ -208,21 +217,23 @@ object SwerveSubsystem : SubsystemBase() {
 	}
 
 	private fun addVisionMeasurement(
-		translationStdDev: Double = 0.3, thetaStdDev: Double = 0.9,
+		translationStdDev: Double = 0.4, thetaStdDev: Double = 1.0,
 	) {
-//		Vision.estimatedGlobalPose?.let { estimatedPose ->
-//			swerveDrive.field.getObject("Vision_Robot").pose = estimatedPose.estimatedPose.toPose2d()
-//			swerveDrive.addVisionMeasurement(
-//				estimatedPose.estimatedPose.toPose2d(),
-//				estimatedPose.timestampSeconds,
-//				Matrix(Nat.N3(), Nat.N1()).apply {
-//					this[0, 0] = translationStdDev
-//					this[1, 0] = translationStdDev
-//					this[2, 0] = thetaStdDev
-//				},
-//			)
-//			swerveDrive.setGyroOffset(swerveDrive.gyroRotation3d)
-//		}
+//		SmartDashboard.putBoolean("has targets", Vision.latestResult.hasTargets())
+		if (!Vision.latestResult.hasTargets()) return
+		Vision.estimatedGlobalPose?.let { estimatedPose ->
+			swerveDrive.field.getObject("Vision_Robot").pose = estimatedPose.estimatedPose.toPose2d()
+			swerveDrive.addVisionMeasurement(
+				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, swerveDrive.gyroRotation3d.z.radians) },
+				estimatedPose.timestampSeconds,
+				Matrix(Nat.N3(), Nat.N1()).apply {
+					this[0, 0] = translationStdDev
+					this[1, 0] = translationStdDev
+					this[2, 0] = thetaStdDev
+				},
+			)
+			swerveDrive.setGyroOffset(swerveDrive.gyroRotation3d)
+		}
 	}
 
 	fun pathFindToPathCommand(pathname: String): Command {
@@ -243,5 +254,6 @@ object SwerveSubsystem : SubsystemBase() {
 
 	override fun periodic() {
 		addVisionMeasurement()
+		swerveDrive.field.robotPose = pose
 	}
 }

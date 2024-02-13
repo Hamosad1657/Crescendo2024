@@ -51,7 +51,6 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		// TODO: Implement properly
-		return swerve.pathFindToPathCommand("example_path")
+		return swerve.pathFindToPathCommand("to_speaker")
 	}
 }

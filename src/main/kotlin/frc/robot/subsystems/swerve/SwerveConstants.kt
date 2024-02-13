@@ -15,7 +15,7 @@ object SwerveConstants {
 
 	val PATH_CONSTRAINTS =
 		PathConstraints(
-			3.0, 3.0,
+			2.0, 2.0,
 			540.0, 720.0
 		)
 
