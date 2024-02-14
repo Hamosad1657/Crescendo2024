@@ -15,6 +15,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
+import frc.robot.subsystems.vision.Vision
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -35,6 +37,11 @@ object SwerveSubsystem : SwerveDrivetrain(
 		configureAutoBuilder()
 	}
 
+	override fun periodic() {
+		poseEstimator.update(robotHeading, modulesPositions)
+		addVisionMeasurement()
+	}
+
 
 	// --- Super-Class Members Aliases ---
 
@@ -43,21 +50,21 @@ object SwerveSubsystem : SwerveDrivetrain(
 	private inline val pigeon: Pigeon2 get() = super.getPigeon2()
 	private inline val currentState: SwerveDriveState get() = super.getState()
 	private inline val modulesStates: Array<SwerveModuleState> get() = currentState.ModuleStates
-
+	private inline val modulesPositions: Array<SwerveModulePosition> get() = super.m_modulePositions
 
 	// --- Robot State Getters ---
 
 	/** Gets the current yaw angle of the robot, as reported by the IMU (CCW positive, not wrapped). */
-	val heading: Rotation2d get() = Rotation2d.fromDegrees(pigeon.yaw.valueAsDouble)
+	val robotHeading: Rotation2d get() = Rotation2d.fromDegrees(pigeon.yaw.valueAsDouble)
 
 	/** Gets the current pitch angle of the robot, as reported by the imu. */
-	val pitch: Rotation2d get() = Rotation2d.fromDegrees(pigeon.pitch.valueAsDouble)
+	val robotPitch: Rotation2d get() = Rotation2d.fromDegrees(pigeon.pitch.valueAsDouble)
 
 	/** Gets the current velocity (x, y and omega) of the robot. */
 	val robotVelocity: ChassisSpeeds get() = kinematics.toChassisSpeeds(*modulesStates)
 
 	/** Gets the current pose (position and rotation) of the robot, as reported by odometry. */
-	val pose: Pose2d get() = state.Pose
+	val robotPose: Pose2d get() = state.Pose
 
 
 	// --- Drive & Module States Control
@@ -162,7 +169,20 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
 		val modulePositions = Array(4) { SwerveModulePosition() }
-		poseEstimator.resetPosition(heading, modulePositions, initialHolonomicPose)
+		poseEstimator.resetPosition(robotHeading, modulePositions, initialHolonomicPose)
+	}
+
+	/** Update the odometry using the detected AprilTag (if any were detected). */
+	private fun addVisionMeasurement() {
+		Vision.estimatedPose2d?.let { estimatedPose ->
+			val poseDelta = estimatedPose.relativeTo(robotPose)
+			if (
+				poseDelta.x < Vision.MAX_VISION_TO_ODOMETRY_DELTA.asMeters &&
+				poseDelta.y < Vision.MAX_VISION_TO_ODOMETRY_DELTA.asMeters
+			) {
+				super.addVisionMeasurement(estimatedPose, Timer.getFPGATimestamp())
+			}
+		}
 	}
 
 
@@ -170,7 +190,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	private fun configureAutoBuilder() {
 		AutoBuilder.configureHolonomic(
-			::pose,
+			::robotPose,
 			::resetOdometry,
 			::robotVelocity,
 			::setChassisSpeeds,
