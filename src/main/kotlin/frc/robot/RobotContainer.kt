@@ -1,12 +1,10 @@
 package frc.robot
 
-import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
-import frc.robot.commands.closedLoopTeleop_shooterAngle
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
@@ -68,10 +66,10 @@ object RobotContainer {
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
 		with(Shooter) {
-			defaultCommand = Shooter.closedLoopTeleop_shooterAngle(
-				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) },
-				ShooterConstants.ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER
-			)
+			defaultCommand = Shooter.run {
+				setAngle(ShooterConstants.ANGLE_FOR_INTAKE)
+			}
+
 		}
 	}
 
