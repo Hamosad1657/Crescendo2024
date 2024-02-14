@@ -18,14 +18,18 @@ object ClimbingSubsystem : SubsystemBase() {
 	// --- Motors and Sensors ---
 
 	private val leftMainMotor = HaSparkFlex(ClimbingMap.LEFT_FRONT_MOTOR_ID).apply {
-		configMainMotor()
+		// TODO: Verify positive output raises climber
+		inverted = true
+		idleMode = IdleMode.kBrake
 	}
 	private val leftSecondaryMotor = HaSparkFlex(ClimbingMap.LEFT_BACK_MOTOR_ID).apply {
 		configSecondaryMotor(leftMainMotor)
 	}
 
 	private val rightMainMotor = HaSparkFlex(ClimbingMap.RIGHT_FRONT_MOTOR_ID).apply {
-		configMainMotor()
+		// TODO: Verify positive output raises climber
+		inverted = false
+		idleMode = IdleMode.kBrake
 	}
 	private val rightSecondaryMotor = HaSparkFlex(ClimbingMap.RIGHT_BACK_MOTOR_ID).apply {
 		configSecondaryMotor(rightMainMotor)
@@ -46,13 +50,6 @@ object ClimbingSubsystem : SubsystemBase() {
 
 
 	// --- Motors Configuration ---
-
-	private fun CANSparkFlex.configMainMotor() =
-		apply {
-			// TODO: Verify positive output raises climber
-			inverted = false
-			idleMode = IdleMode.kBrake
-		}
 
 	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
 		apply {
