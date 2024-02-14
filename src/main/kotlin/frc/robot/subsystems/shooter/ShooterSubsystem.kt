@@ -9,14 +9,16 @@ import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.*
 import com.revrobotics.CANSparkBase.ControlType
 import com.revrobotics.CANSparkBase.IdleMode
+import com.revrobotics.SparkPIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.shooter.ShooterConstants.ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
 import frc.robot.subsystems.shooter.ShooterConstants.AngleMotorDirection
-import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUPTUT
-import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUPTUT
+import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUTPUT
+import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUTPUT
+import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_PID_GAINS
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import kotlin.math.cos
 import frc.robot.RobotMap.Shooter as ShooterMap
@@ -32,6 +34,12 @@ object ShooterSubsystem : SubsystemBase() {
 		// TODO: Verify positive output shoots
 		inverted = true
 		idleMode = IdleMode.kCoast
+	}
+
+	private val shooterPIDController = shooterMainMotor.pidController.apply {
+		p = SHOOTER_PID_GAINS.kP
+		i = SHOOTER_PID_GAINS.kI
+		d = SHOOTER_PID_GAINS.kD
 	}
 
 	private val shooterSecondaryMotor = HaSparkFlex(ShooterMap.LOWER_MOTOR_ID).apply {
@@ -106,19 +114,36 @@ object ShooterSubsystem : SubsystemBase() {
 		setVelocity(shooterState.velocity)
 	}
 
-	private fun setVelocity(velocity: AngularVelocity) {
-		shooterMainMotor.pidController.setReference(-velocity.asRpm, ControlType.kSmartVelocity)
+	fun setVelocity(velocity: AngularVelocity) {
+		shooterPIDController.setReference(
+			-velocity.asRpm,
+			ControlType.kVelocity,
+			0,
+			SHOOTER_PID_GAINS.kFF(velocity.asRpm),
+			SparkPIDController.ArbFFUnits.kVoltage,
+		)
 		velocitySetpoint = velocity
 	}
 
 	fun setAngle(angle: Rotation2d) {
 		val motorDirection = angleMotorDirectionTo(setpoint = angle)
 		if (isAtMinAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MIN) {
-			angleMotor.setControl(PositionVoltage(KEEP_AT_MIN_ANGLE_OUPTUT))
+			angleMotor.setControl(PositionVoltage(KEEP_AT_MIN_ANGLE_OUTPUT))
 		} else if (isAtMaxAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MAX) {
-			angleMotor.setControl(PositionVoltage(KEEP_AT_MAX_ANGLE_OUPTUT))
+			angleMotor.setControl(PositionVoltage(KEEP_AT_MAX_ANGLE_OUTPUT))
 		} else {
-			angleMotor.setControl(PositionVoltage(angle.rotations, 0.0, false, calculateFF(), 0, false, false, false))
+			angleMotor.setControl(
+				PositionVoltage(
+					angle.rotations,
+					0.0,
+					false,
+					calculateAngleFF(),
+					0,
+					false,
+					false,
+					false
+				)
+			)
 		}
 	}
 
@@ -165,11 +190,11 @@ object ShooterSubsystem : SubsystemBase() {
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun setAngleMotorOutput(output: PercentOutput) {
 		if (output > 0.0 && isAtMaxAngleLimit) {
-			angleMotor.set(KEEP_AT_MAX_ANGLE_OUPTUT)
+			angleMotor.set(KEEP_AT_MAX_ANGLE_OUTPUT)
 			return
 		}
 		if (output < 0.0 && isAtMinAngleLimit) {
-			angleMotor.set(KEEP_AT_MIN_ANGLE_OUPTUT)
+			angleMotor.set(KEEP_AT_MIN_ANGLE_OUTPUT)
 			return
 		}
 		angleMotor.set(output)
@@ -181,9 +206,9 @@ object ShooterSubsystem : SubsystemBase() {
 	}
 
 
-	private fun calculateFF(): Volts {
+	private fun calculateAngleFF(): Volts {
 		val ff =
-			cos(currentAngle.radians) * KEEP_AT_MIN_ANGLE_OUPTUT * 12.0
+			cos(currentAngle.radians) * KEEP_AT_MIN_ANGLE_OUTPUT * 12.0
 		if (currentAngle.degrees < 90.0) return ff
 		return ff * 1.5
 	}

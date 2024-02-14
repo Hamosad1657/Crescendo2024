@@ -25,7 +25,7 @@ fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command = withName("open loop
  */
 fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command = withName("closed loop stay folded") {
 	runOnce {
-		configPIDF(isHoldingRobot = FOLDING.isHoldingRobot)
+		configPID(isHoldingRobot = FOLDING.isHoldingRobot)
 	} andThen
 		maintainSetpointCommand(FOLDING.setpoint)
 }
@@ -36,7 +36,7 @@ fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command = withName("closed 
  */
 fun ClimbingSubsystem.reachChainCommand(): Command = withName("reach chain") {
 	runOnce {
-		configPIDF(isHoldingRobot = REACHING_CHAIN.isHoldingRobot)
+		configPID(isHoldingRobot = REACHING_CHAIN.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(REACHING_CHAIN.setpoint, REACHING_CHAIN.output)
 }
@@ -49,7 +49,7 @@ fun ClimbingSubsystem.reachChainCommand(): Command = withName("reach chain") {
  */
 fun ClimbingSubsystem.pullUpRobotCommand(): Command = withName("pull up robot") {
 	runOnce {
-		configPIDF(isHoldingRobot = PULLING_UP_ROBOT.isHoldingRobot)
+		configPID(isHoldingRobot = PULLING_UP_ROBOT.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(PULLING_UP_ROBOT.setpoint, PULLING_UP_ROBOT.output) andThen
 		maintainSetpointCommand(PULLING_UP_ROBOT.setpoint)
@@ -63,7 +63,7 @@ fun ClimbingSubsystem.pullUpRobotCommand(): Command = withName("pull up robot") 
  */
 fun ClimbingSubsystem.climbDownCommand(): Command = withName("climb down") {
 	runOnce {
-		configPIDF(isHoldingRobot = CLIMBING_DOWN.isHoldingRobot)
+		configPID(isHoldingRobot = CLIMBING_DOWN.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(CLIMBING_DOWN.setpoint, CLIMBING_DOWN.output) andThen
 		maintainSetpointCommand(CLIMBING_DOWN.setpoint)
@@ -75,7 +75,7 @@ fun ClimbingSubsystem.climbDownCommand(): Command = withName("climb down") {
  */
 fun ClimbingSubsystem.foldCommand(): Command = withName("fold") {
 	runOnce {
-		configPIDF(isHoldingRobot = FOLDING.isHoldingRobot)
+		configPID(isHoldingRobot = FOLDING.isHoldingRobot)
 	} andThen
 		openLoopGetToPositionCommand(FOLDING.setpoint, FOLDING.output)
 }
@@ -99,6 +99,23 @@ fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> PercentOutput): Comman
 	withName("climbing open loop teleop") {
 		run {
 			set(output())
+		} finallyDo {
+			stop()
+		}
+	}
+
+/**
+ * [output] is assumed -1 to 1, will come from joysticks.
+ * - Requirements: Climbing.
+ */
+fun ClimbingSubsystem.openLoopTeleopCommand(
+	leftOutput: () -> PercentOutput,
+	rightOutput: () -> PercentOutput
+): Command =
+	withName("climbing open loop teleop") {
+		run {
+			setLeft(leftOutput())
+			setRight(rightOutput())
 		} finallyDo {
 			stop()
 		}

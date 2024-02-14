@@ -9,15 +9,20 @@ object ShooterConstants {
 	val VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
 	val ANGLE_TOLERANCE = 0.25.degrees
 
-	val KEEP_AT_MAX_ANGLE_OUPTUT = 0.03
-	val KEEP_AT_MIN_ANGLE_OUPTUT = -0.03
+	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
+	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
 
 	val ANGLE_FOR_INTAKE = 35.41.degrees
 
-	val ANGLE_PID_GAINS = PIDGains(22.0, 0.001, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(24.0, 0.001, 0.0)
 
-	// TODO: Check if this should be 1/20 or 20.
-	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 20.0
+	private val SHOOTER_MAX_VELOCITY = 5000.rpm
+	val SHOOTER_PID_GAINS = PIDGains(0.0, 0.0, 0.0, { setpoint ->
+		-9.5 * (setpoint / SHOOTER_MAX_VELOCITY.asRpm)
+	})
+
+	// Calculate the gear ratio.
+	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = (66.0 / 32.0) * 4 * 4
 
 	/**
 	 * Time between when loading started to when the note is shot.
@@ -30,7 +35,7 @@ object ShooterConstants {
 	 * 1 degree should be the lowest possible angle.
 	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
 	 */
-	val CANCODER_OFFSET = (-0.15).rotations
+	val CANCODER_OFFSET = (-56.0).degrees
 
 	/** This should eject the note quickly without getting it too far away. */
 	const val EJECT_OUTPUT: PercentOutput = 0.0

@@ -7,8 +7,8 @@ import com.hamosad1657.lib.units.Rotations
 object ClimbingConstants {
 	// TODO: Tune PID
 	// Don't use iZone it's weird with WPILib's PID controller
-	val PID_GAINS_HOLDING_ROBOT = PIDGains(0.0, 0.0, 0.0, { 0.0 })
-	val PID_GAINS_NOT_HOLDING_ROBOT = PIDGains(0.0, 0.0, 0.0, { 0.0 })
+	val PID_GAINS_HOLDING_ROBOT = PIDGains(0.0, 0.0, 0.0)
+	val PID_GAINS_NOT_HOLDING_ROBOT = PIDGains(0.0, 0.0, 0.0)
 
 	const val SETPOINT_TOLERANCE: Rotations = 0.0
 

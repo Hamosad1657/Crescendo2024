@@ -77,15 +77,9 @@ object ClimbingSubsystem : SubsystemBase() {
 	// TODO: Check if switches are wired normally open or normally closed.
 
 	private val isLeftAtClosedLimit get() = !leftClosedLimitSwitch.get()
+	private val isLeftAtOpenedLimit get() = !leftOpenedLimitSwitch.get()
 	private val isRightAtClosedLimit get() = rightClosedLimitSwitch.get()
-
-	private val isLeftAtOpenedLimit
-		get() = !leftOpenedLimitSwitch.get()
-			|| currentPosition >= Constants.MAX_POSSIBLE_POSITION
-
-	private val isRightAtOpenedLimit
-		get() = !rightOpenedLimitSwitch.get()
-			|| currentPosition >= Constants.MAX_POSSIBLE_POSITION
+	private val isRightAtOpenedLimit get() = !rightOpenedLimitSwitch.get()
 
 	val isAtClosedLimit get() = isLeftAtClosedLimit || isRightAtClosedLimit
 	val isAtOpenedLimit get() = isLeftAtOpenedLimit || isRightAtOpenedLimit
@@ -93,12 +87,11 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// --- Motors Control ---
 
-	fun configPIDF(isHoldingRobot: Boolean) =
-		if (isHoldingRobot) configPIDF(Constants.PID_GAINS_HOLDING_ROBOT)
-		else configPIDF(Constants.PID_GAINS_NOT_HOLDING_ROBOT)
+	fun configPID(isHoldingRobot: Boolean) =
+		if (isHoldingRobot) configPID(Constants.PID_GAINS_HOLDING_ROBOT)
+		else configPID(Constants.PID_GAINS_NOT_HOLDING_ROBOT)
 
-	private fun configPIDF(gains: PIDGains) {
-		feedForwardPercentOutput = gains.kFF()
+	private fun configPID(gains: PIDGains) {
 		pidController.configPID(gains)
 	}
 
@@ -123,13 +116,13 @@ object ClimbingSubsystem : SubsystemBase() {
 		setRight(output)
 	}
 
-	private fun setLeft(output: PercentOutput) {
+	fun setLeft(output: PercentOutput) {
 		if (isLeftAtOpenedLimit && output > 0.0) leftMainMotor.set(0.0)
 		else if (isLeftAtClosedLimit && output < 0.0) leftMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
 		else leftMainMotor.set(output)
 	}
 
-	private fun setRight(output: PercentOutput) {
+	fun setRight(output: PercentOutput) {
 		if (isRightAtOpenedLimit && output > 0.0) rightMainMotor.set(0.0)
 		else if (isRightAtClosedLimit && output < 0.0) rightMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
 		else rightMainMotor.set(output)
@@ -139,7 +132,7 @@ object ClimbingSubsystem : SubsystemBase() {
 		leftMainMotor.stopMotor()
 		rightMainMotor.stopMotor()
 	}
-	
+
 
 	override fun periodic() {
 		if (isLeftAtClosedLimit) leftEncoder.position = 0.0

@@ -1,13 +1,12 @@
 package frc.robot
 
 import com.hamosad1657.lib.commands.finallyDo
-import com.hamosad1657.lib.math.simpleDeadband
+import com.hamosad1657.lib.units.rpm
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
-import frc.robot.commands.teleopDriveCommand
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -54,12 +53,12 @@ object RobotContainer {
 	}
 
 	private fun setDefaultCommands() {
-		Swerve.defaultCommand = Swerve.teleopDriveCommand(
-			vxSupplier = { controllerA.leftY },
-			vySupplier = { controllerA.leftX },
-			omegaSupplier = { controllerA.rightX },
-			isFieldRelative = { true },
-		)
+//		Swerve.defaultCommand = Swerve.teleopDriveCommand(
+//			vxSupplier = { controllerA.leftY },
+//			vySupplier = { controllerA.leftX },
+//			omegaSupplier = { controllerA.rightX },
+//			isFieldRelative = { true },
+//		)
 
 		// --- For initial testing, delete later --- //
 
@@ -67,19 +66,21 @@ object RobotContainer {
 		// For a list of things to test follow the link:
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
-//		with(ShooterSubsystem) {
-//			defaultCommand =
-//				openLoopTeleop_shooterAngle { simpleDeadband(testingController.rightY * 0.3, JOYSTICK_DEADBAND) }
+//		with(Shooter) {
+//			defaultCommand = Shooter.run {
+//				setAngle(10.degrees)
+//			}
 ////			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
 //		}
 
 		with(Shooter) {
 			defaultCommand = Shooter.run {
-				setShooterMotorsOutput(simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND))
+				setVelocity(3000.0.rpm)
 			} finallyDo {
 				stopShooterMotors()
 			}
 		}
+
 
 //		with(Intake) {
 //			defaultCommand = run {
@@ -95,6 +96,12 @@ object RobotContainer {
 //			} finallyDo {
 //				stop()
 //			}
+//		}
+
+//		with(Climbing) {
+//			defaultCommand = openLoopTeleopCommand(
+//				{ simpleDeadband(testingController.leftY, JOYSTICK_DEADBAND) },
+//				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) })
 //		}
 	}
 

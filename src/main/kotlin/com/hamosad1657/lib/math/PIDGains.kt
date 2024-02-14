@@ -23,7 +23,7 @@ class PIDGains @JvmOverloads constructor(
 	var kP: Double = 0.0,
 	var kI: Double = 0.0,
 	var kD: Double = 0.0,
-	var kFF: () -> Double = { 0.0 },
+	var kFF: (setpoint: Double) -> Double = { 0.0 },
 	var kIZone: Double = 0.0,
 ) {
 	/** Creates a WPILib [PIDController] with the P, I and D gains. */
