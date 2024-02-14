@@ -4,11 +4,9 @@ import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.mechanisms.swerve.*
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType
-import com.hamosad1657.lib.units.inches
-import com.hamosad1657.lib.units.meters
+import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.*
-import kotlin.math.PI
 import frc.robot.RobotMap.Swerve as SwerveMap
 
 object SwerveConstants {
@@ -20,6 +18,9 @@ object SwerveConstants {
 	/** Theoretical free speed (m/s) at 12v applied output. */
 	// TODO: Tune.
 	const val MAX_SPEED_MPS = 5.0
+
+	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
+	val MAX_ANGULAR_VELOCITY = 1.0.rps
 
 	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.
@@ -57,8 +58,8 @@ object SwerveConstants {
 	val PATH_CONSTRAINTS = PathConstraints(
 		MAX_SPEED_MPS, // Max velocity (meters per second)
 		MAX_SPEED_MPS / 2, // Max acceleration - 2 seconds to max velocity
-		PI * 2, // Max angular velocity (radians per second)
-		(PI * 2) * 2, // Max angular acceleration - 1 second to max velocity
+		MAX_ANGULAR_VELOCITY.radPs, // Max angular velocity (radians per second)
+		MAX_ANGULAR_VELOCITY.radPs * 2, // Max angular acceleration - 1 second to max velocity
 	)
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(13.0, 1.0, 1.0)

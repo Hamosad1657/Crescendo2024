@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.openLoopTeleop_shooterAngle
-import frc.robot.commands.swerve.TeleopDriveCommand
-import frc.robot.subsystems.climbing.ClimbingSubsystem
-import frc.robot.subsystems.intake.IntakeSubsystem
-import frc.robot.subsystems.loader.LoaderSubsystem
-import frc.robot.subsystems.myswerve.MySwerveSubsystem
-import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.commands.teleopDriveCommand
+import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
+import frc.robot.subsystems.intake.IntakeSubsystem as Intake
+import frc.robot.subsystems.loader.LoaderSubsystem as Loader
+import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
+import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,11 +26,13 @@ object RobotContainer {
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
-	private val swerve = MySwerveSubsystem
-	private val autoChooser = AutoBuilder.buildAutoChooser().apply { SmartDashboard.putData("Auto Chooser", this) }
+
+	private val autoChooser = AutoBuilder.buildAutoChooser().apply {
+		SmartDashboard.putData("Auto Chooser", this)
+	}
 
 	init {
-		setSendables()
+		initSendables()
 		registerAutoCommands()
 		configureBindings()
 		setDefaultCommands()
@@ -39,18 +41,16 @@ object RobotContainer {
 	/** Use this method to define your `trigger->command` mappings. */
 	private fun configureBindings() {
 		autoChooser.onChange { controllerA.triangle().onTrue(it) }
-		controllerA.options().onTrue(InstantCommand({ swerve.zeroGyro() }))
-		controllerA.square().onTrue(InstantCommand({}, swerve))
+		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
+		controllerA.square().onTrue(InstantCommand({}, Swerve))
 	}
 
 	private fun setDefaultCommands() {
-		swerve.defaultCommand = TeleopDriveCommand(
-			swerve,
-			vX = { simpleDeadband(controllerA.leftY, 0.1) },
-			vY = { simpleDeadband(controllerA.leftX, 0.1) },
-			omega = { simpleDeadband(controllerA.rightX * 1.0, 0.1) },
+		Swerve.defaultCommand = Swerve.teleopDriveCommand(
+			vxSupplier = { controllerA.leftY },
+			vySupplier = { controllerA.leftX },
+			omegaSupplier = { controllerA.rightX },
 			isFieldRelative = { true },
-			headingCorrection = false
 		)
 
 		// --- For initial testing, delete later --- //
@@ -59,7 +59,7 @@ object RobotContainer {
 		// For a list of things to test follow the link:
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
-		with(ShooterSubsystem) {
+		with(Shooter) {
 			defaultCommand = openLoopTeleop_shooterAngle { simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) }
 //			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
 		}
@@ -86,13 +86,13 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return swerve.pathFindToPathCommand("to_speaker")
+		return Swerve.pathFindToPathCommand("to_speaker")
 	}
 
-	fun setSendables() {
-		SmartDashboard.putData(ShooterSubsystem)
-		SmartDashboard.putData(LoaderSubsystem)
-		SmartDashboard.putData(IntakeSubsystem)
-		SmartDashboard.putData(ClimbingSubsystem)
+	fun initSendables() {
+		SmartDashboard.putData(Climbing)
+		SmartDashboard.putData(Intake)
+		SmartDashboard.putData(Loader)
+		SmartDashboard.putData(Shooter)
 	}
 }
