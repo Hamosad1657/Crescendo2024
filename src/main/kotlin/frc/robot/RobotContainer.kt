@@ -11,8 +11,8 @@ import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderSubsystem
+import frc.robot.subsystems.myswerve.MySwerveSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,12 +21,12 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-	private const val JOYSTICK_DEADBAND = 0.05
+	const val JOYSTICK_DEADBAND = 0.05
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
-	private val swerve = SwerveSubsystem
+	private val swerve = MySwerveSubsystem
 	private val autoChooser = AutoBuilder.buildAutoChooser().apply { SmartDashboard.putData("Auto Chooser", this) }
 
 	init {

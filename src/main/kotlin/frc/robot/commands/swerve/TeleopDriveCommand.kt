@@ -4,15 +4,15 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.swerve.SwerveSubsystem
+import frc.robot.subsystems.myswerve.MySwerveSubsystem
 import swervelib.SwerveController
 import java.util.function.BooleanSupplier
 import java.util.function.DoubleSupplier
 import kotlin.math.pow
-import frc.robot.subsystems.swerve.SwerveConstants as Constants
+import frc.robot.subsystems.myswerve.MySwerveConstants as Constants
 
 class TeleopDriveCommand(
-	private val swerve: SwerveSubsystem,
+	private val swerve: MySwerveSubsystem,
 	private val vX: DoubleSupplier,
 	private val vY: DoubleSupplier,
 	private val omega: DoubleSupplier,
