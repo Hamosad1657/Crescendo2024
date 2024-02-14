@@ -230,7 +230,7 @@ object SwerveSubsystem : SubsystemBase() {
 	}
 
 	override fun periodic() {
-		addVisionMeasurement()
-		swerveDrive.field.robotPose = pose
+//		addVisionMeasurement()
+//		swerveDrive.field.robotPose = pose
 	}
 }

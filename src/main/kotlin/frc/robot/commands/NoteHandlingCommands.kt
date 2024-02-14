@@ -78,12 +78,12 @@ fun waitForNoteToPassCommand() = withName("wait for note to pass") {
 fun IntakeSubsystem.runIntakeCommand(): Command = withName("run") {
 	run {
 		if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.isRunning) {
-			set(IntakeConstants.MOTOR_OUTPUT)
+			set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
 		} else {
-			set(0.0)
+			stop()
 		}
 	} finallyDo {
-		set(0.0)
+		stop()
 	}
 }
 
@@ -176,9 +176,9 @@ fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
  */
 fun IntakeSubsystem.ejectFromIntakeCommand(): Command =
 	run {
-		set(-IntakeConstants.MOTOR_OUTPUT)
+		set(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
 	} finallyDo {
-		set(0.0)
+		stop()
 	}
 
 /** - Requirements: Loader, Shooter. */
