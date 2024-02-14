@@ -17,17 +17,17 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// --- Motors and Sensors ---
 
-	private val leftMainMotor = HaSparkFlex(ClimbingMap.LEFT_MAIN_MOTOR_ID).apply {
+	private val leftMainMotor = HaSparkFlex(ClimbingMap.LEFT_FRONT_MOTOR_ID).apply {
 		configMainMotor()
 	}
-	private val leftSecondaryMotor = HaSparkFlex(ClimbingMap.LEFT_SECONDARY_MOTOR_ID).apply {
+	private val leftSecondaryMotor = HaSparkFlex(ClimbingMap.LEFT_BACK_MOTOR_ID).apply {
 		configSecondaryMotor(leftMainMotor)
 	}
 
-	private val rightMainMotor = HaSparkFlex(ClimbingMap.RIGHT_MAIN_MOTOR_ID).apply {
+	private val rightMainMotor = HaSparkFlex(ClimbingMap.RIGHT_FRONT_MOTOR_ID).apply {
 		configMainMotor()
 	}
-	private val rightSecondaryMotor = HaSparkFlex(ClimbingMap.RIGHT_SECONDARY_MOTOR_ID).apply {
+	private val rightSecondaryMotor = HaSparkFlex(ClimbingMap.RIGHT_BACK_MOTOR_ID).apply {
 		configSecondaryMotor(rightMainMotor)
 	}
 
