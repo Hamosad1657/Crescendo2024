@@ -154,6 +154,14 @@ object ShooterSubsystem : SubsystemBase() {
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun setAngleMotorOutput(output: PercentOutput) {
+		if (output > 0.0 && isAtMaxAngleLimit) {
+			angleMotor.set(0.0)
+			return
+		}
+		if (output < 0.0 && isAtMinAngleLimit) {
+			angleMotor.set(0.0)
+			return
+		}
 		angleMotor.set(output)
 	}
 
