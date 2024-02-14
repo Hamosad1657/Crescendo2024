@@ -1,4 +1,4 @@
-package frc.robot.subsystems
+package frc.robot.subsystems.swerve
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.alliance
@@ -28,7 +28,7 @@ import java.io.File
 import kotlin.math.pow
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
-object MySwerveSubsystem : SubsystemBase() {
+object SwerveSubsystem : SubsystemBase() {
 	private val swerveDrive: SwerveDrive
 
 	/** Gets the current field-relative velocity (x, y and omega) of the robot*/
