@@ -1,12 +1,13 @@
 package frc.robot
 
-import com.hamosad1657.lib.commands.finallyDo
-import com.hamosad1657.lib.units.rpm
+import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
+import frc.robot.commands.closedLoopTeleop_shooterAngle
+import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -66,20 +67,13 @@ object RobotContainer {
 		// For a list of things to test follow the link:
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
-//		with(Shooter) {
-//			defaultCommand = Shooter.run {
-//				setAngle(10.degrees)
-//			}
-////			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
-//		}
-
 		with(Shooter) {
-			defaultCommand = Shooter.run {
-				setVelocity(3000.0.rpm)
-			} finallyDo {
-				stopShooterMotors()
-			}
+			defaultCommand = Shooter.closedLoopTeleop_shooterAngle(
+				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) },
+				ShooterConstants.ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER
+			)
 		}
+	}
 
 
 //		with(Intake) {
@@ -103,7 +97,6 @@ object RobotContainer {
 //				{ simpleDeadband(testingController.leftY, JOYSTICK_DEADBAND) },
 //				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) })
 //		}
-	}
 
 	fun getAutonomousCommand(): Command {
 		return Swerve.pathFindToPathCommand("to_speaker")

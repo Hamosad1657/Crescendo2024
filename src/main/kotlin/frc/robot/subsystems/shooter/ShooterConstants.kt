@@ -24,6 +24,8 @@ object ShooterConstants {
 	// Calculate the gear ratio.
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = (66.0 / 32.0) * 4 * 4
 
+	const val ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER = 20.0
+
 	/**
 	 * Time between when loading started to when the note is shot.
 	 * It might be a little different in different speeds, so put here
