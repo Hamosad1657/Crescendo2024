@@ -1,8 +1,7 @@
 package frc.robot.subsystems.arm
 
-import com.ctre.phoenix6.signals.NeutralModeValue
-import com.hamosad1657.lib.units.FractionalOutput
-import com.hamosad1657.lib.units.toIdleMode
+import com.hamosad1657.lib.units.PercentOutput
+import com.revrobotics.CANSparkBase.IdleMode
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.util.sendable.SendableBuilder
@@ -32,22 +31,22 @@ object ArmSubsystem : SubsystemBase() {
 
 	val isAtLimit get() = isLeftAtLimit || isRightAtLimit
 
-	var neutralMode: NeutralModeValue = NeutralModeValue.Brake
+	var idleMode: IdleMode = IdleMode.kBrake
 		set(value) {
-			leftMotor.setIdleMode(value.toIdleMode())
-			rightMotor.setIdleMode(value.toIdleMode())
+			leftMotor.setIdleMode(value)
+			rightMotor.setIdleMode(value)
 			field = value
 		}
 
-	fun setLeftMotor(output: FractionalOutput) {
+	fun setLeftMotor(output: PercentOutput) {
 		leftMotor.set(output)
 	}
 
-	fun setRightMotor(output: FractionalOutput) {
+	fun setRightMotor(output: PercentOutput) {
 		rightMotor.set(output)
 	}
 
-	fun setBothMotors(output: FractionalOutput) {
+	fun setBothMotors(output: PercentOutput) {
 		setLeftMotor(output)
 		setRightMotor(output)
 	}
