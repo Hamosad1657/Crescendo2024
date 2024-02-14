@@ -1,16 +1,17 @@
 package frc.robot
 
+import com.hamosad1657.lib.commands.finallyDo
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
-import frc.robot.commands.openLoopTeleop_shooterAngle
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderSubsystem
+import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 
@@ -59,10 +60,16 @@ object RobotContainer {
 		// For a list of things to test follow the link:
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
+//		with(ShooterSubsystem) {
+//			defaultCommand =
+//				openLoopTeleop_shooterAngle { simpleDeadband(testingController.rightY * 0.3, JOYSTICK_DEADBAND) }
+////			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
+//		}
+
 		with(ShooterSubsystem) {
-			defaultCommand =
-				openLoopTeleop_shooterAngle { simpleDeadband(testingController.rightY * 0.3, JOYSTICK_DEADBAND) }
-//			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
+			defaultCommand = ShooterSubsystem.run {
+				setAngle(ShooterConstants.ANGLE_FOR_INTAKE)
+			} finallyDo { setShooterMotorsOutput(0.0) }
 		}
 
 //		with(IntakeSubsystem) {

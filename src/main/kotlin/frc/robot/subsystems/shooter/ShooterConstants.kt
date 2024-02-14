@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter
 
+import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.units.*
 import edu.wpi.first.math.geometry.Rotation2d
 
@@ -12,6 +13,9 @@ object ShooterConstants {
 	val KEEP_AT_MIN_ANGLE_OUPTUT = -0.03
 
 	val ANGLE_FOR_INTAKE = 35.41.degrees
+
+	// P 0.08
+	val ANGLE_PID_GAINS = PIDGains(0.0, 0.0, 0.0)
 
 	// TODO: Check if this should be 1/20 or 20.
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 20.0

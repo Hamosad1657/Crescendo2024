@@ -1,14 +1,12 @@
 package frc.robot.subsystems.shooter
 
 import com.ctre.phoenix6.configs.*
-import com.ctre.phoenix6.controls.NeutralOut
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.signals.*
 import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
-import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.*
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
@@ -20,6 +18,7 @@ import frc.robot.subsystems.shooter.ShooterConstants.AngleMotorDirection
 import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUPTUT
 import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUPTUT
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import kotlin.math.cos
 import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.RobotMap.Shooter.Angle as ShooterAngleMap
 import frc.robot.subsystems.shooter.ShooterConstants as Constants
@@ -51,13 +50,16 @@ object ShooterSubsystem : SubsystemBase() {
 		inverted = false
 		idleMode = IdleMode.kBrake
 
-		configurator.apply(
-			FeedbackConfigs().apply {
-				FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
-				FeedbackRemoteSensorID = ShooterAngleMap.CANCODER_ID
-				RotorToSensorRatio = ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
-			}
-		)
+		configurator.apply(FeedbackConfigs().apply {
+			FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
+			FeedbackRemoteSensorID = ShooterAngleMap.CANCODER_ID
+			RotorToSensorRatio = ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
+		})
+		configurator.apply(Slot0Configs().apply {
+			kP = Constants.ANGLE_PID_GAINS.kP
+			kI = Constants.ANGLE_PID_GAINS.kI
+			kD = Constants.ANGLE_PID_GAINS.kD
+		})
 	}
 
 	private val angleCANCoder = CANcoder(ShooterAngleMap.CANCODER_ID).apply {
@@ -110,15 +112,14 @@ object ShooterSubsystem : SubsystemBase() {
 		velocitySetpoint = velocity
 	}
 
-	private fun setAngle(angle: Rotation2d) {
+	fun setAngle(angle: Rotation2d) {
 		val motorDirection = angleMotorDirectionTo(setpoint = angle)
-		if (
-			(isAtMinAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MIN) ||
-			(isAtMaxAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MAX)
-		) {
-			angleMotor.setControl(NeutralOut())
+		if (isAtMinAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MIN) {
+			angleMotor.setControl(PositionVoltage(KEEP_AT_MIN_ANGLE_OUPTUT))
+		} else if (isAtMaxAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MAX) {
+			angleMotor.setControl(PositionVoltage(KEEP_AT_MAX_ANGLE_OUPTUT))
 		} else {
-			angleMotor.setControl(PositionVoltage(angle.rotations))
+			angleMotor.setControl(PositionVoltage(angle.rotations, 0.0, false, calculateFF(), 0, false, false, false))
 		}
 	}
 
@@ -171,6 +172,15 @@ object ShooterSubsystem : SubsystemBase() {
 	fun increaseAngleSetpointBy(angle: Rotation2d) {
 		setAngle(this.currentAngle + angle)
 	}
+
+
+	private fun calculateFF(): Volts {
+		val ff =
+			cos(currentAngle.radians) * KEEP_AT_MIN_ANGLE_OUPTUT * 12.0
+		if (currentAngle.degrees < 90.0) return ff
+		return ff * 1.5
+	}
+
 
 	override fun initSendable(builder: SendableBuilder) {
 		super.initSendable(builder)
