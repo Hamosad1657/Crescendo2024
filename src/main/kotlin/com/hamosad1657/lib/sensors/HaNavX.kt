@@ -180,7 +180,7 @@ class HaNavX : Sendable {
 		builder.addDoubleProperty("Pitch Angle Radians", { pitchRad }, null)
 		builder.addDoubleProperty("Roll Angle Degrees", { rollDeg }, null)
 		builder.addDoubleProperty("Roll Angle Radians", { rollRad }, null)
-		builder.addDoubleProperty("Yaw Angular Velocity DegPs", { yawAngularVelocity.degPs }, null)
+		builder.addDoubleProperty("Yaw Angular Velocity DegPs", { yawAngularVelocity.asDegPs }, null)
 		builder.addDoubleProperty("Yaw Offset Degrees", { yawOffsetDeg }, null)
 	}
 

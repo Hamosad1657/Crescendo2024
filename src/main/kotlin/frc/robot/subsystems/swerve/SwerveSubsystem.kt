@@ -96,14 +96,14 @@ object SwerveSubsystem : SwerveDrivetrain(
 			super.setControl(controlRequestFieldRelative.apply {
 				VelocityX = translation.x
 				VelocityY = translation.y
-				RotationalRate = omega.radPs
+				RotationalRate = omega.asRadPs
 				DriveRequestType = if (isOpenLoop) OpenLoopVoltage else Velocity
 			})
 		} else {
 			super.setControl(controlRequestRobotRelative.apply {
 				VelocityX = translation.x
 				VelocityY = translation.y
-				RotationalRate = omega.radPs
+				RotationalRate = omega.asRadPs
 				DriveRequestType = if (isOpenLoop) OpenLoopVoltage else Velocity
 			})
 		}

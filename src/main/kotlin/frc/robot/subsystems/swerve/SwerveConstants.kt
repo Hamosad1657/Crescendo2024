@@ -58,8 +58,8 @@ object SwerveConstants {
 	val PATH_CONSTRAINTS = PathConstraints(
 		MAX_SPEED_MPS, // Max velocity (meters per second)
 		MAX_SPEED_MPS / 2, // Max acceleration - 2 seconds to max velocity
-		MAX_ANGULAR_VELOCITY.radPs, // Max angular velocity (radians per second)
-		MAX_ANGULAR_VELOCITY.radPs * 2, // Max angular acceleration - 1 second to max velocity
+		MAX_ANGULAR_VELOCITY.asRadPs, // Max angular velocity (radians per second)
+		MAX_ANGULAR_VELOCITY.asRadPs * 2, // Max angular acceleration - 1 second to max velocity
 	)
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(13.0, 1.0, 1.0)

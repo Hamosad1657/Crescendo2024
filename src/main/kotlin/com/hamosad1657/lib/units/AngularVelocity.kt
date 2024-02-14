@@ -16,33 +16,20 @@ import com.hamosad1657.lib.units.AngularVelocity.Unit as AngularVelocityUnit
  */
 class AngularVelocity
 private constructor(velocity: Double, velocityUnit: AngularVelocityUnit) : Comparable<AngularVelocity> {
-	var rpm = 0.0
+	private var rpm = 0.0
 		set(value) {
-			require(!value.isNaN())
-			require(value.isFinite())
+			require(!value.isNaN()) { "AngularVelocity cannot be NaN." }
+			require(value.isFinite()) { "AngularVelocity cannot be infinite." }
 			field = value
 		}
 
-	var rps = this.inUnit(AngularVelocityUnit.Rps)
-		get() = this.inUnit(AngularVelocityUnit.Rps)
-		set(value) {
-			rpm = rpsToRpm(value)
-			field = value
-		}
+	val asRpm get() = rpm
+	val asRps get() = this.inUnit(AngularVelocityUnit.Rps)
+	val asRadPs get() = this.inUnit(AngularVelocityUnit.RadPs)
+	val asDegPs get() = this.inUnit(AngularVelocityUnit.DegPs)
 
-	var radPs = this.inUnit(AngularVelocityUnit.RadPs)
-		get() = this.inUnit(AngularVelocityUnit.RadPs)
-		set(value) {
-			rpm = radPsToRpm(value)
-			field = value
-		}
-
-	var degPs = this.inUnit(AngularVelocityUnit.DegPs)
-		get() = this.inUnit(AngularVelocityUnit.DegPs)
-		set(value) {
-			rpm = degPsToRpm(value)
-			field = value
-		}
+	fun asMps(wheelRadius: Length) = rpmToMps(rpm, wheelRadius)
+	fun asFalconTicksPer100ms(gearRatio: Double = 1.0) = rpmToFalconTicksPer100ms(rpm, gearRatio)
 
 	init {
 		rpm = when (velocityUnit) {
@@ -68,9 +55,6 @@ private constructor(velocity: Double, velocityUnit: AngularVelocityUnit) : Compa
 	operator fun minus(other: AngularVelocity) = fromRpm(rpm - other.rpm)
 	operator fun times(ratio: Double) = fromRpm(rpm * ratio)
 	operator fun div(ratio: Double) = fromRpm(rpm / ratio)
-
-	fun toMps(wheelRadius: Length) = rpmToMps(rpm, wheelRadius)
-	fun toFalconTicksPer100ms(gearRatio: Double = 1.0) = rpmToFalconTicksPer100ms(rpm, gearRatio)
 
 	enum class Unit {
 		Rpm,
