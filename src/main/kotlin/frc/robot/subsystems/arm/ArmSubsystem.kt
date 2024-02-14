@@ -55,6 +55,11 @@ object ArmSubsystem : SubsystemBase() {
 		setRightMotor(output)
 	}
 
+	fun stopBothMotors() {
+		leftMotor.stopMotor()
+		rightMotor.stopMotor()
+	}
+
 	override fun initSendable(builder: SendableBuilder) {
 		super.initSendable(builder)
 		builder.addBooleanProperty("Is at limit", { isAtLimit }, null)

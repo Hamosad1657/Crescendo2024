@@ -28,8 +28,8 @@ object IntakeSubsystem : SubsystemBase() {
 	}
 
 	fun stop() {
-		bottomMotor.set(0.0)
-		topMotor.set(0.0)
+		bottomMotor.stopMotor()
+		topMotor.stopMotor()
 	}
 
 	val isRunning: Boolean

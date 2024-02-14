@@ -96,7 +96,7 @@ fun LoaderSubsystem.runLoaderCommand(): Command = withName("run") {
 	run {
 		set(LoaderConstants.MOTOR_OUTPUT)
 	} finallyDo {
-		set(0.0)
+		stop()
 	}
 }
 
@@ -123,7 +123,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(
 	run {
 		setAngleMotorOutput(output())
 	} finallyDo {
-		setAngleMotorOutput(0.0)
+		stopAngleMotor()
 	}
 }
 
@@ -150,7 +150,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
 	run {
 		increaseShooterMotorsOutputBy(output())
 	} finallyDo {
-		setShooterMotorsOutput(0.0)
+		stopShooterMotors()
 	}
 }
 
@@ -187,5 +187,5 @@ fun ejectFromShooterCommand(): Command =
 		ShooterSubsystem.run {
 			ShooterSubsystem.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
 		}.finallyDo { _ ->
-			ShooterSubsystem.setShooterMotorsOutput(0.0)
+			ShooterSubsystem.stopShooterMotors()
 		}

@@ -127,6 +127,14 @@ object ShooterSubsystem : SubsystemBase() {
 		if (setpoint.rotations - currentAngle.rotations > 0.0) AngleMotorDirection.TOWARDS_MAX
 		else AngleMotorDirection.TOWARDS_MIN
 
+	fun stopShooterMotors() {
+		shooterMainMotor.stopMotor()
+	}
+
+	fun stopAngleMotor() {
+		angleMotor.stopMotor()
+	}
+
 
 	// --- Getters ---
 

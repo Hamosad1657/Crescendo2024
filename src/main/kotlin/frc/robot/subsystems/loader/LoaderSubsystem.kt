@@ -28,6 +28,10 @@ object LoaderSubsystem : SubsystemBase() {
 		motor.set(output)
 	}
 
+	fun stop() {
+		motor.stopMotor()
+	}
+
 	val isRunning: Boolean
 		get() = abs(motor.get()) > 0.0
 

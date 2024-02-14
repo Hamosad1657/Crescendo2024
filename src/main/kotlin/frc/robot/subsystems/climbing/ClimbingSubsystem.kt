@@ -135,6 +135,11 @@ object ClimbingSubsystem : SubsystemBase() {
 		else rightMainMotor.set(output)
 	}
 
+	fun stop() {
+		leftMainMotor.stopMotor()
+		rightMainMotor.stopMotor()
+	}
+	
 
 	override fun periodic() {
 		if (isLeftAtClosedLimit) leftEncoder.position = 0.0
