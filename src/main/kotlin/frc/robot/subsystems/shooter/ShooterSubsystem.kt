@@ -7,8 +7,7 @@ import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.signals.*
 import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
-import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.*
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
@@ -47,7 +46,7 @@ object ShooterSubsystem : SubsystemBase() {
 		configurator.apply(TalonFXConfiguration())
 		// TODO: Verify positive output raises angle
 		inverted = false
-		idleMode = IdleMode.kBrake
+		setNeutralMode(IdleMode.kBrake.toNeutralModeValue())
 
 		configurator.apply(
 			FeedbackConfigs().apply {
