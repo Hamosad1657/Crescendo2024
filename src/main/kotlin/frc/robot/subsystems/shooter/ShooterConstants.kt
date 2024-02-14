@@ -14,8 +14,7 @@ object ShooterConstants {
 
 	val ANGLE_FOR_INTAKE = 35.41.degrees
 
-	// P 0.08
-	val ANGLE_PID_GAINS = PIDGains(0.0, 0.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(22.0, 0.001, 0.0)
 
 	// TODO: Check if this should be 1/20 or 20.
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 20.0
