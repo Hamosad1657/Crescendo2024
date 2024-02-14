@@ -73,15 +73,15 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// TODO: Check if switches are wired normally open or normally closed.
 
-	private val isLeftAtClosedLimit get() = leftClosedLimitSwitch.get()
+	private val isLeftAtClosedLimit get() = !leftClosedLimitSwitch.get()
 	private val isRightAtClosedLimit get() = rightClosedLimitSwitch.get()
 
 	private val isLeftAtOpenedLimit
-		get() = leftOpenedLimitSwitch.get()
+		get() = !leftOpenedLimitSwitch.get()
 			|| currentPosition >= Constants.MAX_POSSIBLE_POSITION
 
 	private val isRightAtOpenedLimit
-		get() = rightOpenedLimitSwitch.get()
+		get() = !rightOpenedLimitSwitch.get()
 			|| currentPosition >= Constants.MAX_POSSIBLE_POSITION
 
 	val isAtClosedLimit get() = isLeftAtClosedLimit || isRightAtClosedLimit
@@ -143,7 +143,7 @@ object ClimbingSubsystem : SubsystemBase() {
 		builder.addBooleanProperty("Left at opened limit", { isLeftAtOpenedLimit }, null)
 		builder.addBooleanProperty("Left at closed limit", { isLeftAtClosedLimit }, null)
 		builder.addBooleanProperty("Right at opened limit", { isRightAtOpenedLimit }, null)
-		builder.addBooleanProperty("Right at opened limit", { isRightAtClosedLimit }, null)
+		builder.addBooleanProperty("Right at closed limit", { isRightAtClosedLimit }, null)
 		builder.addDoubleProperty("Position rotations", { currentPosition }, null)
 		builder.addDoubleProperty("Position setpoint rotations", { lastSetpoint }, null)
 		builder.addBooleanProperty("In tolerance", { isWithinTolerance }, null)

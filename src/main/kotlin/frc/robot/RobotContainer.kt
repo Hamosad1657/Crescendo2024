@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.openLoopTeleop_shooterAngle
 import frc.robot.commands.swerve.TeleopDriveCommand
+import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderConstants
@@ -30,6 +31,7 @@ object RobotContainer {
 	private val autoChooser = AutoBuilder.buildAutoChooser().apply { SmartDashboard.putData("Auto Chooser", this) }
 
 	init {
+		setSendables()
 		registerAutoCommands()
 		configureBindings()
 		setDefaultCommands()
@@ -86,5 +88,12 @@ object RobotContainer {
 
 	fun getAutonomousCommand(): Command {
 		return swerve.pathFindToPathCommand("to_speaker")
+	}
+
+	fun setSendables() {
+		SmartDashboard.putData(ShooterSubsystem)
+		SmartDashboard.putData(LoaderSubsystem)
+		SmartDashboard.putData(IntakeSubsystem)
+		SmartDashboard.putData(ClimbingSubsystem)
 	}
 }

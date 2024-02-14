@@ -127,8 +127,8 @@ object ShooterSubsystem : SubsystemBase() {
 
 	// --- Getters ---
 
-	val isAtMinAngleLimit get() = !minAngleLimitSwitch.get()
-	val isAtMaxAngleLimit get() = !maxAngleLimitSwitch.get()
+	val isAtMinAngleLimit get() = minAngleLimitSwitch.get()
+	val isAtMaxAngleLimit get() = maxAngleLimitSwitch.get()
 
 	val isWithinVelocityTolerance get() = currentVelocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
 	val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations

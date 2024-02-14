@@ -12,6 +12,7 @@ object ClimbingConstants {
 
 	const val SETPOINT_TOLERANCE: Rotations = 0.0
 
+	// TODO: Find this value
 	const val MAX_POSSIBLE_POSITION: Rotations = 0.0
 
 	const val STAY_FOLDED_OUTPUT: PercentOutput = 0.0
