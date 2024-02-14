@@ -107,7 +107,7 @@ object ShooterSubsystem : SubsystemBase() {
 	}
 
 	private fun setVelocity(velocity: AngularVelocity) {
-		shooterMainMotor.pidController.setReference(velocity.rpm, CANSparkBase.ControlType.kSmartVelocity)
+		shooterMainMotor.pidController.setReference(velocity.asRpm, CANSparkBase.ControlType.kSmartVelocity)
 		velocitySetpoint = velocity
 	}
 
@@ -197,9 +197,10 @@ object ShooterSubsystem : SubsystemBase() {
 		builder.addDoubleProperty("CANCoder angle deg", { angleCANCoder.absolutePosition.value * 360 }, null)
 		builder.addDoubleProperty("Angle setpoint deg", { angleSetpoint.degrees }, null)
 		builder.addBooleanProperty("Angle in tolerance", { isWithinAngleTolerance }, null)
-		builder.addDoubleProperty("Velocity rpm", { currentVelocity.rpm }, null)
-		builder.addDoubleProperty("Velocity setpoint rpm", { velocitySetpoint.rpm }, null)
+		builder.addDoubleProperty("Velocity rpm", { currentVelocity.asRpm }, null)
+		builder.addDoubleProperty("Velocity setpoint rpm", { velocitySetpoint.asRpm }, null)
 		builder.addBooleanProperty("Velocity in tolerance", { isWithinVelocityTolerance }, null)
 		builder.addDoubleProperty("Angle motor output", { angleMotor.get() }, null)
+		builder.addDoubleProperty("Shooter motors output", { shooterMainMotor.get() }, null)
 	}
 }

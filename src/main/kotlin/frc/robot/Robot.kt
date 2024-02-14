@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.subsystems.myswerve.MySwerveSubsystem
+import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.vision.Vision
 
 /**
@@ -40,7 +40,7 @@ object Robot : TimedRobot() {
 		HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
 		// Access the RobotContainer object so that it is initialized. This will perform all our
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
-		Vision.estimatedGlobalPose?.let { MySwerveSubsystem.setGyro(it.estimatedPose.rotation.toRotation2d()) }
+		Vision.estimatedGlobalPose?.let { SwerveSubsystem.setGyro(it.estimatedPose.rotation.toRotation2d()) }
 		RobotContainer
 	}
 
