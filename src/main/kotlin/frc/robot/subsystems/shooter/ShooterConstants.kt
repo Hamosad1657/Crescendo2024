@@ -11,7 +11,7 @@ object ShooterConstants {
 	val KEEP_AT_MAX_ANGLE_OUPTUT = 0.03
 	val KEEP_AT_MIN_ANGLE_OUPTUT = -0.03
 
-	val ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
+	val ANGLE_FOR_INTAKE = 35.41.degrees
 
 	// TODO: Check if this should be 1/20 or 20.
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = 20.0
