@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.shooter.ShooterConstants.ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
 import frc.robot.subsystems.shooter.ShooterConstants.AngleMotorDirection
+import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUPTUT
+import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUPTUT
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.RobotMap.Shooter.Angle as ShooterAngleMap
@@ -46,7 +48,7 @@ object ShooterSubsystem : SubsystemBase() {
 	private val angleMotor = HaTalonFX(ShooterAngleMap.MOTOR_ID).apply {
 		configurator.apply(TalonFXConfiguration())
 		// TODO: Verify positive output raises angle
-		inverted = true
+		inverted = false
 		idleMode = IdleMode.kBrake
 
 		configurator.apply(
@@ -155,11 +157,11 @@ object ShooterSubsystem : SubsystemBase() {
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun setAngleMotorOutput(output: PercentOutput) {
 		if (output > 0.0 && isAtMaxAngleLimit) {
-			angleMotor.set(0.0)
+			angleMotor.set(KEEP_AT_MAX_ANGLE_OUPTUT)
 			return
 		}
 		if (output < 0.0 && isAtMinAngleLimit) {
-			angleMotor.set(0.0)
+			angleMotor.set(KEEP_AT_MIN_ANGLE_OUPTUT)
 			return
 		}
 		angleMotor.set(output)
@@ -180,5 +182,6 @@ object ShooterSubsystem : SubsystemBase() {
 		builder.addDoubleProperty("Velocity rpm", { currentVelocity.rpm }, null)
 		builder.addDoubleProperty("Velocity setpoint rpm", { velocitySetpoint.rpm }, null)
 		builder.addBooleanProperty("Velocity in tolerance", { isWithinVelocityTolerance }, null)
+		builder.addDoubleProperty("Angle motor output", { angleMotor.get() }, null)
 	}
 }

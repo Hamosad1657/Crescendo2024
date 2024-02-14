@@ -8,6 +8,9 @@ object ShooterConstants {
 	val VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
 	val ANGLE_TOLERANCE = 0.25.degrees
 
+	val KEEP_AT_MAX_ANGLE_OUPTUT = 0.03
+	val KEEP_AT_MIN_ANGLE_OUPTUT = -0.03
+
 	val ANGLE_FOR_INTAKE = Rotation2d() // TODO: Find SHOOTER_ANGLE_FOR_INTAKE
 
 	// TODO: Check if this should be 1/20 or 20.

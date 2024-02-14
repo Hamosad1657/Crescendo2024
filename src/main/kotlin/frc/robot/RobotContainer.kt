@@ -60,7 +60,8 @@ object RobotContainer {
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
 		with(ShooterSubsystem) {
-			defaultCommand = openLoopTeleop_shooterAngle { simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) }
+			defaultCommand =
+				openLoopTeleop_shooterAngle { simpleDeadband(testingController.rightY * 0.3, JOYSTICK_DEADBAND) }
 //			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
 		}
 
