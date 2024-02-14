@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem
-import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.loader.LoaderSubsystem
-import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 
@@ -68,9 +66,14 @@ object RobotContainer {
 //		}
 
 		with(ShooterSubsystem) {
+//			defaultCommand = ShooterSubsystem.run {
+//				setAngle(ShooterConstants.ANGLE_FOR_INTAKE)
+//			} finallyDo { setShooterMotorsOutput(0.0) }
 			defaultCommand = ShooterSubsystem.run {
-				setAngle(ShooterConstants.ANGLE_FOR_INTAKE)
-			} finallyDo { setShooterMotorsOutput(0.0) }
+				setShooterMotorsOutput(simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND))
+			} finallyDo {
+				stopShooterMotors()
+			}
 		}
 
 //		with(IntakeSubsystem) {
@@ -81,13 +84,13 @@ object RobotContainer {
 //			}
 //		}
 
-		with(LoaderSubsystem) {
-			defaultCommand = run {
-				set(LoaderConstants.MOTOR_OUTPUT)
-			} finallyDo {
-				stop()
-			}
-		}
+//		with(LoaderSubsystem) {
+//			defaultCommand = run {
+//				set(LoaderConstants.MOTOR_OUTPUT)
+//			} finallyDo {
+//				stop()
+//			}
+//		}
 	}
 
 	private fun registerAutoCommands() {
