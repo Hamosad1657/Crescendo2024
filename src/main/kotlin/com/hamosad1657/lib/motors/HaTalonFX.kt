@@ -31,9 +31,12 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 	 *
 	 * Use only as setter.
 	 */
-	var idleMode: IdleMode
+	var idleMode: IdleMode = IdleMode.kBrake
 		get() = throw UnsupportedOperationException("use this field only as a setter")
-		set(value) = setNeutralMode(idleMode.toNeutralModeValue())
+		set(value) {
+			setNeutralMode(value.toNeutralModeValue())
+			field = value
+		}
 
 	/** USE [idleMode] SETTER INSTEAD. */
 	override fun setNeutralMode(neutralMode: NeutralModeValue) {
