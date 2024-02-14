@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swerve
+package frc.robot.subsystems
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.alliance
@@ -7,10 +7,7 @@ import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.trajectory.Trajectory
@@ -31,7 +28,7 @@ import java.io.File
 import kotlin.math.pow
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
-object SwerveSubsystem : SubsystemBase() {
+object MySwerveSubsystem : SubsystemBase() {
 	private val swerveDrive: SwerveDrive
 
 	/** Gets the current field-relative velocity (x, y and omega) of the robot*/
@@ -121,26 +118,6 @@ object SwerveSubsystem : SubsystemBase() {
 	 */
 	fun drive(translation: Translation2d?, rotation: Double, fieldRelative: Boolean, isOpenLoop: Boolean) {
 		swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop)
-	}
-
-	/**
-	 * Get the chassis speeds based on controller input of 2 joysticks. One for speeds in which direction. The other for
-	 * the angle of the robot.
-	 *
-	 * @param xInput   X joystick input for the robot to move in the X direction.
-	 * @param yInput   Y joystick input for the robot to move in the Y direction.
-	 * @param headingX X joystick which controls the angle of the robot.
-	 * @param headingY Y joystick which controls the angle of the robot.
-	 * @return [ChassisSpeeds] which can be sent to th Swerve Drive.
-	 */
-	fun getTargetSpeeds(xInput: Double, yInput: Double, headingX: Double, headingY: Double): ChassisSpeeds {
-		return swerveDrive.swerveController.getTargetSpeeds(
-			xInput.pow(3.0),
-			yInput.pow(3.0),
-			headingX,
-			headingY,
-			heading.radians,
-		)
 	}
 
 	/**
