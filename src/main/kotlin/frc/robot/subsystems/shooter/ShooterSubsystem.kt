@@ -30,13 +30,12 @@ object ShooterSubsystem : SubsystemBase() {
 	private val shooterMainMotor = HaSparkFlex(ShooterMap.UPPER_MOTOR_ID).apply {
 		restoreFactoryDefaults()
 		// TODO: Verify positive output shoots
-		inverted = false
+		inverted = true
 		idleMode = IdleMode.kCoast
 	}
 
 	private val shooterSecondaryMotor = HaSparkFlex(ShooterMap.LOWER_MOTOR_ID).apply {
 		restoreFactoryDefaults()
-		inverted = false
 		idleMode = IdleMode.kCoast
 		// TODO: Check if follower needs to be inverted from the main motor
 		follow(shooterMainMotor, true)

@@ -72,7 +72,7 @@ object RobotContainer {
 			} finallyDo { setShooterMotorsOutput(0.0) }
 		}
 
-//		with(IntakeSubsystem) {
+//		with(Intake) {
 //			defaultCommand = run {
 //				set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
 //			} finallyDo {
