@@ -1,9 +1,9 @@
 package frc.robot.subsystems.loader
 
-import com.hamosad1657.lib.motors.HaSparkFlex
+import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.PercentOutput
 import com.revrobotics.CANSparkBase.IdleMode
-import com.revrobotics.CANSparkLowLevel.MotorType
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -11,8 +11,10 @@ import kotlin.math.abs
 import frc.robot.RobotMap.Loader as LoaderMap
 
 object LoaderSubsystem : SubsystemBase() {
-	private val motor = HaSparkFlex(LoaderMap.MOTOR_ID, MotorType.kBrushless).apply {
-		restoreFactoryDefaults()
+	private val motor = HaTalonFX(LoaderMap.MOTOR_ID).apply {
+		configurator.apply {
+			TalonFXConfiguration()
+		}
 		// TODO: Verify positive output loads
 		inverted = false
 		idleMode = IdleMode.kBrake
