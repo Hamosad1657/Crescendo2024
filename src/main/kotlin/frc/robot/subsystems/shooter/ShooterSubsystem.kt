@@ -46,7 +46,7 @@ object ShooterSubsystem : SubsystemBase() {
 	private val angleMotor = HaTalonFX(ShooterAngleMap.MOTOR_ID).apply {
 		configurator.apply(TalonFXConfiguration())
 		// TODO: Verify positive output raises angle
-		inverted = false
+		inverted = true
 		idleMode = IdleMode.kBrake
 
 		configurator.apply(

@@ -1,6 +1,5 @@
 package frc.robot
 
-import com.hamosad1657.lib.commands.finallyDo
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -10,9 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.openLoopTeleop_shooterAngle
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.climbing.ClimbingSubsystem
-import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.intake.IntakeSubsystem
-import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
@@ -24,6 +21,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
+	private const val JOYSTICK_DEADBAND = 0.05
+
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
@@ -61,25 +60,25 @@ object RobotContainer {
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
 		with(ShooterSubsystem) {
-			defaultCommand = openLoopTeleop_shooterAngle { testingController.leftY }
+			defaultCommand = openLoopTeleop_shooterAngle { simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) }
 //			defaultCommand = openLoopTeleop_shooterVelocity { testingController.leftY }
 		}
 
-		with(IntakeSubsystem) {
-			defaultCommand = run {
-				set(IntakeConstants.MOTOR_OUTPUT)
-			} finallyDo {
-				set(0.0)
-			}
-		}
+//		with(IntakeSubsystem) {
+//			defaultCommand = run {
+//				set(IntakeConstants.MOTOR_OUTPUT)
+//			} finallyDo {
+//				set(0.0)
+//			}
+//		}
 
-		with(LoaderSubsystem) {
-			defaultCommand = run {
-				set(LoaderConstants.MOTOR_OUTPUT)
-			} finallyDo {
-				set(0.0)
-			}
-		}
+//		with(LoaderSubsystem) {
+//			defaultCommand = run {
+//				set(LoaderConstants.MOTOR_OUTPUT)
+//			} finallyDo {
+//				set(0.0)
+//			}
+//		}
 	}
 
 	private fun registerAutoCommands() {
