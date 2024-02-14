@@ -177,6 +177,7 @@ object ShooterSubsystem : SubsystemBase() {
 		builder.addBooleanProperty("Is at min angle limit", { isAtMinAngleLimit }, null)
 		builder.addBooleanProperty("Is at max angle limit", { isAtMaxAngleLimit }, null)
 		builder.addDoubleProperty("Angle deg", { currentAngle.degrees }, null)
+		builder.addDoubleProperty("CANCoder angle deg", { angleCANCoder.absolutePosition.value * 360 }, null)
 		builder.addDoubleProperty("Angle setpoint deg", { angleSetpoint.degrees }, null)
 		builder.addBooleanProperty("Angle in tolerance", { isWithinAngleTolerance }, null)
 		builder.addDoubleProperty("Velocity rpm", { currentVelocity.rpm }, null)
