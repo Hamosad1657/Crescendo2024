@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.Follower
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.PercentOutput
@@ -11,6 +12,7 @@ import frc.robot.subsystems.intake.IntakeConstants as Constants
 
 object IntakeSubsystem : SubsystemBase() {
 	private val floorIntakeMotor = HaTalonFX(IntakeMap.FLOOR_INTAKE_MOTOR_ID).apply {
+		configurator.apply(TalonFXConfiguration())
 		// TODO: Verify positive output intakes
 		inverted = false
 		idleMode = IdleMode.kBrake
@@ -18,6 +20,7 @@ object IntakeSubsystem : SubsystemBase() {
 	}
 
 	private val intakeToLoaderMotor = HaTalonFX(IntakeMap.INTAKE_TO_LOADER_MOTOR_ID).apply {
+		configurator.apply(TalonFXConfiguration())
 		inverted = false
 		idleMode = IdleMode.kBrake
 		configurator.apply(Constants.CURRENT_LIMIT_CONFIGURATION)

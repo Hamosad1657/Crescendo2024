@@ -11,8 +11,12 @@ import frc.robot.subsystems.arm.ArmConstants as Constants
 
 object ArmSubsystem : SubsystemBase() {
 
-	private val leftMotor = CANSparkFlex(ArmMap.MOTOR_ID, MotorType.kBrushless)
-	private val rightMotor = CANSparkFlex(ArmMap.MOTOR_ID, MotorType.kBrushless)
+	private val leftMotor = CANSparkFlex(ArmMap.MOTOR_ID, MotorType.kBrushless).apply {
+		restoreFactoryDefaults()
+	}
+	private val rightMotor = CANSparkFlex(ArmMap.MOTOR_ID, MotorType.kBrushless).apply {
+		restoreFactoryDefaults()
+	}
 
 	init {
 		leftMotor.inverted = false // TODO: Verify positive output opens arm.

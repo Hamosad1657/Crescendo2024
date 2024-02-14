@@ -13,5 +13,5 @@ object IntakeConstants {
 	}
 
 	// TODO: Do tests and decide optimal intake output
-	const val MOTOR_OUTPUT: PercentOutput = 0.0
+	const val MOTOR_OUTPUT: PercentOutput = 0.9
 }

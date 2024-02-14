@@ -18,6 +18,7 @@ object ClimbingSubsystem : SubsystemBase() {
 	// --- Motors and Sensors ---
 
 	private val leftMainMotor = HaSparkFlex(ClimbingMap.LEFT_FRONT_MOTOR_ID).apply {
+		restoreFactoryDefaults()
 		// TODO: Verify positive output raises climber
 		inverted = true
 		idleMode = IdleMode.kBrake
@@ -27,6 +28,7 @@ object ClimbingSubsystem : SubsystemBase() {
 	}
 
 	private val rightMainMotor = HaSparkFlex(ClimbingMap.RIGHT_FRONT_MOTOR_ID).apply {
+		restoreFactoryDefaults()
 		// TODO: Verify positive output raises climber
 		inverted = false
 		idleMode = IdleMode.kBrake
@@ -53,6 +55,7 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
 		apply {
+			restoreFactoryDefaults()
 			inverted = false
 			idleMode = IdleMode.kBrake
 			// TODO: Check if follower motor should oppose master motor or not
