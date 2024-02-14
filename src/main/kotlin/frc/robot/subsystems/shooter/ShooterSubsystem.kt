@@ -7,7 +7,7 @@ import com.ctre.phoenix6.signals.*
 import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.*
-import com.revrobotics.CANSparkBase
+import com.revrobotics.CANSparkBase.ControlType
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
@@ -79,7 +79,7 @@ object ShooterSubsystem : SubsystemBase() {
 
 	// --- Motors Properties ---
 
-	val currentVelocity get() = AngularVelocity.fromRpm(shooterEncoder.velocity)
+	val currentVelocity get() = AngularVelocity.fromRpm(-shooterEncoder.velocity)
 
 	/**
 	 * When the shooter is at its lowest possible angle, measurement is 1 degree.
@@ -107,7 +107,7 @@ object ShooterSubsystem : SubsystemBase() {
 	}
 
 	private fun setVelocity(velocity: AngularVelocity) {
-		shooterMainMotor.pidController.setReference(velocity.asRpm, CANSparkBase.ControlType.kSmartVelocity)
+		shooterMainMotor.pidController.setReference(-velocity.asRpm, ControlType.kSmartVelocity)
 		velocitySetpoint = velocity
 	}
 

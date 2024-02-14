@@ -1,14 +1,13 @@
 package frc.robot
 
 import com.hamosad1657.lib.commands.finallyDo
+import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.teleopDriveCommand
-import frc.robot.subsystems.loader.LoaderConstants
-import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -28,19 +27,27 @@ object RobotContainer {
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
 
-	private val autoChooser = AutoBuilder.buildAutoChooser().apply {
-		SmartDashboard.putData("Auto Chooser", this)
+	private val autoChooser = Swerve.let {
+		AutoBuilder.buildAutoChooser().apply {
+			SmartDashboard.putData("Auto Chooser", this)
+		}
 	}
 
 	init {
 		initSendables()
-		registerAutoCommands()
-		configureBindings()
+		configureButtonBindings()
 		setDefaultCommands()
+		registerAutoCommands()
 	}
 
-	/** Use this method to define your `trigger->command` mappings. */
-	private fun configureBindings() {
+	private fun initSendables() {
+		SmartDashboard.putData(Climbing)
+		SmartDashboard.putData(Intake)
+		SmartDashboard.putData(Loader)
+		SmartDashboard.putData(Shooter)
+	}
+
+	private fun configureButtonBindings() {
 		autoChooser.onChange { controllerA.triangle().onTrue(it) }
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
@@ -68,8 +75,10 @@ object RobotContainer {
 
 		with(Shooter) {
 			defaultCommand = Shooter.run {
-				setAngle(ShooterConstants.ANGLE_FOR_INTAKE)
-			} finallyDo { setShooterMotorsOutput(0.0) }
+				setShooterMotorsOutput(simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND))
+			} finallyDo {
+				stopShooterMotors()
+			}
 		}
 
 //		with(Intake) {
@@ -79,28 +88,21 @@ object RobotContainer {
 //				stop()
 //			}
 //		}
-
-		with(Loader) {
-			defaultCommand = run {
-				set(LoaderConstants.MOTOR_OUTPUT)
-			} finallyDo {
-				stop()
-			}
-		}
-	}
-
-	private fun registerAutoCommands() {
-		NamedCommands.registerCommand("HelloCommand", PrintCommand("HelloWorld"))
+//
+//		with(Loader) {
+//			defaultCommand = run {
+//				set(LoaderConstants.MOTOR_OUTPUT)
+//			} finallyDo {
+//				stop()
+//			}
+//		}
 	}
 
 	fun getAutonomousCommand(): Command {
 		return Swerve.pathFindToPathCommand("to_speaker")
 	}
 
-	fun initSendables() {
-		SmartDashboard.putData(Climbing)
-		SmartDashboard.putData(Intake)
-		SmartDashboard.putData(Loader)
-		SmartDashboard.putData(Shooter)
+	private fun registerAutoCommands() {
+		NamedCommands.registerCommand("HelloCommand", PrintCommand("HelloWorld"))
 	}
 }
