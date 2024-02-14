@@ -2,7 +2,7 @@
   "imu": {
     "type": "pigeon2",
     "id": 2,
-    "canbus": null
+    "canbus": "SwerveBus"
   },
   "invertedIMU": false,
   "modules": [
