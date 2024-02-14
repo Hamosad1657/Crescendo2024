@@ -12,6 +12,7 @@ import frc.robot.RobotMap.Loader as LoaderMap
 
 object LoaderSubsystem : SubsystemBase() {
 	private val motor = HaSparkFlex(LoaderMap.MOTOR_ID, MotorType.kBrushless).apply {
+		restoreFactoryDefaults()
 		// TODO: Verify positive output loads
 		inverted = false
 		idleMode = IdleMode.kBrake
@@ -25,6 +26,10 @@ object LoaderSubsystem : SubsystemBase() {
 
 	fun set(output: PercentOutput) {
 		motor.set(output)
+	}
+
+	fun stop() {
+		motor.stopMotor()
 	}
 
 	val isRunning: Boolean

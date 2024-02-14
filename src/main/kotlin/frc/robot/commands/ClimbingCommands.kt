@@ -100,7 +100,7 @@ fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> PercentOutput): Comman
 		run {
 			set(output())
 		} finallyDo {
-			set(0.0)
+			stop()
 		}
 	}
 
@@ -115,7 +115,7 @@ fun ClimbingSubsystem.closedLoopTeleopCommand(changeInPosition: () -> PercentOut
 			val delta = changeInPosition() * multiplier
 			increasePositionSetpointBy(delta)
 		} finallyDo {
-			set(0.0)
+			stop()
 		}
 	}
 

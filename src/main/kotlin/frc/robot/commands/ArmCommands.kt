@@ -13,7 +13,7 @@ fun ArmSubsystem.openCommand(): Command = withName("open") {
 	run {
 		setBothMotors(OPEN_OUTPUT)
 	} until ::isAtLimit finallyDo {
-		setBothMotors(0.0)
+		stopBothMotors()
 	}
 }
 
@@ -22,7 +22,7 @@ fun ArmSubsystem.foldCommand(): Command = withName("fold") {
 	run {
 		setBothMotors(FOLD_OUTPUT)
 	} until ::isAtLimit finallyDo {
-		setBothMotors(0.0)
+		stopBothMotors()
 	}
 }
 
@@ -31,7 +31,7 @@ fun ArmSubsystem.stayFoldedCommand(): Command = withName("stay folded") {
 	run {
 		setBothMotors(STAY_FOLDED_OUTPUT)
 	} finallyDo {
-		setBothMotors(0.0)
+		stopBothMotors()
 	}
 }
 
@@ -51,7 +51,7 @@ fun ArmSubsystem.separateSidesTeleopCommand(
 		setLeftMotor(leftOutput())
 		setRightMotor(rightOutput())
 	} finallyDo {
-		setBothMotors(0.0)
+		stopBothMotors()
 	}
 }
 

@@ -20,8 +20,8 @@ object RobotMap {
 	}
 
 	object Intake {
-		const val INTAKE_TO_LOADER_MOTOR_ID = 21
-		const val FLOOR_INTAKE_MOTOR_ID = 20
+		const val TOP_MOTOR_ID = 21
+		const val BOTTOM_MOTOR_ID = 20
 	}
 
 	object Shooter {

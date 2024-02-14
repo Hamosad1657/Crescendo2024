@@ -78,12 +78,12 @@ fun waitForNoteToPassCommand() = withName("wait for note to pass") {
 fun IntakeSubsystem.runIntakeCommand(): Command = withName("run") {
 	run {
 		if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.isRunning) {
-			set(IntakeConstants.MOTOR_OUTPUT)
+			set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
 		} else {
-			set(0.0)
+			stop()
 		}
 	} finallyDo {
-		set(0.0)
+		stop()
 	}
 }
 
@@ -96,7 +96,7 @@ fun LoaderSubsystem.runLoaderCommand(): Command = withName("run") {
 	run {
 		set(LoaderConstants.MOTOR_OUTPUT)
 	} finallyDo {
-		set(0.0)
+		stop()
 	}
 }
 
@@ -123,7 +123,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(
 	run {
 		setAngleMotorOutput(output())
 	} finallyDo {
-		setAngleMotorOutput(0.0)
+		stopAngleMotor()
 	}
 }
 
@@ -150,7 +150,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
 	run {
 		increaseShooterMotorsOutputBy(output())
 	} finallyDo {
-		setShooterMotorsOutput(0.0)
+		stopShooterMotors()
 	}
 }
 
@@ -176,9 +176,9 @@ fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
  */
 fun IntakeSubsystem.ejectFromIntakeCommand(): Command =
 	run {
-		set(-IntakeConstants.MOTOR_OUTPUT)
+		set(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
 	} finallyDo {
-		set(0.0)
+		stop()
 	}
 
 /** - Requirements: Loader, Shooter. */
@@ -187,5 +187,5 @@ fun ejectFromShooterCommand(): Command =
 		ShooterSubsystem.run {
 			ShooterSubsystem.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
 		}.finallyDo { _ ->
-			ShooterSubsystem.setShooterMotorsOutput(0.0)
+			ShooterSubsystem.stopShooterMotors()
 		}

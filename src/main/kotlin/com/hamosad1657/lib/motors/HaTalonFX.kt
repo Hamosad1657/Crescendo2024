@@ -73,9 +73,7 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 		}
 		configurator.apply(configuration)
 	}
-
-	override fun get() = speed
-
+	
 	var positionWrapEnabled = false
 		set(value) {
 			closedLoopGeneralConfigs.ContinuousWrap = value
