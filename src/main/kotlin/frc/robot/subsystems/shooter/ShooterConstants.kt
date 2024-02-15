@@ -16,10 +16,9 @@ object ShooterConstants {
 
 	val ANGLE_PID_GAINS = PIDGains(24.0, 0.001, 0.0)
 
-	private val SHOOTER_MAX_VELOCITY = 5000.rpm
-	val SHOOTER_PID_GAINS = PIDGains(0.0, 0.0, 0.025, { setpoint ->
-		-9.3 * (setpoint / SHOOTER_MAX_VELOCITY.asRpm)
-	})
+	val SHOOTER_MAX_VELOCITY = 5000.rpm
+
+	val SHOOTER_PID_GAINS = PIDGains(0.0022, 0.0, 0.0, { setpoint -> -0.0 })
 
 	// Calculate the gear ratio.
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = (66.0 / 32.0) * 4 * 4

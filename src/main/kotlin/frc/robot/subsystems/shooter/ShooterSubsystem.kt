@@ -7,9 +7,7 @@ import com.ctre.phoenix6.signals.*
 import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.*
-import com.revrobotics.CANSparkBase.ControlType
 import com.revrobotics.CANSparkBase.IdleMode
-import com.revrobotics.SparkPIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
@@ -114,15 +112,11 @@ object ShooterSubsystem : SubsystemBase() {
 		setVelocity(shooterState.velocity)
 	}
 
-	fun setVelocity(velocity: AngularVelocity) {
-		shooterPIDController.setReference(
-			-velocity.asRpm,
-			ControlType.kVelocity,
-			0,
-			SHOOTER_PID_GAINS.kFF(velocity.asRpm),
-			SparkPIDController.ArbFFUnits.kVoltage,
-		)
-		velocitySetpoint = velocity
+	fun setVelocity(velocitySP: AngularVelocity) {
+		val ff = velocitySP.asRpm
+		val error = velocitySP - currentVelocity
+		val output: Volts = (ff + error.asRpm) * SHOOTER_PID_GAINS.kP
+		shooterMainMotor.setVoltage(-output)
 	}
 
 	fun setAngle(angle: Rotation2d) {

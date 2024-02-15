@@ -1,11 +1,11 @@
 package frc.robot
 
+import com.hamosad1657.lib.units.AngularVelocity
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
-import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -46,6 +46,9 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
+//		val teleopEnabled = Trigger { Robot.isTeleopEnabled }
+//		teleopEnabled.whileTrue(loadAndShootCommand(ShooterConstants.ShooterState.COLLECT))
+
 		autoChooser.onChange { controllerA.triangle().onTrue(it) }
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
@@ -65,16 +68,19 @@ object RobotContainer {
 		// For a list of things to test follow the link:
 		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
 
+//		with(Shooter) {
+//			defaultCommand = Shooter.closedLoopTeleop_shooterAngle(
+//				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) },
+//				ShooterConstants.ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER
+//			)
+//		}
+
 		with(Shooter) {
 			defaultCommand = Shooter.run {
-				setAngle(ShooterConstants.ANGLE_FOR_INTAKE)
+				setVelocity(AngularVelocity.fromRpm(5000.0))
 			}
-
 		}
-	}
-
-
-//		with(Intake) {
+		//		with(Intake) {
 //			defaultCommand = run {
 //				set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
 //			} finallyDo {
@@ -95,6 +101,7 @@ object RobotContainer {
 //				{ simpleDeadband(testingController.leftY, JOYSTICK_DEADBAND) },
 //				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) })
 //		}
+	}
 
 	fun getAutonomousCommand(): Command {
 		return Swerve.pathFindToPathCommand("to_speaker")
