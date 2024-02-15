@@ -1,5 +1,6 @@
 package frc.robot
 
+import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
@@ -53,16 +54,13 @@ object RobotContainer {
 		Trigger { Robot.isTeleopEnabled }
 
 		testingController.square().toggleOnTrue(
-			Notes.collectCommand()
-		)
-
-		testingController.circle().onTrue(
-			Notes.loadAndShootCommand(
-				ShooterConstants.ShooterState(
-					70.0.degrees,
-					AngularVelocity.fromRpm(1200.0)
+			Notes.collectCommand() andThen
+				Notes.loadAndShootCommand(
+					ShooterConstants.ShooterState(
+						72.0.degrees,
+						AngularVelocity.fromRpm(750.0)
+					)
 				)
-			)
 		)
 
 		autoChooser.onChange { controllerA.triangle().onTrue(it) }
@@ -76,7 +74,7 @@ object RobotContainer {
 //			omegaSupplier = { controllerA.rightX },
 //			isFieldRelative = { true },
 //		)
-		
+
 		Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
 	}
 

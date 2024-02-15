@@ -115,7 +115,8 @@ object ShooterSubsystem : SubsystemBase() {
 		currentVelocitySetpoint = velocitySetpoint
 		val ff: Volts = SHOOTER_PID_GAINS.kFF(velocitySetpoint.asRpm)
 		val pidOutput: Volts = shooterPIDController.calculate(currentVelocity.asRpm, velocitySetpoint.asRpm)
-		shooterMainMotor.setVoltage(-(pidOutput + ff))
+		val voltage = (pidOutput + ff).absoluteValue
+		shooterMainMotor.setVoltage(-voltage)
 	}
 
 	private val controlRequestShooterAngle = MotionMagicVoltage(0.0).apply { EnableFOC = false }

@@ -8,8 +8,8 @@ import kotlin.math.cos
 
 object ShooterConstants {
 	// TODO: Find velocity and angle tolerances for shooter
-	val VELOCITY_TOLERANCE: AngularVelocity = 75.0.rpm
-	val ANGLE_TOLERANCE = 3.0.degrees
+	val VELOCITY_TOLERANCE: AngularVelocity = 10.0.rpm
+	val ANGLE_TOLERANCE = 1.0.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
@@ -18,18 +18,16 @@ object ShooterConstants {
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = 0.4
 	val ANGLE_FOR_INTAKE = 26.0.degrees
 
-	val SHOOTER_MAX_VELOCITY = 5000.rpm
-
 	val SHOOTER_PID_GAINS = PIDGains(
 		0.0, 0.006, 0.0,
 		kFF = { setpointRpm -> 0.0019 * setpointRpm },
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(30.0, 0.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(40.0, 7.5, 0.0)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
-		MotionMagicCruiseVelocity = 1.0
-		MotionMagicAcceleration = 1.5
+		MotionMagicCruiseVelocity = 2.0
+		MotionMagicAcceleration = 4.0
 	}
 
 	private val VERTICAL_CENTER_LINE_OFFSET = 5.degrees
@@ -53,7 +51,7 @@ object ShooterConstants {
 	 * It might be a little different in different speeds, so put here
 	 * it's maximum value.
 	 */
-	const val SHOOT_TIME_SEC = 2.0 // TODO: Measure SHOOT_TIME_SEC
+	const val SHOOT_TIME_SEC = 1.25
 
 	/**
 	 * 1 degree should be the lowest possible angle.
@@ -73,6 +71,10 @@ object ShooterConstants {
 	// a continuous shooting function if we have the time. In the meantime, we will
 	// shoot from a few constant positions. Keep instances of ShooterState as constants.
 	data class ShooterState(val angle: Rotation2d, val velocity: AngularVelocity) {
+		init {
+			require(angle.degrees in 0.0..160.0)
+			require(velocity.asRpm in 0.0..6000.0)
+		}
 
 		companion object {
 			// TODO: Test and find the shooter states
