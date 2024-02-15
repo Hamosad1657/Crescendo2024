@@ -1,8 +1,8 @@
 package frc.robot
 
 import com.hamosad1657.lib.commands.andThen
-import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.rpm
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.*
-import frc.robot.subsystems.shooter.ShooterConstants
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -53,19 +53,31 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		Trigger { Robot.isTeleopEnabled }
 
-		testingController.square().toggleOnTrue(
-			Notes.collectCommand() andThen
-				Notes.loadAndShootCommand(
-					ShooterConstants.ShooterState(
-						72.0.degrees,
-						AngularVelocity.fromRpm(750.0)
-					)
-				)
-		)
+		var degSP = 74.0
+		var velSP = 750.0
+		fun ampShooting(degSP: Double, velSP: Double) {
+			testingController.square().toggleOnTrue(
+				Notes.collectCommand() andThen
+					Notes.loadAndShootCommand(ShooterState(degSP.degrees, velSP.rpm))
+			)
+		}
+
+		ampShooting(degSP, velSP)
+		SmartDashboard.putData("Amp Shooting") { builder ->
+			builder.addDoubleProperty("Deg SP", { degSP }, {
+				degSP = it
+				ampShooting(degSP, velSP)
+			})
+			builder.addDoubleProperty("Vel SP", { velSP }, {
+				velSP = it
+				ampShooting(degSP, velSP)
+			})
+		}
 
 		autoChooser.onChange { controllerA.triangle().onTrue(it) }
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
 	}
+
 
 	private fun setDefaultCommands() {
 //		Swerve.defaultCommand = Swerve.teleopDriveCommand(
