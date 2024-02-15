@@ -1,7 +1,7 @@
 package frc.robot.subsystems.shooter
 
 import com.ctre.phoenix6.configs.*
-import com.ctre.phoenix6.controls.PositionVoltage
+import com.ctre.phoenix6.controls.MotionMagicVoltage
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.signals.*
 import com.hamosad1657.lib.motors.HaSparkFlex
@@ -63,6 +63,7 @@ object ShooterSubsystem : SubsystemBase() {
 			kI = Constants.ANGLE_PID_GAINS.kI
 			kD = Constants.ANGLE_PID_GAINS.kD
 		})
+		configurator.apply(Constants.ANGLE_MOTION_MAGIC_CONFIG)
 	}
 
 	private val angleCANCoder = CANcoder(ShooterAngleMap.CANCODER_ID).apply {
@@ -117,7 +118,7 @@ object ShooterSubsystem : SubsystemBase() {
 		shooterMainMotor.setVoltage(-(pidOutput + ff))
 	}
 
-	private val controlRequestShooterAngle = PositionVoltage(0.0).apply { EnableFOC = false }
+	private val controlRequestShooterAngle = MotionMagicVoltage(0.0).apply { EnableFOC = false }
 
 	fun setAngle(angleSetpoint: Rotation2d) {
 		when (angleMotorDirectionTo(angleSetpoint)) {
@@ -130,7 +131,6 @@ object ShooterSubsystem : SubsystemBase() {
 			FeedForward = Constants.calculateAngleFF(currentAngle)
 		})
 	}
-
 
 	private fun angleMotorDirectionTo(setpoint: Rotation2d): AngleMotorDirection =
 		if (setpoint.rotations - currentAngle.rotations > 0.0) TOWARDS_MAX else TOWARDS_MIN

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.units.*
 import edu.wpi.first.math.geometry.Rotation2d
@@ -25,7 +26,11 @@ object ShooterConstants {
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(30.0, 0.0, 0.5)
+	val ANGLE_PID_GAINS = PIDGains(30.0, 0.0, 0.0)
+	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
+		MotionMagicCruiseVelocity = 1.0
+		MotionMagicAcceleration = 1.5
+	}
 
 	private val VERTICAL_CENTER_LINE_OFFSET = 5.degrees
 
