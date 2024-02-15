@@ -19,12 +19,12 @@ object SwerveConstants {
 	const val MAX_SPEED_MPS = 5.0 // 9.46 according to CTRE ?
 
 	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
-	val MAX_ANGULAR_VELOCITY = 1.5.rps
+	val MAX_ANGULAR_VELOCITY = 1.0.rps
 
 	/** When using closed-loop control, the steer motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.
 	private val STEER_PID_GAINS = Slot0Configs().apply {
-		kP = 100.0; kI = 0.0; kD = 0.2
+		kP = 20.0; kI = 0.0; kD = 0.0
 		kS = 0.0; kV = 1.5; kA = 0.0
 	}
 
