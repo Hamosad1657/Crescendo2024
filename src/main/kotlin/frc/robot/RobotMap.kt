@@ -61,7 +61,7 @@ object RobotMap {
 		}
 
 		object FrontRight {
-			const val DRIVE_MOTOR_ID = 15
+			const val DRIVE_MOTOR_ID = 16
 			const val STEER_MOTOR_ID = 7
 			const val CANCODER_ID = 8
 		}
