@@ -92,20 +92,20 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 * positive y is towards the left wall when looking through the driver station glass (field West).
 	 * @param omega Robot angular rate (radians per second). CCW positive. Unaffected by field/robot relativity.
 	 * @param isFieldRelative Drive mode. True for field-relative, false for robot-relative.
-	 * @param isOpenLoop Whether to use closed-loop velocity control. Set to true to disable closed-loop.
+	 * @param useClosedLoopDrive Whether to use closed-loop velocity control. Set to true to enable closed-loop.
 	 */
 	fun drive(
 		translation: Translation2d,
 		omega: AngularVelocity,
 		isFieldRelative: Boolean = true,
-		isOpenLoop: Boolean = false
+		useClosedLoopDrive: Boolean = false,
 	) {
 		if (isFieldRelative) {
 			super.setControl(controlRequestFieldRelative.apply {
 				VelocityX = translation.x
 				VelocityY = translation.y
 				RotationalRate = omega.asRadPs
-				DriveRequestType = if (isOpenLoop) OpenLoopVoltage else Velocity
+				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
 				SteerRequestType = MotionMagic
 			})
 		} else {
@@ -113,7 +113,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 				VelocityX = translation.x
 				VelocityY = translation.y
 				RotationalRate = omega.asRadPs
-				DriveRequestType = if (isOpenLoop) OpenLoopVoltage else Velocity
+				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
 			})
 		}
 	}

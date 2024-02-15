@@ -32,7 +32,6 @@ fun SwerveSubsystem.teleopDriveCommand(
 			Translation2d(vx, vy),
 			omega.radPs,
 			isFieldRelative.asBoolean,
-			isOpenLoop = true,
 		)
 	}
 }

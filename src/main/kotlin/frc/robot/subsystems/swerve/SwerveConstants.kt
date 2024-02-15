@@ -21,13 +21,6 @@ object SwerveConstants {
 	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
 	val MAX_ANGULAR_VELOCITY = 1.5.rps
 
-	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
-	// TODO: Tune.
-	private val DRIVE_PID_GAINS = Slot0Configs().apply {
-		kP = 3.0; kI = 0.0; kD = 0.0
-		kS = 0.0; kV = 0.0; kA = 0.0
-	}
-
 	/** When using closed-loop control, the steer motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.
 	private val STEER_PID_GAINS = Slot0Configs().apply {
@@ -125,5 +118,14 @@ object SwerveConstants {
 			-DISTANCE_TO_MODULE_Y.asMeters,
 			SHOULD_INVERT_RIGHT_SIDE,
 		)
+	}
+
+	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
+	// !!!!!!!!!!!!!!!!!!!!!!!
+	// !!! Tune if you use !!!
+	// !!!!!!!!!!!!!!!!!!!!!!!
+	private val DRIVE_PID_GAINS = Slot0Configs().apply {
+		kP = 0.0; kI = 0.0; kD = 0.0
+		kS = 0.0; kV = 0.0; kA = 0.0
 	}
 }
