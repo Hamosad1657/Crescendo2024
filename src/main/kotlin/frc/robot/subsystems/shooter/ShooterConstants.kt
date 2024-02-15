@@ -18,6 +18,9 @@ object ShooterConstants {
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = 0.4
 	val ANGLE_FOR_INTAKE = 26.0.degrees
 
+	// TODO: Find this
+	val ANGLE_FOR_AMP = Rotation2d()
+
 	val SHOOTER_PID_GAINS = PIDGains(
 		0.0, 0.006, 0.0,
 		kFF = { setpointRpm -> 0.0019 * setpointRpm },
@@ -78,7 +81,6 @@ object ShooterConstants {
 
 		companion object {
 			// TODO: Test and find the shooter states
-			val TO_AMP = ShooterState(Rotation2d(), 0.0.rpm)
 			val TO_TRAP = ShooterState(Rotation2d(), 0.0.rpm)
 
 			// TODO: Name these shooter states better

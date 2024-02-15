@@ -4,6 +4,7 @@ package frc.robot.commands
 
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.*
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.*
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
@@ -34,7 +35,7 @@ fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and
 	Shooter.getToShooterStateCommand(state) raceWith
 		(WaitCommand(0.1) andThen
 			waitUntil { Shooter.isWithinTolerance } andThen
-			WaitCommand(0.2) andThen
+			WaitCommand(0.1) andThen
 			loadIntoShooterCommand()
 			)
 }
@@ -49,6 +50,30 @@ fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("g
 	} finallyDo {
 		stopShooterMotors()
 	}
+}
+
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter.
+ */
+fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to shooter state") {
+	run {
+		setAngle(angle)
+	} finallyDo {
+		stopShooterMotors()
+	}
+}
+
+fun Notes.ejectIntoAmp(): Command = withName("eject into amp") {
+	Shooter.getToAngleCommand(ShooterConstants.ANGLE_FOR_AMP) raceWith
+		(WaitCommand(0.1) andThen
+			waitUntil { Shooter.isWithinAngleTolerance } andThen
+			WaitCommand(0.1) andThen
+			Loader.ejectCommand())
+}
+
+private fun Loader.ejectCommand(): Command = withName("eject") {
+	Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout ShooterConstants.SHOOT_TIME_SEC
 }
 
 
