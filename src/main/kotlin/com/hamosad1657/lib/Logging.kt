@@ -31,11 +31,11 @@ enum class Telemetry {
 	Testing, Simulation, Competition;
 }
 
-private val MODULE_NAMES = arrayOf("FrontLeft", "FrontRight", "BackLeft", "BackRight")
+val SWERVE_MODULE_NAMES = arrayOf("FrontLeft", "FrontRight", "BackLeft", "BackRight")
 
 fun SwerveModuleState.toSendable(moduleIndex: Int, prefix: String = "") =
 	Sendable { builder ->
-		val moduleName = MODULE_NAMES[moduleIndex]
+		val moduleName = SWERVE_MODULE_NAMES[moduleIndex]
 		builder.addDoubleProperty("$prefix$moduleName/MPS", { speedMetersPerSecond }, null)
 		builder.addDoubleProperty("$prefix$moduleName/Angle", { angle.degrees }, null)
 	}

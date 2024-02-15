@@ -28,6 +28,15 @@ object SwerveConstants {
 		kS = 0.0; kV = 1.5; kA = 0.0
 	}
 
+	// !!!!!!!!!!!!!!!!!!!!!!!
+	// !!! Tune if you use !!!
+	// !!!!!!!!!!!!!!!!!!!!!!!
+	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
+	private val DRIVE_PID_GAINS = Slot0Configs().apply {
+		kP = 0.0; kI = 0.0; kD = 0.0
+		kS = 0.0; kV = 0.0; kA = 0.0
+	}
+
 	/** How many rotations the drive motor does when the module rotates 1 rotation. */
 	private const val COUPLING_GEAR_RATIO = 3.5714285714285716
 
@@ -118,14 +127,5 @@ object SwerveConstants {
 			-DISTANCE_TO_MODULE_Y.asMeters,
 			SHOULD_INVERT_RIGHT_SIDE,
 		)
-	}
-
-	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
-	// !!!!!!!!!!!!!!!!!!!!!!!
-	// !!! Tune if you use !!!
-	// !!!!!!!!!!!!!!!!!!!!!!!
-	private val DRIVE_PID_GAINS = Slot0Configs().apply {
-		kP = 0.0; kI = 0.0; kD = 0.0
-		kS = 0.0; kV = 0.0; kA = 0.0
 	}
 }

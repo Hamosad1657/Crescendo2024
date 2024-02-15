@@ -6,7 +6,8 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoo
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
-import com.hamosad1657.lib.*
+import com.hamosad1657.lib.SWERVE_MODULE_NAMES
+import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.toNeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
@@ -15,13 +16,14 @@ import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
+import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Subsystem
-import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.Vision
@@ -33,7 +35,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	Constants.Modules.FRONT_RIGHT,
 	Constants.Modules.BACK_LEFT,
 	Constants.Modules.BACK_RIGHT,
-), Subsystem {
+), Subsystem, Sendable {
 	init {
 		configureAutoBuilder()
 	}
@@ -229,39 +231,25 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	// --- Telemetry ---
 
-	private val telemetry = SwerveDriveTelemetry()
 	private val field = Field2d()
 
-	init {
+	override fun initSendable(builder: SendableBuilder) {
 		SmartDashboard.putData(field)
-		super.registerTelemetry { state -> customTelemetry(state) }
+		super.registerTelemetry { state -> field.robotPose = state.Pose }
 
-		when (Robot.robotTelemetry) {
-			Telemetry.Testing -> {
-				super.registerTelemetry { state ->
-					telemetry.telemeterize(state)
+		builder.setSmartDashboardType("Subsystem")
 
-					// Also a possibility
-					// customTelemetry(state)
-				}
-			}
-
-			else -> {}
-		}
-	}
-
-	private fun customTelemetry(state: SwerveDriveState) {
-		// Current module states
 		state.ModuleStates.forEachIndexed { index, module ->
-			SmartDashboard.putData(module.toSendable(index, prefix = "Current/"))
+			val moduleName = SWERVE_MODULE_NAMES[index]
+			builder.addDoubleProperty("Current/$moduleName/MPS", { module.speedMetersPerSecond }, null)
+			builder.addDoubleProperty("Current/$moduleName/Angle", { module.angle.degrees }, null)
 		}
 
 		// Desired module states
 		state.ModuleTargets.forEachIndexed { index, module ->
-			SmartDashboard.putData(module.toSendable(index, prefix = "Desired/"))
+			val moduleName = SWERVE_MODULE_NAMES[index]
+			builder.addDoubleProperty("Desired/$moduleName/MPS", { module.speedMetersPerSecond }, null)
+			builder.addDoubleProperty("Desired/$moduleName/Angle", { module.angle.degrees }, null)
 		}
-
-		// Robot pose (x, y, omega)
-		field.robotPose = state.Pose
 	}
 }
