@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.*
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterState.Companion.TO_TRAP
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -50,12 +51,15 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
+		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
 
-		Trigger { Robot.isTeleopEnabled }
+		// --- Notes ---
+		controllerA.R1().toggleOnTrue(Notes.collectCommand())
+		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
+		controllerA.triangle().toggleOnTrue(Notes.loadAndShootCommand(TO_TRAP))
 
-		testingController.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
-		testingController.R1().toggleOnTrue(Notes.collectCommand())
+		Trigger { Robot.isTeleopEnabled }
 	}
 
 

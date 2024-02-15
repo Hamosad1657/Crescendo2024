@@ -9,7 +9,7 @@ import kotlin.math.cos
 object ShooterConstants {
 	// TODO: Find velocity and angle tolerances for shooter
 	val VELOCITY_TOLERANCE: AngularVelocity = 10.0.rpm
-	val ANGLE_TOLERANCE = 1.5.degrees
+	val ANGLE_TOLERANCE = 2.0.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
@@ -26,7 +26,7 @@ object ShooterConstants {
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(30.0, 0.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(30.0, 3.0, 0.0)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
 		MotionMagicCruiseVelocity = 1.0
 		MotionMagicAcceleration = 1.5
@@ -74,7 +74,7 @@ object ShooterConstants {
 
 		companion object {
 			// TODO: Test and find the shooter states
-			val TO_TRAP = ShooterState(Rotation2d(), 0.0.rpm)
+			val TO_TRAP = ShooterState(123.0.degrees, 2000.0.rpm)
 
 			// TODO: Name these shooter states better
 			val TO_SPEAKER_1 = ShooterState(Rotation2d(), 0.0.rpm)
