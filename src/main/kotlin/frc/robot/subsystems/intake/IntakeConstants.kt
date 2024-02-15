@@ -1,8 +1,8 @@
 package frc.robot.subsystems.intake
 
-import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Volts
 
 object IntakeConstants {
-	const val BOTTOM_MOTOR_OUTPUT: PercentOutput = 0.5
-	const val TOP_MOTOR_OUTPUT: PercentOutput = 1.0
+	const val BOTTOM_MOTOR_VOLTAGE: Volts = 8.0
+	const val TOP_MOTOR_VOLTAGE: Volts = 11.0
 }

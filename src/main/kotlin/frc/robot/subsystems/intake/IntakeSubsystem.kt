@@ -1,8 +1,9 @@
 package frc.robot.subsystems.intake
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.controls.VoltageOut
 import com.hamosad1657.lib.motors.HaTalonFX
-import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Volts
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import kotlin.math.abs
@@ -22,9 +23,9 @@ object IntakeSubsystem : SubsystemBase() {
 		idleMode = IdleMode.kBrake
 	}
 
-	fun set(bottomOutput: PercentOutput, topOutput: PercentOutput) {
-		bottomMotor.set(bottomOutput)
-		topMotor.set(topOutput)
+	fun setVoltage(bottomVoltage: Volts, topVoltage: Volts) {
+		bottomMotor.setControl(VoltageOut(bottomVoltage))
+		topMotor.setControl(VoltageOut(topVoltage))
 	}
 
 	fun stop() {

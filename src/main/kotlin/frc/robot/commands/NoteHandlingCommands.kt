@@ -35,7 +35,9 @@ fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and
 	Shooter.getToShooterStateCommand(state) raceWith
 		(WaitCommand(0.1) andThen
 			waitUntil { Shooter.isWithinTolerance } andThen
-			loadIntoShooterCommand())
+			WaitCommand(0.2) andThen
+			loadIntoShooterCommand()
+			)
 }
 
 /**
@@ -81,7 +83,7 @@ fun Notes.waitForNoteToPassCommand() = withName("wait for note to pass") {
 fun Intake.runIntakeCommand(): Command = withName("run") {
 	run {
 		if ((Shooter.isWithinAngleTolerance || Loader.isRunning) && !Loader.isNoteDetected) {
-			set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
+			setVoltage(IntakeConstants.BOTTOM_MOTOR_VOLTAGE, IntakeConstants.TOP_MOTOR_VOLTAGE)
 		} else {
 			stop()
 		}
@@ -152,7 +154,7 @@ fun Shooter.closedLoopTeleop_shooterVelocity(
  */
 fun Intake.ejectFromIntakeCommand(): Command =
 	run {
-		set(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
+		setVoltage(-IntakeConstants.BOTTOM_MOTOR_VOLTAGE, -IntakeConstants.TOP_MOTOR_VOLTAGE)
 	} finallyDo {
 		stop()
 	}
