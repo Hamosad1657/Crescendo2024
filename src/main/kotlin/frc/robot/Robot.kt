@@ -21,7 +21,7 @@ import frc.robot.subsystems.vision.Vision
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel = Telemetry.Competition.also { SmartDashboard.putString("Telemetry", it.name) }
+	val telemetryLevel = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
 
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
@@ -51,9 +51,5 @@ object Robot : TimedRobot() {
 	override fun testInit() {
 		// Cancels all running commands at the start of test mode.
 		commandScheduler.cancelAll()
-	}
-
-	override fun simulationInit() {
-		telemetryLevel = Telemetry.Simulation
 	}
 }

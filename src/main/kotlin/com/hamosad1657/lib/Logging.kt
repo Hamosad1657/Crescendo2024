@@ -28,7 +28,7 @@ val driverStationID: Int
 	}
 
 enum class Telemetry {
-	Testing, Simulation, Competition;
+	Testing, Competition;
 }
 
 val SWERVE_MODULE_NAMES = arrayOf("FrontLeft", "FrontRight", "BackLeft", "BackRight")

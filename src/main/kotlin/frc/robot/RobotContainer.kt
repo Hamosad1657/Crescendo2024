@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import frc.robot.commands.closedLoopTeleop_shooterAngle
 import frc.robot.commands.teleopDriveCommand
+import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -35,14 +37,14 @@ object RobotContainer {
 	}
 
 	init {
-//		initSendables()
+		initSendables()
 		configureButtonBindings()
 		setDefaultCommands()
 		registerAutoCommands()
 	}
 
 	private fun initSendables() {
-		if (Robot.robotTelemetry == Telemetry.Competition) return
+		if (Robot.telemetryLevel == Telemetry.Competition) return
 		SmartDashboard.putData(Climbing)
 		SmartDashboard.putData(Intake)
 		SmartDashboard.putData(Loader)
@@ -53,27 +55,12 @@ object RobotContainer {
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
 
 		Trigger { Robot.isTeleopEnabled }
-
-//		var degSP = 74.0
-//		var velSP = 750.0
-//		fun ampShooting(degSP: Double, velSP: Double) {
-//			testingController.square().toggleOnTrue(
-//				Notes.collectCommand() andThen
-//					Notes.loadAndShootCommand(ShooterState(degSP.degrees, velSP.rpm))
-//			)
-//		}
-//
-//		ampShooting(degSP, velSP)
-//		SmartDashboard.putData("Amp Shooting") { builder ->
-//			builder.addDoubleProperty("Deg SP", { degSP }, {
-//				degSP = it
-//				ampShooting(degSP, velSP)
-//			})
-//			builder.addDoubleProperty("Vel SP", { velSP }, {
-//				velSP = it
-//				ampShooting(degSP, velSP)
-//			})
-//		}
+			.onTrue(
+				Shooter.closedLoopTeleop_shooterAngle(
+					{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) },
+					ShooterConstants.ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER,
+				)
+			)
 	}
 
 

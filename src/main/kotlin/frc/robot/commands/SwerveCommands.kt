@@ -1,9 +1,11 @@
 package frc.robot.commands
 
+import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.withName
 import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import frc.robot.Robot
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import java.util.function.BooleanSupplier
@@ -21,11 +23,11 @@ fun SwerveSubsystem.teleopDriveCommand(
 		val vy = -vySupplier.asDouble.pow(3.0) * SwerveConstants.MAX_SPEED_MPS
 		val omega = -omegaSupplier.asDouble.pow(3.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs
 
-//		if (Robot.robotTelemetry == Telemetry.Testing) {
-		SmartDashboard.putNumber("vx", vx)
-		SmartDashboard.putNumber("vy", vy)
-		SmartDashboard.putNumber("omega", omega)
-//		}
+		if (Robot.telemetryLevel == Telemetry.Testing) {
+			SmartDashboard.putNumber("vx", vx)
+			SmartDashboard.putNumber("vy", vy)
+			SmartDashboard.putNumber("omega", omega)
+		}
 
 		// Drive using raw values.
 		drive(
