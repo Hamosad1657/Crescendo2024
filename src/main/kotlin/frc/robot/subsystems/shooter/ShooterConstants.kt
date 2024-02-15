@@ -9,17 +9,16 @@ import kotlin.math.cos
 object ShooterConstants {
 	// TODO: Find velocity and angle tolerances for shooter
 	val VELOCITY_TOLERANCE: AngularVelocity = 10.0.rpm
-	val ANGLE_TOLERANCE = 1.0.degrees
+	val ANGLE_TOLERANCE = 1.5.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
 
 	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.05
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = 0.4
-	val ANGLE_FOR_INTAKE = 26.0.degrees
+	val ANGLE_FOR_INTAKE = 42.0.degrees
 
-	// TODO: Find this
-	val ANGLE_FOR_AMP = Rotation2d()
+	val ANGLE_FOR_AMP = (-120.0).degrees
 
 	val SHOOTER_PID_GAINS = PIDGains(
 		0.0, 0.006, 0.0,
@@ -27,21 +26,15 @@ object ShooterConstants {
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(40.0, 7.5, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(30.0, 0.0, 0.0)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
-		MotionMagicCruiseVelocity = 2.0
-		MotionMagicAcceleration = 4.0
+		MotionMagicCruiseVelocity = 1.0
+		MotionMagicAcceleration = 1.5
 	}
 
-	private val VERTICAL_CENTER_LINE_OFFSET = 5.degrees
-
 	fun calculateAngleFF(currentAngle: Rotation2d): Volts {
-		val cosine = cos(currentAngle.radians - VERTICAL_CENTER_LINE_OFFSET.radians)
-		val ff = cosine * KEEP_AT_MIN_ANGLE_OUTPUT * 12.0
-
-		val verticalCenter = 90.0 - VERTICAL_CENTER_LINE_OFFSET.degrees
-		val hasPassedVerticalCenter = currentAngle.degrees > verticalCenter
-		return if (hasPassedVerticalCenter) ff * 0.9 + 0.15 else ff
+		val ff = cos(currentAngle.radians) * KEEP_AT_MIN_ANGLE_OUTPUT * 12.0 * 0.7
+		return if (currentAngle.degrees < 0.0) ff * 0.7 else ff
 	}
 
 	// Calculate the gear ratio.
@@ -63,7 +56,7 @@ object ShooterConstants {
 	val CANCODER_OFFSET = (-0.1254).rotations
 
 	/** This should eject the note quickly without getting it too far away. */
-	const val EJECT_OUTPUT: PercentOutput = 0.0
+	const val EJECT_OUTPUT: PercentOutput = 0.3
 
 	enum class AngleMotorDirection {
 		TOWARDS_MIN,

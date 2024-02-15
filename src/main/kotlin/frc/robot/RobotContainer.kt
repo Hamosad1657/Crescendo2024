@@ -8,9 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
-import frc.robot.commands.closedLoopTeleop_shooterAngle
-import frc.robot.commands.teleopDriveCommand
-import frc.robot.subsystems.shooter.ShooterConstants
+import frc.robot.commands.*
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -55,12 +53,9 @@ object RobotContainer {
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
 
 		Trigger { Robot.isTeleopEnabled }
-			.onTrue(
-				Shooter.closedLoopTeleop_shooterAngle(
-					{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) },
-					ShooterConstants.ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER,
-				)
-			)
+
+		testingController.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
+		testingController.R1().toggleOnTrue(Notes.collectCommand())
 	}
 
 
@@ -72,7 +67,7 @@ object RobotContainer {
 			isFieldRelative = { true },
 		)
 
-//		Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
+		Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
 	}
 
 	fun getAutonomousCommand(): Command {
