@@ -65,7 +65,7 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 
 fun Notes.ejectIntoAmpCommand(): Command = withName("eject into amp") {
 	Shooter.getToAngleCommand(ShooterConstants.ANGLE_FOR_AMP) raceWith
-		(WaitCommand(0.2) andThen
+		(WaitCommand(0.3) andThen
 			waitUntil { Shooter.isWithinAngleTolerance } andThen
 			Loader.ejectCommand())
 }
