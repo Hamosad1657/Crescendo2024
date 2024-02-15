@@ -25,7 +25,7 @@ object ShooterConstants {
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(0.0, 0.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(30.0, 0.0, 0.5)
 
 	private val VERTICAL_CENTER_LINE_OFFSET = 5.degrees
 
