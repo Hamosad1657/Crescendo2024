@@ -230,7 +230,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	private val telemetry = SwerveDriveTelemetry()
 
 	init {
-		when (Robot.robotTelemetry) {
+		when (Robot.telemetryLevel) {
 			Telemetry.Testing -> {
 				super.registerTelemetry { state ->
 					telemetry.telemeterize(state)
