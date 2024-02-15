@@ -60,7 +60,7 @@ object ShooterConstants {
 	 * 1 degree should be the lowest possible angle.
 	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
 	 */
-	val CANCODER_OFFSET = (-56.0).degrees
+	val CANCODER_OFFSET = (-0.1254).rotations
 
 	/** This should eject the note quickly without getting it too far away. */
 	const val EJECT_OUTPUT: PercentOutput = 0.0
@@ -75,7 +75,7 @@ object ShooterConstants {
 	// shoot from a few constant positions. Keep instances of ShooterState as constants.
 	data class ShooterState(val angle: Rotation2d, val velocity: AngularVelocity) {
 		init {
-			require(angle.degrees in 0.0..160.0) { "have a nice day :D" }
+			require(angle.degrees in 0.0..320.0) { "have a nice day :D" }
 			require(velocity.asRpm in 0.0..6000.0) { "have a nice day :D" }
 		}
 
