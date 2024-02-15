@@ -21,9 +21,8 @@ fun collectCommand(): Command = withName("collect") {
 	(ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
 		LoaderSubsystem.runLoaderCommand() alongWith
 		IntakeSubsystem.runIntakeCommand()
-		).apply {
-			raceWith(waitForNoteToPassCommand())
-		}
+		) until
+		LoaderSubsystem::isNoteDetected
 }
 
 /** SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM */
