@@ -165,7 +165,7 @@ object ShooterSubsystem : SubsystemBase() {
 	val isAtMinAngleLimit get() = minAngleLimitSwitch.get()
 	val isAtMaxAngleLimit get() = maxAngleLimitSwitch.get()
 
-	val isWithinVelocityTolerance get() = currentVelocity - velocitySetpoint <= Constants.VELOCITY_TOLERANCE
+	val isWithinVelocityTolerance get() = velocitySetpoint - currentVelocity <= Constants.VELOCITY_TOLERANCE
 	val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
 	val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
@@ -221,9 +221,11 @@ object ShooterSubsystem : SubsystemBase() {
 		builder.addDoubleProperty("Angle deg", { currentAngle.degrees }, null)
 		builder.addDoubleProperty("CANCoder angle deg", { angleCANCoder.absolutePosition.value * 360 }, null)
 		builder.addDoubleProperty("Angle setpoint deg", { angleSetpoint.degrees }, null)
+		builder.addDoubleProperty("Angle error deg", { angleMotor.closedLoopError.value * 360 }, null)
 		builder.addBooleanProperty("Angle in tolerance", { isWithinAngleTolerance }, null)
 		builder.addDoubleProperty("Velocity rpm", { currentVelocity.asRpm }, null)
 		builder.addDoubleProperty("Velocity setpoint rpm", { velocitySetpoint.asRpm }, null)
+		builder.addDoubleProperty("Velocity error rpm", { (velocitySetpoint - currentVelocity).asRpm }, null)
 		builder.addBooleanProperty("Velocity in tolerance", { isWithinVelocityTolerance }, null)
 		builder.addDoubleProperty("Angle motor output", { angleMotor.get() }, null)
 		builder.addDoubleProperty("Shooter motors output", { shooterMainMotor.get() }, null)
