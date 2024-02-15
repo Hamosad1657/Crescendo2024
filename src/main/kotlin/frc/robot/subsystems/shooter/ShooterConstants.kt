@@ -17,8 +17,8 @@ object ShooterConstants {
 	val ANGLE_PID_GAINS = PIDGains(24.0, 0.001, 0.0)
 
 	private val SHOOTER_MAX_VELOCITY = 5000.rpm
-	val SHOOTER_PID_GAINS = PIDGains(0.0, 0.0, 0.0, { setpoint ->
-		-9.5 * (setpoint / SHOOTER_MAX_VELOCITY.asRpm)
+	val SHOOTER_PID_GAINS = PIDGains(0.0, 0.0, 0.025, { setpoint ->
+		-9.3 * (setpoint / SHOOTER_MAX_VELOCITY.asRpm)
 	})
 
 	// Calculate the gear ratio.
@@ -31,7 +31,7 @@ object ShooterConstants {
 	 * It might be a little different in different speeds, so put here
 	 * it's maximum value.
 	 */
-	const val SHOOT_TIME_SEC = 0.0 // TODO: Measure SHOOT_TIME_SEC
+	const val SHOOT_TIME_SEC = 2.0 // TODO: Measure SHOOT_TIME_SEC
 
 	/**
 	 * 1 degree should be the lowest possible angle.
