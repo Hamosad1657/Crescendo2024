@@ -4,8 +4,10 @@ import com.ctre.phoenix6.hardware.Pigeon2
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoopVoltage
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
-import com.hamosad1657.lib.*
+import com.hamosad1657.lib.SWERVE_MODULE_NAMES
+import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.toNeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
@@ -14,13 +16,14 @@ import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
+import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Subsystem
-import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.Vision
@@ -32,14 +35,14 @@ object SwerveSubsystem : SwerveDrivetrain(
 	Constants.Modules.FRONT_RIGHT,
 	Constants.Modules.BACK_LEFT,
 	Constants.Modules.BACK_RIGHT,
-), Subsystem {
+), Subsystem, Sendable {
 	init {
 		configureAutoBuilder()
 	}
 
 	override fun periodic() {
-		poseEstimator.update(robotHeading, modulesPositions)
-		addVisionMeasurement()
+//		poseEstimator.update(robotHeading, modulesPositions)
+//		addVisionMeasurement()
 	}
 
 
@@ -70,12 +73,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 	// --- Drive & Module States Control
 
 	private val controlRequestFieldRelative = SwerveRequest.FieldCentric().apply {
-		Deadband = RobotContainer.JOYSTICK_DEADBAND
-		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND
+		Deadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_SPEED_MPS
+		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_ANGULAR_VELOCITY.asRadPs
 	}
 	private val controlRequestRobotRelative = SwerveRequest.RobotCentric().apply {
-		Deadband = RobotContainer.JOYSTICK_DEADBAND
-		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND
+		Deadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_SPEED_MPS
+		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_ANGULAR_VELOCITY.asRadPs
 	}
 
 	/**
@@ -89,29 +92,30 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 * In robot-relative mode, positive x is towards the front and positive y is towards the left.
 	 * In field-relative mode, positive x is away from the alliance wall (field North) and
 	 * positive y is towards the left wall when looking through the driver station glass (field West).
-	 * @param omega Robot angular rate. CCW positive. Unaffected by field/robot relativity.
+	 * @param omega Robot angular rate (radians per second). CCW positive. Unaffected by field/robot relativity.
 	 * @param isFieldRelative Drive mode. True for field-relative, false for robot-relative.
-	 * @param isOpenLoop Whether to use closed-loop velocity control. Set to true to disable closed-loop.
+	 * @param useClosedLoopDrive Whether to use closed-loop velocity control. Set to true to enable closed-loop.
 	 */
 	fun drive(
 		translation: Translation2d,
 		omega: AngularVelocity,
 		isFieldRelative: Boolean = true,
-		isOpenLoop: Boolean = false
+		useClosedLoopDrive: Boolean = false,
 	) {
 		if (isFieldRelative) {
 			super.setControl(controlRequestFieldRelative.apply {
 				VelocityX = translation.x
 				VelocityY = translation.y
 				RotationalRate = omega.asRadPs
-				DriveRequestType = if (isOpenLoop) OpenLoopVoltage else Velocity
+				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
+				SteerRequestType = MotionMagic
 			})
 		} else {
 			super.setControl(controlRequestRobotRelative.apply {
 				VelocityX = translation.x
 				VelocityY = translation.y
 				RotationalRate = omega.asRadPs
-				DriveRequestType = if (isOpenLoop) OpenLoopVoltage else Velocity
+				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
 			})
 		}
 	}
@@ -227,39 +231,25 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	// --- Telemetry ---
 
-	private val telemetry = SwerveDriveTelemetry()
+	private val field = Field2d()
 
-	init {
-		when (Robot.robotTelemetry) {
-			Telemetry.Testing -> {
-				super.registerTelemetry { state ->
-					telemetry.telemeterize(state)
-
-					// Also a possibility
-					// customTelemetry(state)
-				}
-			}
-
-			else -> {}
-		}
-	}
-
-	private fun customTelemetry(state: SwerveDriveState) {
-		val field = Field2d()
+	override fun initSendable(builder: SendableBuilder) {
 		SmartDashboard.putData(field)
+		super.registerTelemetry { state -> field.robotPose = state.Pose }
 
-		// Current module states
+		builder.setSmartDashboardType("Subsystem")
+
 		state.ModuleStates.forEachIndexed { index, module ->
-			SmartDashboard.putData(module.toSendable(index, prefix = "Current/"))
+			val moduleName = SWERVE_MODULE_NAMES[index]
+			builder.addDoubleProperty("Current/$moduleName/MPS", { module.speedMetersPerSecond }, null)
+			builder.addDoubleProperty("Current/$moduleName/Angle", { module.angle.degrees }, null)
 		}
 
 		// Desired module states
 		state.ModuleTargets.forEachIndexed { index, module ->
-			SmartDashboard.putData(module.toSendable(index, prefix = "Desired/"))
+			val moduleName = SWERVE_MODULE_NAMES[index]
+			builder.addDoubleProperty("Desired/$moduleName/MPS", { module.speedMetersPerSecond }, null)
+			builder.addDoubleProperty("Desired/$moduleName/Angle", { module.angle.degrees }, null)
 		}
-
-		// Robot pose (x, y, omega)
-		SmartDashboard.putData("RobotPose", state.Pose.toSendable())
-		field.robotPose = state.Pose
 	}
 }

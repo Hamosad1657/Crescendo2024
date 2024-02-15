@@ -1,16 +1,14 @@
 package frc.robot
 
-import com.hamosad1657.lib.commands.andThen
-import com.hamosad1657.lib.units.degrees
-import com.hamosad1657.lib.units.rpm
+import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
-import frc.robot.commands.*
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.commands.teleopDriveCommand
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -37,13 +35,14 @@ object RobotContainer {
 	}
 
 	init {
-		initSendables()
+//		initSendables()
 		configureButtonBindings()
 		setDefaultCommands()
 		registerAutoCommands()
 	}
 
 	private fun initSendables() {
+		if (Robot.robotTelemetry == Telemetry.Competition) return
 		SmartDashboard.putData(Climbing)
 		SmartDashboard.putData(Intake)
 		SmartDashboard.putData(Loader)
@@ -51,43 +50,42 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
+		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
+
 		Trigger { Robot.isTeleopEnabled }
 
-		var degSP = 74.0
-		var velSP = 750.0
-		fun ampShooting(degSP: Double, velSP: Double) {
-			testingController.square().toggleOnTrue(
-				Notes.collectCommand() andThen
-					Notes.loadAndShootCommand(ShooterState(degSP.degrees, velSP.rpm))
-			)
-		}
-
-		ampShooting(degSP, velSP)
-		SmartDashboard.putData("Amp Shooting") { builder ->
-			builder.addDoubleProperty("Deg SP", { degSP }, {
-				degSP = it
-				ampShooting(degSP, velSP)
-			})
-			builder.addDoubleProperty("Vel SP", { velSP }, {
-				velSP = it
-				ampShooting(degSP, velSP)
-			})
-		}
-
-		autoChooser.onChange { controllerA.triangle().onTrue(it) }
-		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
+//		var degSP = 74.0
+//		var velSP = 750.0
+//		fun ampShooting(degSP: Double, velSP: Double) {
+//			testingController.square().toggleOnTrue(
+//				Notes.collectCommand() andThen
+//					Notes.loadAndShootCommand(ShooterState(degSP.degrees, velSP.rpm))
+//			)
+//		}
+//
+//		ampShooting(degSP, velSP)
+//		SmartDashboard.putData("Amp Shooting") { builder ->
+//			builder.addDoubleProperty("Deg SP", { degSP }, {
+//				degSP = it
+//				ampShooting(degSP, velSP)
+//			})
+//			builder.addDoubleProperty("Vel SP", { velSP }, {
+//				velSP = it
+//				ampShooting(degSP, velSP)
+//			})
+//		}
 	}
 
 
 	private fun setDefaultCommands() {
-//		Swerve.defaultCommand = Swerve.teleopDriveCommand(
-//			vxSupplier = { controllerA.leftY },
-//			vySupplier = { controllerA.leftX },
-//			omegaSupplier = { controllerA.rightX },
-//			isFieldRelative = { true },
-//		)
+		Swerve.defaultCommand = Swerve.teleopDriveCommand(
+			vxSupplier = { simpleDeadband(controllerA.leftY, JOYSTICK_DEADBAND) },
+			vySupplier = { simpleDeadband(controllerA.leftX, JOYSTICK_DEADBAND) },
+			omegaSupplier = { simpleDeadband(controllerA.rightX, JOYSTICK_DEADBAND) },
+			isFieldRelative = { true },
+		)
 
-		Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
+//		Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
 	}
 
 	fun getAutonomousCommand(): Command {
