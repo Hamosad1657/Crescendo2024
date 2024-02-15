@@ -12,6 +12,8 @@ object ShooterConstants {
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
 
+	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.05
+	const val ESCAPE_ANGLE_LOCK_OUTPUT = 0.4
 	val ANGLE_FOR_INTAKE = 24.0.degrees
 
 	val ANGLE_PID_GAINS = PIDGains(24.0, 0.001, 0.0)

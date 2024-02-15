@@ -11,7 +11,9 @@ import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterConstants
+import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.subsystems.shooter.ShooterConstants.TIME_TO_ESCAPE_ANGLE_LOCK_SEC
 import frc.robot.subsystems.shooter.ShooterSubsystem
 
 /** - Requirements: Intake, Loader, Shooter. */
@@ -45,6 +47,12 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = wi
 	run {
 		setShooterState(state)
 	}
+}
+
+fun ShooterSubsystem.escapeAngleLock(): Command = withName("escape angle lock") {
+	run {
+		setAngleMotorOutput(ESCAPE_ANGLE_LOCK_OUTPUT)
+	} withTimeout (TIME_TO_ESCAPE_ANGLE_LOCK_SEC) finallyDo { stopAngleMotor() }
 }
 
 
