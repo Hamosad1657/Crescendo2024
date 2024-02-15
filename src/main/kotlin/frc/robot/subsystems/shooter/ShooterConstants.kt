@@ -9,14 +9,14 @@ import kotlin.math.cos
 object ShooterConstants {
 	// TODO: Find velocity and angle tolerances for shooter
 	val VELOCITY_TOLERANCE: AngularVelocity = 10.0.rpm
-	val ANGLE_TOLERANCE = 1.25.degrees
+	val ANGLE_TOLERANCE = 1.5.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
 
 	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.05
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = 0.4
-	val ANGLE_FOR_INTAKE = 42.0.degrees
+	val ANGLE_FOR_INTAKE = 122.degrees // 42.0.degrees
 
 	val ANGLE_FOR_AMP = (-120.0).degrees
 
@@ -26,10 +26,10 @@ object ShooterConstants {
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(35.0, 8.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(45.0, 0.0, 0.0)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
-		MotionMagicCruiseVelocity = 1.0
-		MotionMagicAcceleration = 1.5
+		MotionMagicCruiseVelocity = 0.8
+		MotionMagicAcceleration = 2.0
 	}
 
 	fun calculateAngleFF(currentAngle: Rotation2d): Volts {
@@ -74,7 +74,7 @@ object ShooterConstants {
 
 		companion object {
 			// TODO: Test and find the shooter states
-			val TO_TRAP = ShooterState(121.0.degrees, 2212.0.rpm)
+			val TO_TRAP = ShooterState(122.0.degrees, 2300.0.rpm)
 
 			// TODO: Name these shooter states better
 			val TO_SPEAKER_1 = ShooterState(Rotation2d(), 0.0.rpm)

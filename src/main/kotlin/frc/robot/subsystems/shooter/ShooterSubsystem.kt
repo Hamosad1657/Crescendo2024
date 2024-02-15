@@ -113,6 +113,8 @@ object ShooterSubsystem : SubsystemBase() {
 
 	fun setVelocity(velocitySetpoint: AngularVelocity) {
 		currentVelocitySetpoint = velocitySetpoint
+		shooterPIDController.reset()
+
 		val ff: Volts = SHOOTER_PID_GAINS.kFF(velocitySetpoint.asRpm)
 		val pidOutput: Volts = shooterPIDController.calculate(currentVelocity.asRpm, velocitySetpoint.asRpm)
 		val voltage = (pidOutput + ff).absoluteValue
@@ -126,7 +128,7 @@ object ShooterSubsystem : SubsystemBase() {
 			TOWARDS_MIN -> if (isAtMinAngleLimit) return angleMotor.set(KEEP_AT_MIN_ANGLE_OUTPUT)
 			TOWARDS_MAX -> if (isAtMaxAngleLimit) return angleMotor.set(KEEP_AT_MAX_ANGLE_OUTPUT)
 		}
-
+		
 		angleMotor.setControl(controlRequestShooterAngle.apply {
 			Position = angleSetpoint.rotations
 			FeedForward = Constants.calculateAngleFF(currentAngle)
