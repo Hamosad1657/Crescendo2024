@@ -5,8 +5,9 @@ import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.PercentOutput
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.subsystems.loader.LoaderConstants.ANALOG_READ_NOTE_DETECTED_THRESHOLD
 import kotlin.math.abs
 import frc.robot.RobotMap.Loader as LoaderMap
 
@@ -20,11 +21,11 @@ object LoaderSubsystem : SubsystemBase() {
 		idleMode = IdleMode.kBrake
 	}
 
-	private val beamBreak = DigitalInput(LoaderMap.BEAM_BREAK_CHANNEL)
+	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)
 
 	// TODO: Check if beam-break sensor is wired normally-true or normally-false
 	/** Beam-break is positioned between loader and shooter. */
-	val isNoteDetected: Boolean get() = beamBreak.get()
+	val isNoteDetected: Boolean get() = beamBreak.value <= ANALOG_READ_NOTE_DETECTED_THRESHOLD
 
 	fun set(output: PercentOutput) {
 		motor.set(output)
@@ -39,6 +40,7 @@ object LoaderSubsystem : SubsystemBase() {
 
 	override fun initSendable(builder: SendableBuilder) {
 		super.initSendable(builder)
+		builder.addDoubleProperty("Analog channel 0 voltage", { beamBreak.value.toDouble() }, null)
 		builder.addBooleanProperty("Is note detected", { isNoteDetected }, null)
 		builder.addBooleanProperty("Running", { isRunning }, null)
 	}

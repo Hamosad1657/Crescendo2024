@@ -75,11 +75,11 @@ object RobotContainer {
 //			)
 //		}
 
-		with(Shooter) {
-			defaultCommand = Shooter.run {
-				setVelocity(AngularVelocity.fromRpm(5000.0))
-			}
-		}
+//		with(Shooter) {
+//			defaultCommand = Shooter.run {
+//				setVelocity(AngularVelocity.fromRpm(5000.0))
+//			}
+//		}
 		//		with(Intake) {
 //			defaultCommand = run {
 //				set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
