@@ -14,12 +14,13 @@ import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.shooter.ShooterConstants.ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO
 import frc.robot.subsystems.shooter.ShooterConstants.AngleMotorDirection
+import frc.robot.subsystems.shooter.ShooterConstants.AngleMotorDirection.TOWARDS_MAX
+import frc.robot.subsystems.shooter.ShooterConstants.AngleMotorDirection.TOWARDS_MIN
 import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_PID_GAINS
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import kotlin.math.absoluteValue
-import kotlin.math.cos
 import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.RobotMap.Shooter.Angle as ShooterAngleMap
 import frc.robot.subsystems.shooter.ShooterConstants as Constants
@@ -116,27 +117,23 @@ object ShooterSubsystem : SubsystemBase() {
 		shooterMainMotor.setVoltage(-(pidOutput + ff))
 	}
 
-	fun setAngle(angle: Rotation2d) {
-		val motorDirection = angleMotorDirectionTo(setpoint = angle)
-		if (isAtMinAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MIN) {
-			angleMotor.setControl(PositionVoltage(KEEP_AT_MIN_ANGLE_OUTPUT))
-		} else if (isAtMaxAngleLimit && motorDirection == AngleMotorDirection.TOWARDS_MAX) {
-			angleMotor.setControl(PositionVoltage(KEEP_AT_MAX_ANGLE_OUTPUT))
-		} else {
-			angleMotor.setControl(
-				PositionVoltage(
-					angle.rotations,
-					0.0, false, // Default values
-					calculateAngleFF(),
-					0, false, false, false, // Default values
-				)
-			)
+	private val controlRequestShooterAngle = PositionVoltage(0.0).apply { EnableFOC = false }
+
+	fun setAngle(angleSetpoint: Rotation2d) {
+		when (angleMotorDirectionTo(angleSetpoint)) {
+			TOWARDS_MIN -> if (isAtMinAngleLimit) return angleMotor.set(KEEP_AT_MIN_ANGLE_OUTPUT)
+			TOWARDS_MAX -> if (isAtMaxAngleLimit) return angleMotor.set(KEEP_AT_MAX_ANGLE_OUTPUT)
 		}
+
+		angleMotor.setControl(controlRequestShooterAngle.apply {
+			Position = angleSetpoint.rotations
+			FeedForward = Constants.calculateAngleFF(currentAngle)
+		})
 	}
 
+
 	private fun angleMotorDirectionTo(setpoint: Rotation2d): AngleMotorDirection =
-		if (setpoint.rotations - currentAngle.rotations > 0.0) AngleMotorDirection.TOWARDS_MAX
-		else AngleMotorDirection.TOWARDS_MIN
+		if (setpoint.rotations - currentAngle.rotations > 0.0) TOWARDS_MAX else TOWARDS_MIN
 
 	fun stopShooterMotors() {
 		shooterMainMotor.stopMotor()
@@ -190,14 +187,6 @@ object ShooterSubsystem : SubsystemBase() {
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun increaseAngleSetpointBy(angle: Rotation2d) {
 		setAngle(this.currentAngle + angle)
-	}
-
-
-	private fun calculateAngleFF(): Volts {
-		val ff =
-			cos(currentAngle.radians) * KEEP_AT_MIN_ANGLE_OUTPUT * 12.0
-		if (currentAngle.degrees < 90.0) return ff
-		return ff * 1.5
 	}
 
 
