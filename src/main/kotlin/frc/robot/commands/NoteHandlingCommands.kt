@@ -6,42 +6,43 @@ import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import frc.robot.subsystems.intake.IntakeConstants
-import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.loader.LoaderConstants
-import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.subsystems.intake.IntakeSubsystem as Intake
+import frc.robot.subsystems.loader.LoaderSubsystem as Loader
+import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
 
 /** - Requirements: Intake, Loader, Shooter. */
 fun collectCommand(): Command = withName("collect") {
-	(ShooterSubsystem.prepareShooterForCollectingCommand() alongWith
-		LoaderSubsystem.runLoaderCommand() alongWith
-		IntakeSubsystem.runIntakeCommand()
+	(Shooter.prepareShooterForCollectingCommand() alongWith
+		Loader.runLoaderCommand() alongWith
+		Intake.runIntakeCommand()
 		) until
-		LoaderSubsystem::isNoteDetected
+		Loader::isNoteDetected
 }
 
 /** SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM */
-fun ShooterSubsystem.prepareShooterForCollectingCommand(): Command = withName("prepare shooter for collecting") {
+fun Shooter.prepareShooterForCollectingCommand(): Command = withName("prepare shooter for collecting") {
 	getToShooterStateCommand(ShooterState.COLLECT)
 }
 
 /** - Requirements: Loader, Shooter. */
 fun loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
-	ShooterSubsystem.getToShooterStateCommand(state) until {
-		ShooterSubsystem.isWithinTolerance
-	} andThen
-		loadIntoShooterCommand()
+	Shooter.getToShooterStateCommand(state) raceWith
+		(waitUntil { Shooter.isWithinTolerance } andThen
+			loadIntoShooterCommand())
 }
 
 /**
  * - Command has no end condition.
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
+fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
 	run {
 		setShooterState(state)
+	} finallyDo {
+		stopShooterMotors()
 	}
 }
 
@@ -61,9 +62,9 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = wi
 fun waitForNoteToPassCommand() = withName("wait for note to pass") {
 	var hasNotePassed = false
 	Commands.run({
-		if (LoaderSubsystem.isNoteDetected && !hasNotePassed) hasNotePassed = true
+		if (Loader.isNoteDetected && !hasNotePassed) hasNotePassed = true
 	}) until {
-		hasNotePassed && !LoaderSubsystem.isNoteDetected
+		hasNotePassed && !Loader.isNoteDetected
 	}
 }
 
@@ -73,9 +74,9 @@ fun waitForNoteToPassCommand() = withName("wait for note to pass") {
  * Runs intake only if shooter angle is within tolerance, and loader is running.
  * - Requirements: Intake.
  */
-fun IntakeSubsystem.runIntakeCommand(): Command = withName("run") {
+fun Intake.runIntakeCommand(): Command = withName("run") {
 	run {
-		if (ShooterSubsystem.isWithinAngleTolerance || LoaderSubsystem.isRunning) {
+		if (Shooter.isWithinAngleTolerance || Loader.isRunning) {
 			set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
 		} else {
 			stop()
@@ -90,7 +91,7 @@ fun IntakeSubsystem.runIntakeCommand(): Command = withName("run") {
  * Apart from testing, should only be used in [collectCommand] or [loadIntoShooterCommand], or in a manual override.
  * - Requirements: Loader.
  */
-fun LoaderSubsystem.runLoaderCommand(): Command = withName("run") {
+fun Loader.runLoaderCommand(): Command = withName("run") {
 	run {
 		set(LoaderConstants.MOTOR_OUTPUT)
 	} finallyDo {
@@ -100,10 +101,10 @@ fun LoaderSubsystem.runLoaderCommand(): Command = withName("run") {
 
 /**
  * Apart from testing, should only be used in [loadAndShootCommand] or in a manual override.
- * - Requirements: Loader, Shooter.
+ * - Requirements: Loader.
  */
 fun loadIntoShooterCommand(): Command = withName("load into shooter") {
-	LoaderSubsystem.runLoaderCommand() withTimeout
+	Loader.runLoaderCommand() withTimeout
 		ShooterConstants.SHOOT_TIME_SEC
 }
 
@@ -115,7 +116,7 @@ fun loadIntoShooterCommand(): Command = withName("load into shooter") {
 // ---
 
 /** - Requirements: Shooter. */
-fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
+fun Shooter.openLoopTeleop_shooterVelocity(
 	output: () -> PercentOutput
 ): Command = withName("velocity open loop teleop") {
 	run {
@@ -132,7 +133,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
  *
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
+fun Shooter.closedLoopTeleop_shooterVelocity(
 	changeInVelocity: () -> Double, multiplier: Double
 ): Command = withName("velocity closed loop teleop") {
 	run {
@@ -145,7 +146,7 @@ fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
  * Runs the intake in reverse, regardless of shooter angle.
  * - Requirements: Intake.
  */
-fun IntakeSubsystem.ejectFromIntakeCommand(): Command =
+fun Intake.ejectFromIntakeCommand(): Command =
 	run {
 		set(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
 	} finallyDo {
@@ -154,9 +155,9 @@ fun IntakeSubsystem.ejectFromIntakeCommand(): Command =
 
 /** - Requirements: Loader, Shooter. */
 fun ejectFromShooterCommand(): Command =
-	LoaderSubsystem.runLoaderCommand() alongWith
-		ShooterSubsystem.run {
-			ShooterSubsystem.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
+	Loader.runLoaderCommand() alongWith
+		Shooter.run {
+			Shooter.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
 		}.finallyDo { _ ->
-			ShooterSubsystem.stopShooterMotors()
+			Shooter.stopShooterMotors()
 		}

@@ -18,6 +18,7 @@ import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_PID_GAINS
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import kotlin.math.absoluteValue
 import kotlin.math.cos
 import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.RobotMap.Shooter.Angle as ShooterAngleMap
@@ -34,11 +35,7 @@ object ShooterSubsystem : SubsystemBase() {
 		idleMode = IdleMode.kCoast
 	}
 
-	private val shooterPIDController = shooterMainMotor.pidController.apply {
-		p = SHOOTER_PID_GAINS.kP
-		i = SHOOTER_PID_GAINS.kI
-		d = SHOOTER_PID_GAINS.kD
-	}
+	private val shooterPIDController = SHOOTER_PID_GAINS.toPIDController()
 
 	private val shooterSecondaryMotor = HaSparkFlex(ShooterMap.LOWER_MOTOR_ID).apply {
 		restoreFactoryDefaults()
@@ -98,11 +95,11 @@ object ShooterSubsystem : SubsystemBase() {
 	val currentAngle: Rotation2d get() = Rotation2d.fromRotations(angleMotor.position.value)
 
 	// I have to track this myself because there is no getter for it in SparkPIDController :(
-	var velocitySetpoint = AngularVelocity.fromRpm(0.0)
+	var currentVelocitySetpoint = AngularVelocity.fromRpm(0.0)
 		private set
 
 	// TODO: Verify this really is in rotations and not degrees.
-	val angleSetpoint: Rotation2d get() = Rotation2d.fromRotations(angleMotor.closedLoopReference.value)
+	val currentAngleSetpoint: Rotation2d get() = Rotation2d.fromRotations(angleMotor.closedLoopReference.value)
 
 
 	// --- Motors Control ---
@@ -112,11 +109,11 @@ object ShooterSubsystem : SubsystemBase() {
 		setVelocity(shooterState.velocity)
 	}
 
-	fun setVelocity(velocitySP: AngularVelocity) {
-		val ff = velocitySP.asRpm
-		val error = velocitySP - currentVelocity
-		val output: Volts = (ff + error.asRpm) * SHOOTER_PID_GAINS.kP
-		shooterMainMotor.setVoltage(-output)
+	fun setVelocity(velocitySetpoint: AngularVelocity) {
+		currentVelocitySetpoint = velocitySetpoint
+		val ff: Volts = SHOOTER_PID_GAINS.kFF(velocitySetpoint.asRpm)
+		val pidOutput: Volts = shooterPIDController.calculate(currentVelocity.asRpm, velocitySetpoint.asRpm)
+		shooterMainMotor.setVoltage(-(pidOutput + ff))
 	}
 
 	fun setAngle(angle: Rotation2d) {
@@ -129,13 +126,9 @@ object ShooterSubsystem : SubsystemBase() {
 			angleMotor.setControl(
 				PositionVoltage(
 					angle.rotations,
-					0.0,
-					false,
+					0.0, false, // Default values
 					calculateAngleFF(),
-					0,
-					false,
-					false,
-					false
+					0, false, false, false, // Default values
 				)
 			)
 		}
@@ -159,8 +152,8 @@ object ShooterSubsystem : SubsystemBase() {
 	val isAtMinAngleLimit get() = minAngleLimitSwitch.get()
 	val isAtMaxAngleLimit get() = maxAngleLimitSwitch.get()
 
-	val isWithinVelocityTolerance get() = velocitySetpoint - currentVelocity <= Constants.VELOCITY_TOLERANCE
-	val isWithinAngleTolerance get() = angleMotor.closedLoopError.value <= Constants.ANGLE_TOLERANCE.rotations
+	val isWithinVelocityTolerance get() = (currentVelocitySetpoint - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
+	val isWithinAngleTolerance get() = angleMotor.closedLoopError.value.absoluteValue <= Constants.ANGLE_TOLERANCE.rotations
 	val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
 
@@ -214,12 +207,12 @@ object ShooterSubsystem : SubsystemBase() {
 		builder.addBooleanProperty("Is at max angle limit", { isAtMaxAngleLimit }, null)
 		builder.addDoubleProperty("Angle deg", { currentAngle.degrees }, null)
 		builder.addDoubleProperty("CANCoder angle deg", { angleCANCoder.absolutePosition.value * 360 }, null)
-		builder.addDoubleProperty("Angle setpoint deg", { angleSetpoint.degrees }, null)
+		builder.addDoubleProperty("Angle setpoint deg", { currentAngleSetpoint.degrees }, null)
 		builder.addDoubleProperty("Angle error deg", { angleMotor.closedLoopError.value * 360 }, null)
 		builder.addBooleanProperty("Angle in tolerance", { isWithinAngleTolerance }, null)
 		builder.addDoubleProperty("Velocity rpm", { currentVelocity.asRpm }, null)
-		builder.addDoubleProperty("Velocity setpoint rpm", { velocitySetpoint.asRpm }, null)
-		builder.addDoubleProperty("Velocity error rpm", { (velocitySetpoint - currentVelocity).asRpm }, null)
+		builder.addDoubleProperty("Velocity setpoint rpm", { currentVelocitySetpoint.asRpm }, null)
+		builder.addDoubleProperty("Velocity error rpm", { (currentVelocitySetpoint - currentVelocity).asRpm }, null)
 		builder.addBooleanProperty("Velocity in tolerance", { isWithinVelocityTolerance }, null)
 		builder.addDoubleProperty("Angle motor output", { angleMotor.get() }, null)
 		builder.addDoubleProperty("Shooter motors output", { shooterMainMotor.get() }, null)

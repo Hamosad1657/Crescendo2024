@@ -27,7 +27,7 @@ class PIDGains @JvmOverloads constructor(
 	var kIZone: Double = 0.0,
 ) {
 	/** Creates a WPILib [PIDController] with the P, I and D gains. */
-	fun toPIDController() = PIDController(kP, kI, kD)
+	fun toPIDController() = PIDController(kP, kI, kD).apply { iZone = kIZone }
 
 	/** Creates a WPILib [ProfiledPIDController] with the P, I, and D gains and the given [constraints]. */
 	fun toProfiledPIDController(constraints: TrapezoidProfile.Constraints) =

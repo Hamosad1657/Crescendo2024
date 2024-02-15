@@ -48,6 +48,8 @@ private constructor(velocity: Double, velocityUnit: AngularVelocityUnit) : Compa
 			AngularVelocityUnit.DegPs -> rpmToDegPs(rpm)
 		}
 
+	fun abs() = if (rpm < 0) fromRpm(-rpm) else this
+
 	override fun toString() = "RPM=$rpm"
 	override fun compareTo(other: AngularVelocity): Int = (rpm - other.rpm).toInt()
 

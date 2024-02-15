@@ -6,8 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d
 
 object ShooterConstants {
 	// TODO: Find velocity and angle tolerances for shooter
-	val VELOCITY_TOLERANCE: AngularVelocity = 0.0.rpm
-	val ANGLE_TOLERANCE = 0.25.degrees
+	val VELOCITY_TOLERANCE: AngularVelocity = 75.0.rpm
+	val ANGLE_TOLERANCE = 3.0.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
@@ -20,7 +20,11 @@ object ShooterConstants {
 
 	val SHOOTER_MAX_VELOCITY = 5000.rpm
 
-	val SHOOTER_PID_GAINS = PIDGains(0.0022, 0.0, 0.0, { setpoint -> -0.0 })
+	val SHOOTER_PID_GAINS = PIDGains(
+		0.0, 0.006, 0.0,
+		kFF = { setpointRpm -> 0.0019 * setpointRpm },
+		kIZone = 150.0,
+	)
 
 	// Calculate the gear ratio.
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = (66.0 / 32.0) * 4 * 4

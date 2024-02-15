@@ -1,5 +1,7 @@
 package frc.robot
 
+import com.hamosad1657.lib.commands.andThen
+import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -7,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.collectCommand
+import frc.robot.commands.loadAndShootCommand
+import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -48,8 +52,20 @@ object RobotContainer {
 
 	private fun configureButtonBindings() {
 		Trigger { Robot.isTeleopEnabled }
-			.onTrue(collectCommand())
-		
+			.onTrue(
+				collectCommand() andThen loadAndShootCommand(
+					ShooterConstants.ShooterState(
+						60.0.degrees,
+						AngularVelocity.fromRpm(1000.0)
+					)
+				)
+			)
+		Trigger { false }.onTrue(
+			Shooter.run {
+				Shooter.setVelocity(5000.0.rpm)
+			}
+		)
+
 
 		autoChooser.onChange { controllerA.triangle().onTrue(it) }
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
