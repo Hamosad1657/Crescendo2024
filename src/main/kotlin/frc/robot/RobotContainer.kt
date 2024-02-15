@@ -1,15 +1,14 @@
 package frc.robot
 
-import com.hamosad1657.lib.commands.andThen
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
-import frc.robot.commands.collectCommand
-import frc.robot.commands.loadAndShootCommand
+import frc.robot.commands.*
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
@@ -52,24 +51,22 @@ object RobotContainer {
 
 	private fun configureButtonBindings() {
 		Trigger { Robot.isTeleopEnabled }
-			.onTrue(
-				collectCommand() andThen loadAndShootCommand(
-					ShooterConstants.ShooterState(
-						60.0.degrees,
-						AngularVelocity.fromRpm(1000.0)
-					)
-				)
-			)
-		Trigger { false }.onTrue(
-			Shooter.run {
-				Shooter.setVelocity(5000.0.rpm)
-			}
+
+		testingController.square().toggleOnTrue(
+			Notes.collectCommand()
 		)
 
+		testingController.circle().onTrue(
+			Notes.loadAndShootCommand(
+				ShooterConstants.ShooterState(
+					70.0.degrees,
+					AngularVelocity.fromRpm(1200.0)
+				)
+			)
+		)
 
 		autoChooser.onChange { controllerA.triangle().onTrue(it) }
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
-		controllerA.square().onTrue(InstantCommand({}, Swerve))
 	}
 
 	private fun setDefaultCommands() {
@@ -79,46 +76,8 @@ object RobotContainer {
 //			omegaSupplier = { controllerA.rightX },
 //			isFieldRelative = { true },
 //		)
-
-		// --- For initial testing, delete later --- //
-
-		// Test 1 thing at a time.
-		// For a list of things to test follow the link:
-		// https://docs.google.com/document/d/1App5L-vltuqvOiloeHfqbKvk7FwQHXPcqmUYKuAhA1A/edit
-
-//		with(Shooter) {
-//			defaultCommand = Shooter.closedLoopTeleop_shooterAngle(
-//				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) },
-//				ShooterConstants.ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER
-//			)
-//		}
-
-//		with(Shooter) {
-//			defaultCommand = Shooter.run {
-//				setVelocity(AngularVelocity.fromRpm(5000.0))
-//			}
-//		}
-		//		with(Intake) {
-//			defaultCommand = run {
-//				set(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
-//			} finallyDo {
-//				stop()
-//			}
-//		}
-//
-//		with(Loader) {
-//			defaultCommand = run {
-//				set(LoaderConstants.MOTOR_OUTPUT)
-//			} finallyDo {
-//				stop()
-//			}
-//		}
-
-//		with(Climbing) {
-//			defaultCommand = openLoopTeleopCommand(
-//				{ simpleDeadband(testingController.leftY, JOYSTICK_DEADBAND) },
-//				{ simpleDeadband(testingController.rightY, JOYSTICK_DEADBAND) })
-//		}
+		
+		Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
 	}
 
 	fun getAutonomousCommand(): Command {
