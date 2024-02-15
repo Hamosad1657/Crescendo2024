@@ -16,11 +16,10 @@ object SwerveConstants {
 	}
 
 	/** Theoretical free speed (m/s) at 12v applied output. */
-	// TODO: Tune.
-	const val MAX_SPEED_MPS = 9.46//  5.0
+	const val MAX_SPEED_MPS = 5.0 // 9.46 according to CTRE ?
 
 	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
-	val MAX_ANGULAR_VELOCITY = 0.75.rps
+	val MAX_ANGULAR_VELOCITY = 1.5.rps
 
 	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.

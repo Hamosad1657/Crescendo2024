@@ -19,7 +19,7 @@ fun SwerveSubsystem.teleopDriveCommand(
 	run {
 		val vx = -vxSupplier.asDouble.pow(3.0) * SwerveConstants.MAX_SPEED_MPS
 		val vy = -vySupplier.asDouble.pow(3.0) * SwerveConstants.MAX_SPEED_MPS
-		val omega = omegaSupplier.asDouble.pow(3.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs
+		val omega = -omegaSupplier.asDouble.pow(3.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs
 
 //		if (Robot.robotTelemetry == Telemetry.Testing) {
 		SmartDashboard.putNumber("vx", vx)
