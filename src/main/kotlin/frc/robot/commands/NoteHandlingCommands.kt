@@ -3,8 +3,7 @@
 package frc.robot.commands
 
 import com.hamosad1657.lib.commands.*
-import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.*
 import edu.wpi.first.wpilibj2.command.*
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
@@ -19,7 +18,7 @@ object Notes
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectCommand(): Command = withName("collect") {
 	(Shooter.prepareShooterForCollectingCommand() alongWith
-		Loader.runLoaderCommand(LoaderConstants.INTAKE_MOTOR_OUTPUT) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
 		Intake.runIntakeCommand()
 		) until
 		Loader::isNoteDetected
@@ -97,9 +96,9 @@ fun Intake.runIntakeCommand(): Command = withName("run") {
  * Apart from testing, should only be used in [collectCommand] or [loadIntoShooterCommand], or in a manual override.
  * - Requirements: Loader.
  */
-fun Loader.runLoaderCommand(output: PercentOutput): Command = withName("run") {
+fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 	run {
-		set(output)
+		setVoltage(voltage)
 	} finallyDo {
 		stop()
 	}
@@ -110,7 +109,7 @@ fun Loader.runLoaderCommand(output: PercentOutput): Command = withName("run") {
  * - Requirements: Loader.
  */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
-	Loader.runLoaderCommand(LoaderConstants.LOADING_MOTOR_OUTPUT) withTimeout
+	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) withTimeout
 		ShooterConstants.SHOOT_TIME_SEC
 }
 
@@ -161,7 +160,7 @@ fun Intake.ejectFromIntakeCommand(): Command =
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.ejectFromShooterCommand(): Command =
-	Loader.runLoaderCommand(LoaderConstants.LOADING_MOTOR_OUTPUT) alongWith
+	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) alongWith
 		Shooter.run {
 			Shooter.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
 		}.finallyDo { _ ->

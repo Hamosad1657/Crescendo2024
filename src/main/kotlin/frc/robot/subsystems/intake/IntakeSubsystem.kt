@@ -23,9 +23,12 @@ object IntakeSubsystem : SubsystemBase() {
 		idleMode = IdleMode.kBrake
 	}
 
+	private val controlRequestBottomVoltage = VoltageOut(0.0).apply { EnableFOC = false }
+	private val controlRequestTopVoltage = VoltageOut(0.0).apply { EnableFOC = false }
+	
 	fun setVoltage(bottomVoltage: Volts, topVoltage: Volts) {
-		bottomMotor.setControl(VoltageOut(bottomVoltage))
-		topMotor.setControl(VoltageOut(topVoltage))
+		bottomMotor.setControl(controlRequestBottomVoltage.apply { Output = bottomVoltage })
+		topMotor.setControl(controlRequestTopVoltage.apply { Output = topVoltage })
 	}
 
 	fun stop() {

@@ -72,8 +72,8 @@ object ShooterConstants {
 	// shoot from a few constant positions. Keep instances of ShooterState as constants.
 	data class ShooterState(val angle: Rotation2d, val velocity: AngularVelocity) {
 		init {
-			require(angle.degrees in 0.0..160.0)
-			require(velocity.asRpm in 0.0..6000.0)
+			require(angle.degrees in 0.0..160.0) { "have a nice day :D" }
+			require(velocity.asRpm in 0.0..6000.0) { "have a nice day :D" }
 		}
 
 		companion object {
