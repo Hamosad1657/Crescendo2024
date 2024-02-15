@@ -62,7 +62,7 @@ object ShooterConstants {
 			val TO_SPEAKER_2 = ShooterState(Rotation2d(), 0.0.rpm)
 			val TO_SPEAKER_3 = ShooterState(Rotation2d(), 0.0.rpm)
 
-			val COLLECT = ShooterState(Rotation2d(), 0.0.rpm)
+			val COLLECT = ShooterState(ANGLE_FOR_INTAKE, 0.0.rpm)
 		}
 	}
 }
