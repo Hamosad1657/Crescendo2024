@@ -4,6 +4,7 @@ import com.ctre.phoenix6.hardware.Pigeon2
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoopVoltage
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
 import com.hamosad1657.lib.*
 import com.hamosad1657.lib.units.AngularVelocity
@@ -38,8 +39,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		poseEstimator.update(robotHeading, modulesPositions)
-		addVisionMeasurement()
+//		poseEstimator.update(robotHeading, modulesPositions)
+//		addVisionMeasurement()
 	}
 
 
@@ -70,12 +71,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 	// --- Drive & Module States Control
 
 	private val controlRequestFieldRelative = SwerveRequest.FieldCentric().apply {
-		Deadband = RobotContainer.JOYSTICK_DEADBAND
-		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND
+		Deadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_SPEED_MPS
+		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_ANGULAR_VELOCITY.asRadPs
 	}
 	private val controlRequestRobotRelative = SwerveRequest.RobotCentric().apply {
-		Deadband = RobotContainer.JOYSTICK_DEADBAND
-		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND
+		Deadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_SPEED_MPS
+		RotationalDeadband = RobotContainer.JOYSTICK_DEADBAND * Constants.MAX_ANGULAR_VELOCITY.asRadPs
 	}
 
 	/**
@@ -89,7 +90,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 * In robot-relative mode, positive x is towards the front and positive y is towards the left.
 	 * In field-relative mode, positive x is away from the alliance wall (field North) and
 	 * positive y is towards the left wall when looking through the driver station glass (field West).
-	 * @param omega Robot angular rate. CCW positive. Unaffected by field/robot relativity.
+	 * @param omega Robot angular rate (radians per second). CCW positive. Unaffected by field/robot relativity.
 	 * @param isFieldRelative Drive mode. True for field-relative, false for robot-relative.
 	 * @param isOpenLoop Whether to use closed-loop velocity control. Set to true to disable closed-loop.
 	 */
@@ -105,6 +106,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 				VelocityY = translation.y
 				RotationalRate = omega.asRadPs
 				DriveRequestType = if (isOpenLoop) OpenLoopVoltage else Velocity
+				SteerRequestType = MotionMagic
 			})
 		} else {
 			super.setControl(controlRequestRobotRelative.apply {
@@ -228,8 +230,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 	// --- Telemetry ---
 
 	private val telemetry = SwerveDriveTelemetry()
+	private val field = Field2d()
 
 	init {
+		SmartDashboard.putData(field)
+		super.registerTelemetry { state -> customTelemetry(state) }
+
 		when (Robot.robotTelemetry) {
 			Telemetry.Testing -> {
 				super.registerTelemetry { state ->
@@ -245,9 +251,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	private fun customTelemetry(state: SwerveDriveState) {
-		val field = Field2d()
-		SmartDashboard.putData(field)
-
 		// Current module states
 		state.ModuleStates.forEachIndexed { index, module ->
 			SmartDashboard.putData(module.toSendable(index, prefix = "Current/"))
@@ -259,7 +262,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 		}
 
 		// Robot pose (x, y, omega)
-		SmartDashboard.putData("RobotPose", state.Pose.toSendable())
 		field.robotPose = state.Pose
 	}
 }

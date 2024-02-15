@@ -17,16 +17,16 @@ object SwerveConstants {
 
 	/** Theoretical free speed (m/s) at 12v applied output. */
 	// TODO: Tune.
-	const val MAX_SPEED_MPS = 5.0
+	const val MAX_SPEED_MPS = 9.46//  5.0
 
 	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
-	val MAX_ANGULAR_VELOCITY = 1.0.rps
+	val MAX_ANGULAR_VELOCITY = 0.75.rps
 
 	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.
 	private val DRIVE_PID_GAINS = Slot0Configs().apply {
 		kP = 3.0; kI = 0.0; kD = 0.0
-		kS = 0.0; kV = 1.5; kA = 0.0
+		kS = 0.0; kV = 0.0; kA = 0.0
 	}
 
 	/** When using closed-loop control, the steer motor uses [ClosedLoopOutputType.Voltage]. */
@@ -46,7 +46,7 @@ object SwerveConstants {
 		SlipCurrent = 300.0 // TODO: Tune.
 		SteerMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
 		DriveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
-		FeedbackSource = SteerFeedbackType.FusedCANcoder
+		FeedbackSource = SteerFeedbackType.RemoteCANcoder
 		SteerMotorInverted = false
 		SpeedAt12VoltsMps = MAX_SPEED_MPS
 		SteerMotorGains = STEER_PID_GAINS
