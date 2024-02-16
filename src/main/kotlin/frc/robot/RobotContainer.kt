@@ -1,7 +1,6 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -24,7 +23,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-	const val JOYSTICK_DEADBAND = 0.05
+	const val JOYSTICK_DEADBAND = 0.01
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -59,9 +58,8 @@ object RobotContainer {
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
 
-		testingController.triangle().toggleOnTrue(
-			Notes.collectCommand() andThen
-				Notes.loadAndShootCommand(ShooterConstants.ShooterState.AT_SPEAKER_CENTER)
+		controllerA.triangle().toggleOnTrue(
+			Notes.loadAndShootCommand(ShooterConstants.ShooterState.AT_SPEAKER)
 		)
 
 //		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.openLoopTeleop_shooterVelocity {
@@ -77,9 +75,9 @@ object RobotContainer {
 
 	private fun setDefaultCommands() {
 		Swerve.defaultCommand = Swerve.teleopDriveCommand(
-			vxSupplier = { simpleDeadband(controllerA.leftY, JOYSTICK_DEADBAND) },
-			vySupplier = { simpleDeadband(controllerA.leftX, JOYSTICK_DEADBAND) },
-			omegaSupplier = { simpleDeadband(controllerA.rightX, JOYSTICK_DEADBAND) },
+			vxSupplier = { simpleDeadband(controllerA.leftY * 0.5, JOYSTICK_DEADBAND) },
+			vySupplier = { simpleDeadband(controllerA.leftX * 0.5, JOYSTICK_DEADBAND) },
+			omegaSupplier = { simpleDeadband(controllerA.rightX * 0.5, JOYSTICK_DEADBAND) },
 			isFieldRelative = { true },
 		)
 

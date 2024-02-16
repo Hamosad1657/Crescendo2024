@@ -77,9 +77,7 @@ object ShooterConstants {
 			val TO_TRAP = ShooterState(122.0.degrees, 2300.0.rpm)
 
 			// TODO: Test and find the shooter states
-			val AT_SPEAKER_CENTER = ShooterState(65.degrees, 2600.rpm)
-			val AT_SPEAKER_SIDE = ShooterState(Rotation2d(), 0.0.rpm)
-			val AT_STAGE = ShooterState(Rotation2d(), 0.0.rpm)
+			val AT_SPEAKER = ShooterState(65.degrees, 2600.rpm)
 
 			val COLLECT = ShooterState(ANGLE_FOR_INTAKE, 0.0.rpm)
 		}
