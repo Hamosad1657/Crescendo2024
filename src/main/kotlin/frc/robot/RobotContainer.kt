@@ -59,7 +59,7 @@ object RobotContainer {
 		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
 		controllerA.triangle().toggleOnTrue(Notes.loadAndShootCommand(TO_TRAP))
 
-		Trigger { Robot.isTeleopEnabled }
+		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.escapeAngleLock())
 	}
 
 
@@ -71,7 +71,7 @@ object RobotContainer {
 			isFieldRelative = { true },
 		)
 
-		Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
+		//Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
 	}
 
 	fun getAutonomousCommand(): Command {
