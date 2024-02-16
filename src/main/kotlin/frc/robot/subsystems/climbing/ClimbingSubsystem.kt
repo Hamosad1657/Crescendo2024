@@ -1,7 +1,5 @@
 package frc.robot.subsystems.climbing
 
-import com.hamosad1657.lib.math.PIDGains
-import com.hamosad1657.lib.math.configPID
 import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.Rotations
@@ -11,7 +9,6 @@ import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Climbing as ClimbingMap
-import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
 
@@ -37,9 +34,6 @@ object ClimbingSubsystem : SubsystemBase() {
 		configSecondaryMotor(rightMainMotor)
 	}
 
-	private val pidController = Constants.PID_GAINS_NOT_HOLDING_ROBOT.toPIDController()
-	private var feedForwardPercentOutput = 0.0
-
 	private val leftEncoder = leftMainMotor.encoder
 	private val rightEncoder = rightMainMotor.encoder
 
@@ -61,16 +55,6 @@ object ClimbingSubsystem : SubsystemBase() {
 			follow(mainMotor, true)
 		}
 
-
-	// --- Motors Properties ---
-
-	val closedLoopError: Rotations
-		get() = lastSetpoint - currentPosition
-
-	val isWithinTolerance: Boolean
-		get() = closedLoopError <= Constants.SETPOINT_TOLERANCE
-
-
 	// --- Switches ---
 
 	// TODO: Check if switches are wired normally open or normally closed.
@@ -86,29 +70,8 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// --- Motors Control ---
 
-	fun configPID(isHoldingRobot: Boolean) =
-		if (isHoldingRobot) configPID(Constants.PID_GAINS_HOLDING_ROBOT)
-		else configPID(Constants.PID_GAINS_NOT_HOLDING_ROBOT)
-
-	private fun configPID(gains: PIDGains) {
-		pidController.configPID(gains)
-	}
-
 	val currentPosition: Rotations
 		get() = leftMainMotor.encoder.position
-
-	fun setPositionSetpoint(newSetpoint: Rotations) {
-		if (lastSetpoint != newSetpoint) {
-			pidController.reset()
-		}
-		val controlEffort = pidController.calculate(currentPosition, newSetpoint) + feedForwardPercentOutput
-		set(controlEffort)
-		lastSetpoint = newSetpoint
-	}
-
-	fun increasePositionSetpointBy(desiredChangeInPosition: Rotations) {
-		setPositionSetpoint(currentPosition + desiredChangeInPosition)
-	}
 
 	fun set(output: PercentOutput) {
 		setLeft(output)
@@ -117,13 +80,13 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	fun setLeft(output: PercentOutput) {
 		if (isLeftAtOpenedLimit && output < 0.0) leftMainMotor.set(0.0)
-		else if (isLeftAtClosedLimit && output > 0.0) leftMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
+		else if (isLeftAtClosedLimit && output > 0.0) leftMainMotor.set(0.0)
 		else leftMainMotor.set(output)
 	}
 
 	fun setRight(output: PercentOutput) {
 		if (isRightAtOpenedLimit && output < 0.0) rightMainMotor.set(0.0)
-		else if (isRightAtClosedLimit && output > 0.0) rightMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
+		else if (isRightAtClosedLimit && output > 0.0) rightMainMotor.set(0.0)
 		else rightMainMotor.set(output)
 	}
 
@@ -144,8 +107,8 @@ object ClimbingSubsystem : SubsystemBase() {
 		builder.addBooleanProperty("Left at closed limit", { isLeftAtClosedLimit }, null)
 		builder.addBooleanProperty("Right at opened limit", { isRightAtOpenedLimit }, null)
 		builder.addBooleanProperty("Right at closed limit", { isRightAtClosedLimit }, null)
+		builder.addDoubleProperty("Left output", { leftMainMotor.get() }, null)
+		builder.addDoubleProperty("Right output", { rightMainMotor.get() }, null)
 		builder.addDoubleProperty("Position rotations", { currentPosition }, null)
-		builder.addDoubleProperty("Position setpoint rotations", { lastSetpoint }, null)
-		builder.addBooleanProperty("In tolerance", { isWithinTolerance }, null)
 	}
 }
