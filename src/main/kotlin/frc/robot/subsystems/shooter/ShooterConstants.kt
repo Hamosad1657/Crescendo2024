@@ -18,7 +18,8 @@ object ShooterConstants {
 	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.1
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = -0.2
 
-	val ANGLE_FOR_INTAKE = 122.degrees // 42.0.degrees
+	val ANGLE_FOR_INTAKE =
+		42.0.degrees
 
 	val ANGLE_FOR_AMP = (-120.0).degrees
 

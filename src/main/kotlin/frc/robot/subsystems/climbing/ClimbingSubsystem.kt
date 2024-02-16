@@ -56,10 +56,9 @@ object ClimbingSubsystem : SubsystemBase() {
 	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
 		apply {
 			restoreFactoryDefaults()
-			inverted = false
 			idleMode = IdleMode.kBrake
 			// TODO: Check if follower motor should oppose master motor or not
-			follow(mainMotor, false)
+			follow(mainMotor, true)
 		}
 
 
@@ -81,8 +80,8 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val isRightAtClosedLimit get() = rightClosedLimitSwitch.get()
 	private val isRightAtOpenedLimit get() = rightOpenedLimitSwitch.get()
 
-	val isAtClosedLimit get() = isLeftAtClosedLimit || isRightAtClosedLimit
-	val isAtOpenedLimit get() = isLeftAtOpenedLimit || isRightAtOpenedLimit
+	val isAtClosedLimit get() = isLeftAtClosedLimit && isRightAtClosedLimit
+	val isAtOpenedLimit get() = isLeftAtOpenedLimit && isRightAtOpenedLimit
 
 
 	// --- Motors Control ---
@@ -117,14 +116,14 @@ object ClimbingSubsystem : SubsystemBase() {
 	}
 
 	fun setLeft(output: PercentOutput) {
-		if (isLeftAtOpenedLimit && output > 0.0) leftMainMotor.set(0.0)
-		else if (isLeftAtClosedLimit && output < 0.0) leftMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
+		if (isLeftAtOpenedLimit && output < 0.0) leftMainMotor.set(0.0)
+		else if (isLeftAtClosedLimit && output > 0.0) leftMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
 		else leftMainMotor.set(output)
 	}
 
 	fun setRight(output: PercentOutput) {
-		if (isRightAtOpenedLimit && output > 0.0) rightMainMotor.set(0.0)
-		else if (isRightAtClosedLimit && output < 0.0) rightMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
+		if (isRightAtOpenedLimit && output < 0.0) rightMainMotor.set(0.0)
+		else if (isRightAtClosedLimit && output > 0.0) rightMainMotor.set(Constants.STAY_FOLDED_OUTPUT)
 		else rightMainMotor.set(output)
 	}
 

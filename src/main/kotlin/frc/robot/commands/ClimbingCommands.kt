@@ -4,16 +4,25 @@ import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.Rotations
 import edu.wpi.first.wpilibj2.command.Command
+import frc.robot.subsystems.climbing.ClimbingConstants
 import frc.robot.subsystems.climbing.ClimbingConstants.ClimbingState.*
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
+
+fun ClimbingSubsystem.openLoopGetToOpenLimitCommand(): Command = withName("open loop get to open limit") {
+	run { set(ClimbingConstants.REACH_UP_OUTPUT) } until { isAtOpenedLimit } finallyDo { stop() }
+}
+
+fun ClimbingSubsystem.openLoopGetToClosedLimitCommand(): Command = withName("open loop get to closed limit") {
+	run { set(ClimbingConstants.REACH_DOWN_OUTPUT) } until { isAtClosedLimit } finallyDo { stop() }
+}
 
 /**
  * A small constant output is applied to keep the climbing mechanism in place.
  * - Command has no end condition.
  * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command = withName("open loop stay folded") {
+fun ClimbingSubsystem.openLoop_StayFoldedCommand(): Command = withName("open loop stay folded") {
 	run {
 		set(Constants.STAY_FOLDED_OUTPUT)
 	}
@@ -23,7 +32,7 @@ fun ClimbingSubsystem.openLoopStayFoldedCommand(): Command = withName("open loop
  * PID is performed to keep climbing mechanism at [FOLDING].
  * - Command has no end condition.
  */
-fun ClimbingSubsystem.closedLoopStayFoldedCommand(): Command = withName("closed loop stay folded") {
+fun ClimbingSubsystem.closedLoop_StayFoldedCommand(): Command = withName("closed loop stay folded") {
 	runOnce {
 		configPID(isHoldingRobot = FOLDING.isHoldingRobot)
 	} andThen
@@ -86,9 +95,9 @@ fun ClimbingSubsystem.foldCommand(): Command = withName("fold") {
  * - Command has no end condition.
  * - Requirements: Climbing.
  */
-fun ClimbingSubsystem.foldAndStayFolded(): Command = withName("fold and stay folded") {
+fun ClimbingSubsystem.openLoop_FoldAndStayFolded(): Command = withName("fold and stay folded") {
 	foldCommand() andThen
-		closedLoopStayFoldedCommand()
+		openLoop_StayFoldedCommand()
 }
 
 /**

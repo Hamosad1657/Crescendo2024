@@ -59,7 +59,14 @@ object RobotContainer {
 		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
 		controllerA.triangle().toggleOnTrue(Notes.loadAndShootCommand(TO_TRAP))
 
-		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.escapeAngleLock())
+//		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.openLoopTeleop_shooterVelocity {
+//			simpleDeadband(
+//				testingController.leftY,
+//				JOYSTICK_DEADBAND
+//			)
+//		})
+
+		Trigger { Robot.isAutonomousEnabled }.onTrue(Shooter.escapeAngleLock())
 	}
 
 
@@ -71,7 +78,22 @@ object RobotContainer {
 			isFieldRelative = { true },
 		)
 
-		//Shooter.defaultCommand = Shooter.prepareShooterForCollectingCommand()
+//		Climbing.defaultCommand = Climbing.openLoopTeleopCommand {
+//			simpleDeadband(
+//				testingController.leftY,
+//				JOYSTICK_DEADBAND
+//			)
+//		}
+		Climbing.defaultCommand = Climbing.run {
+			Climbing.set(
+				simpleDeadband(
+					testingController.leftY,
+					JOYSTICK_DEADBAND
+				)
+			)
+		}
+
+		//Shooter.defaultCommand = Shooter.getToAngleCommand(ShooterConstants.ANGLE_FOR_INTAKE)
 	}
 
 	fun getAutonomousCommand(): Command {

@@ -10,6 +10,10 @@ object ClimbingConstants {
 	val PID_GAINS_HOLDING_ROBOT = PIDGains(0.0, 0.0, 0.0)
 	val PID_GAINS_NOT_HOLDING_ROBOT = PIDGains(0.0, 0.0, 0.0)
 
+	//TODO: Test and find the outputs.
+	const val REACH_UP_OUTPUT = 0.0
+	const val REACH_DOWN_OUTPUT = 0.0
+
 	const val SETPOINT_TOLERANCE: Rotations = 0.0
 
 	// TODO: Find this value
