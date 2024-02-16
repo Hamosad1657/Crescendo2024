@@ -78,21 +78,6 @@ object RobotContainer {
 			isFieldRelative = { true },
 		)
 
-//		Climbing.defaultCommand = Climbing.openLoopTeleopCommand {
-//			simpleDeadband(
-//				testingController.leftY,
-//				JOYSTICK_DEADBAND
-//			)
-//		}
-		Climbing.defaultCommand = Climbing.run {
-			Climbing.set(
-				simpleDeadband(
-					testingController.leftY,
-					JOYSTICK_DEADBAND
-				)
-			)
-		}
-
 		//Shooter.defaultCommand = Shooter.getToAngleCommand(ShooterConstants.ANGLE_FOR_INTAKE)
 	}
 

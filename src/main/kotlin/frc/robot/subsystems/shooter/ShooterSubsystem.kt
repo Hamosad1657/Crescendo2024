@@ -160,11 +160,6 @@ object ShooterSubsystem : SubsystemBase() {
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
-	fun increaseShooterMotorsOutputBy(output: PercentOutput) {
-		shooterMainMotor.set(shooterMainMotor.get() + output)
-	}
-
-	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun increaseVelocitySetpointBy(velocity: AngularVelocity) {
 		setVelocity(this.currentVelocity + velocity)
 	}

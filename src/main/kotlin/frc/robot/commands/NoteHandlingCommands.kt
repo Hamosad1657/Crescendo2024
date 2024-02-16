@@ -3,7 +3,7 @@
 package frc.robot.commands
 
 import com.hamosad1657.lib.commands.*
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.Volts
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.*
 import frc.robot.subsystems.intake.IntakeConstants
@@ -143,33 +143,6 @@ fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
 //
 // ---
 
-/** - Requirements: Shooter. */
-fun Shooter.openLoopTeleop_shooterVelocity(
-	output: () -> PercentOutput
-): Command = withName("velocity open loop teleop") {
-	run {
-		increaseShooterMotorsOutputBy(output())
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-
-/**
- * [changeInVelocity] is assumed -1 to 1, will come from joysticks.
- * To modify the rate of change, use [multiplier].
- *
- * - Requirements: Shooter.
- */
-fun Shooter.closedLoopTeleop_shooterVelocity(
-	changeInVelocity: () -> Double, multiplier: Double
-): Command = withName("velocity closed loop teleop") {
-	run {
-		val delta = changeInVelocity() * multiplier
-		increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
-	}
-}
-
 /**
  * Runs the intake in reverse, regardless of shooter angle.
  * - Requirements: Intake.
@@ -180,12 +153,3 @@ fun Intake.ejectFromIntakeCommand(): Command =
 	} finallyDo {
 		stop()
 	}
-
-/** - Requirements: Loader, Shooter. */
-fun Notes.ejectFromShooterCommand(): Command =
-	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) alongWith
-		Shooter.run {
-			Shooter.setShooterMotorsOutput(ShooterConstants.EJECT_OUTPUT)
-		}.finallyDo { _ ->
-			Shooter.stopShooterMotors()
-		}
