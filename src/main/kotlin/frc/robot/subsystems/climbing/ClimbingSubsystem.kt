@@ -76,10 +76,10 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	// TODO: Check if switches are wired normally open or normally closed.
 
-	private val isLeftAtClosedLimit get() = !leftClosedLimitSwitch.get()
-	private val isLeftAtOpenedLimit get() = !leftOpenedLimitSwitch.get()
+	private val isLeftAtClosedLimit get() = leftClosedLimitSwitch.get()
+	private val isLeftAtOpenedLimit get() = leftOpenedLimitSwitch.get()
 	private val isRightAtClosedLimit get() = rightClosedLimitSwitch.get()
-	private val isRightAtOpenedLimit get() = !rightOpenedLimitSwitch.get()
+	private val isRightAtOpenedLimit get() = rightOpenedLimitSwitch.get()
 
 	val isAtClosedLimit get() = isLeftAtClosedLimit || isRightAtClosedLimit
 	val isAtOpenedLimit get() = isLeftAtOpenedLimit || isRightAtOpenedLimit
