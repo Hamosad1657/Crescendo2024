@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
 object ShooterConstants {
-	val VELOCITY_TOLERANCE: AngularVelocity = 10.0.rpm
+	val VELOCITY_TOLERANCE: AngularVelocity = 20.0.rpm
 	val ANGLE_TOLERANCE = 1.5.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
@@ -77,10 +77,9 @@ object ShooterConstants {
 			val TO_TRAP = ShooterState(122.0.degrees, 2300.0.rpm)
 
 			// TODO: Test and find the shooter states
-			// TODO: Name these shooter states better
-			val TO_SPEAKER_1 = ShooterState(Rotation2d(), 0.0.rpm)
-			val TO_SPEAKER_2 = ShooterState(Rotation2d(), 0.0.rpm)
-			val TO_SPEAKER_3 = ShooterState(Rotation2d(), 0.0.rpm)
+			val AT_SPEAKER_CENTER = ShooterState(65.degrees, 2600.rpm)
+			val AT_SPEAKER_SIDE = ShooterState(Rotation2d(), 0.0.rpm)
+			val AT_STAGE = ShooterState(Rotation2d(), 0.0.rpm)
 
 			val COLLECT = ShooterState(ANGLE_FOR_INTAKE, 0.0.rpm)
 		}

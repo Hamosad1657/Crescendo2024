@@ -1,6 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -9,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.*
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterState.Companion.TO_TRAP
+import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -57,7 +58,11 @@ object RobotContainer {
 		// --- Notes ---
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
-		controllerA.triangle().toggleOnTrue(Notes.loadAndShootCommand(TO_TRAP))
+
+		testingController.triangle().toggleOnTrue(
+			Notes.collectCommand() andThen
+				Notes.loadAndShootCommand(ShooterConstants.ShooterState.AT_SPEAKER_CENTER)
+		)
 
 //		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.openLoopTeleop_shooterVelocity {
 //			simpleDeadband(
