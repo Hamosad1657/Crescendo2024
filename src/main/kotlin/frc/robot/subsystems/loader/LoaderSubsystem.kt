@@ -17,19 +17,17 @@ object LoaderSubsystem : SubsystemBase() {
 		configurator.apply {
 			TalonFXConfiguration()
 		}
-		// TODO: Verify positive output loads
 		inverted = false
 		idleMode = IdleMode.kBrake
 	}
 
 	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)
 
-	// TODO: Check if beam-break sensor is wired normally-true or normally-false
 	/** Beam-break is positioned between loader and shooter. */
 	val isNoteDetected: Boolean get() = beamBreak.value <= ANALOG_READ_NOTE_DETECTED_THRESHOLD
 
 	private val controlRequestVoltage = VoltageOut(0.0).apply { EnableFOC = false }
-	
+
 	fun setVoltage(voltage: Volts) {
 		motor.setControl(controlRequestVoltage.apply { Output = voltage })
 	}

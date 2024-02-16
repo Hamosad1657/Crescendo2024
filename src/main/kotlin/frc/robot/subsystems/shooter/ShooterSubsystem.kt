@@ -31,7 +31,6 @@ object ShooterSubsystem : SubsystemBase() {
 
 	private val shooterMainMotor = HaSparkFlex(ShooterMap.UPPER_MOTOR_ID).apply {
 		restoreFactoryDefaults()
-		// TODO: Verify positive output shoots
 		inverted = true
 		idleMode = IdleMode.kCoast
 	}
@@ -41,7 +40,6 @@ object ShooterSubsystem : SubsystemBase() {
 	private val shooterSecondaryMotor = HaSparkFlex(ShooterMap.LOWER_MOTOR_ID).apply {
 		restoreFactoryDefaults()
 		idleMode = IdleMode.kCoast
-		// TODO: Check if follower needs to be inverted from the main motor
 		follow(shooterMainMotor, true)
 	}
 
@@ -49,7 +47,6 @@ object ShooterSubsystem : SubsystemBase() {
 
 	private val angleMotor = HaTalonFX(ShooterAngleMap.MOTOR_ID).apply {
 		configurator.apply(TalonFXConfiguration())
-		// TODO: Verify positive output raises angle
 		inverted = false
 		idleMode = IdleMode.kBrake
 
@@ -72,7 +69,6 @@ object ShooterSubsystem : SubsystemBase() {
 				MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1
 				MagnetSensor.MagnetOffset = Constants.CANCODER_OFFSET.rotations
 
-				// TODO: Verify measurement gets more positive when going up after the minimum
 				MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive
 			}
 		)
@@ -100,7 +96,6 @@ object ShooterSubsystem : SubsystemBase() {
 	var currentVelocitySetpoint = AngularVelocity.fromRpm(0.0)
 		private set
 
-	// TODO: Verify this really is in rotations and not degrees.
 	val currentAngleSetpoint: Rotation2d get() = Rotation2d.fromRotations(angleMotor.closedLoopReference.value)
 
 
@@ -128,7 +123,7 @@ object ShooterSubsystem : SubsystemBase() {
 			TOWARDS_MIN -> if (isAtMinAngleLimit) return angleMotor.set(KEEP_AT_MIN_ANGLE_OUTPUT)
 			TOWARDS_MAX -> if (isAtMaxAngleLimit) return angleMotor.set(KEEP_AT_MAX_ANGLE_OUTPUT)
 		}
-		
+
 		angleMotor.setControl(controlRequestShooterAngle.apply {
 			Position = angleSetpoint.rotations
 			FeedForward = Constants.calculateAngleFF(currentAngle)

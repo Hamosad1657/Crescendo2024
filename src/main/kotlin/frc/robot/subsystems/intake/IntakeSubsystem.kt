@@ -12,7 +12,6 @@ import frc.robot.RobotMap.Intake as IntakeMap
 object IntakeSubsystem : SubsystemBase() {
 	private val bottomMotor = HaTalonFX(IntakeMap.BOTTOM_MOTOR_ID).apply {
 		configurator.apply(TalonFXConfiguration())
-		// TODO: Verify positive output intakes
 		inverted = false
 		idleMode = IdleMode.kBrake
 	}
@@ -25,7 +24,7 @@ object IntakeSubsystem : SubsystemBase() {
 
 	private val controlRequestBottomVoltage = VoltageOut(0.0).apply { EnableFOC = false }
 	private val controlRequestTopVoltage = VoltageOut(0.0).apply { EnableFOC = false }
-	
+
 	fun setVoltage(bottomVoltage: Volts, topVoltage: Volts) {
 		bottomMotor.setControl(controlRequestBottomVoltage.apply { Output = bottomVoltage })
 		topMotor.setControl(controlRequestTopVoltage.apply { Output = topVoltage })

@@ -7,14 +7,12 @@ import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
 object ShooterConstants {
-	// TODO: Find velocity and angle tolerances for shooter
 	val VELOCITY_TOLERANCE: AngularVelocity = 10.0.rpm
 	val ANGLE_TOLERANCE = 1.5.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
 
-	// TODO: Test this
 	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.1
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = -0.2
 
@@ -76,9 +74,9 @@ object ShooterConstants {
 		}
 
 		companion object {
-			// TODO: Test and find the shooter states
 			val TO_TRAP = ShooterState(122.0.degrees, 2300.0.rpm)
 
+			// TODO: Test and find the shooter states
 			// TODO: Name these shooter states better
 			val TO_SPEAKER_1 = ShooterState(Rotation2d(), 0.0.rpm)
 			val TO_SPEAKER_2 = ShooterState(Rotation2d(), 0.0.rpm)
