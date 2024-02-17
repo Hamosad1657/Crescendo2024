@@ -90,7 +90,7 @@ object ShooterSubsystem : SubsystemBase() {
 	 * which uses the CANCoder for feedback. Essentially, this is the position that the motor
 	 * controller thinks it's at.
 	 */
-	val currentAngle: Rotation2d get() = Rotation2d.fromRotations(angleMotor.position.value)
+	val currentAngle: Rotation2d get() = Rotation2d.fromRotations(angleCANCoder.absolutePosition.value)
 
 	// I have to track this myself because there is no getter for it in SparkPIDController :(
 	var currentVelocitySetpoint = AngularVelocity.fromRpm(0.0)
@@ -167,19 +167,17 @@ object ShooterSubsystem : SubsystemBase() {
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun setAngleMotorOutput(output: PercentOutput) {
 		if (output > 0.0 && isAtMaxAngleLimit) {
-			angleMotor.set(KEEP_AT_MAX_ANGLE_OUTPUT)
-			return
+			return angleMotor.set(KEEP_AT_MAX_ANGLE_OUTPUT)
 		}
 		if (output < 0.0 && isAtMinAngleLimit) {
-			angleMotor.set(KEEP_AT_MIN_ANGLE_OUTPUT)
-			return
+			return angleMotor.set(KEEP_AT_MIN_ANGLE_OUTPUT)
 		}
 		angleMotor.set(output)
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun increaseAngleSetpointBy(angle: Rotation2d) {
-		setAngle(this.currentAngle + angle)
+		setAngle(currentAngle + angle)
 	}
 
 

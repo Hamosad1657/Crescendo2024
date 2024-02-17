@@ -7,19 +7,24 @@ import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
 object ShooterConstants {
+	/**
+	 * 1 degree should be the lowest possible angle.
+	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
+	 */
+	val CANCODER_OFFSET = (-0.76625).rotations
+
+	/** To set offset let the fall to its resting position while its on coast than subtract 90 degrees */
+	val RESTING_ANGLE = 221.15.degrees
+	val FLOOR_RELATIVE_OFFSET: Rotation2d = -(RESTING_ANGLE - 90.degrees)
+
 	val VELOCITY_TOLERANCE: AngularVelocity = 20.0.rpm
 	val ANGLE_TOLERANCE = 1.5.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
-	const val KEEP_AT_MIN_ANGLE_OUTPUT = -0.03
+	const val KEEP_AT_MIN_ANGLE_OUTPUT = 0.0
 
 	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.1
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = -0.2
-
-	val ANGLE_FOR_INTAKE =
-		42.0.degrees
-
-	val ANGLE_FOR_AMP = (-120.0).degrees
 
 	val SHOOTER_PID_GAINS = PIDGains(
 		0.0, 0.006, 0.0,
@@ -27,15 +32,18 @@ object ShooterConstants {
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(45.0, 0.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(0.0, 0.0, 0.0) // PIDGains(45.0, 0.0, 0.0)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
 		MotionMagicCruiseVelocity = 0.8
 		MotionMagicAcceleration = 2.0
 	}
 
+	private const val KEEP_PARALLEL_TO_FLOOR_OUTPUT = -0.0185
+
 	fun calculateAngleFF(currentAngle: Rotation2d): Volts {
-		val ff = cos(currentAngle.radians) * KEEP_AT_MIN_ANGLE_OUTPUT * 12.0 * 0.7
-		return if (currentAngle.degrees < 0.0) ff * 0.7 else ff
+		val floorRelativeAngle = currentAngle + FLOOR_RELATIVE_OFFSET
+		val ff = cos(floorRelativeAngle.radians) * KEEP_PARALLEL_TO_FLOOR_OUTPUT * 12.0
+		return if (currentAngle.radians < RESTING_ANGLE.radians) ff * 1.125 - 0.1 else ff + 0.125
 	}
 
 	// Calculate the gear ratio.
@@ -49,12 +57,6 @@ object ShooterConstants {
 	 * it's maximum value.
 	 */
 	const val SHOOT_TIME_SEC = 1.25
-
-	/**
-	 * 1 degree should be the lowest possible angle.
-	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
-	 */
-	val CANCODER_OFFSET = (-0.1254).rotations
 
 	/** This should eject the note quickly without getting it too far away. */
 	const val EJECT_OUTPUT: PercentOutput = 0.3
@@ -74,12 +76,12 @@ object ShooterConstants {
 		}
 
 		companion object {
-			val TO_TRAP = ShooterState(122.0.degrees, 2300.0.rpm)
+			val COLLECT = ShooterState(35.degrees, 0.0.rpm)
+			val TO_AMP = ShooterState(230.degrees, 0.0.rpm)
+			val TO_TRAP = ShooterState(122.degrees, 2300.0.rpm)
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(65.degrees, 2600.rpm)
-
-			val COLLECT = ShooterState(ANGLE_FOR_INTAKE, 0.0.rpm)
 		}
 	}
 }

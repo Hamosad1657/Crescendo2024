@@ -18,16 +18,11 @@ object Notes
 
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectCommand(): Command = withName("collect") {
-	(Shooter.prepareShooterForCollectingCommand() alongWith
+	(Shooter.getToShooterStateCommand(ShooterState.COLLECT) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
 		Intake.runIntakeCommand()
 		) until
 		Loader::isNoteDetected
-}
-
-/** SHOULD BE THE DEFAULT COMMAND OF SHOOTER SUBSYSTEM */
-fun Shooter.prepareShooterForCollectingCommand(): Command = withName("prepare shooter for collecting") {
-	getToShooterStateCommand(ShooterState.COLLECT)
 }
 
 /** - Requirements: Loader, Shooter. */
@@ -64,7 +59,7 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 }
 
 fun Notes.ejectIntoAmpCommand(): Command = withName("eject into amp") {
-	Shooter.getToAngleCommand(ShooterConstants.ANGLE_FOR_AMP) raceWith
+	Shooter.getToShooterStateCommand(ShooterState.TO_AMP) raceWith
 		(WaitCommand(0.3) andThen
 			waitUntil { Shooter.isWithinAngleTolerance } andThen
 			Loader.ejectCommand())
