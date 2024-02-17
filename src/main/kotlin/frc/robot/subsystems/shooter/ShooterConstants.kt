@@ -17,7 +17,7 @@ object ShooterConstants {
 	val RESTING_ANGLE = 221.15.degrees
 	val FLOOR_RELATIVE_OFFSET: Rotation2d = -(RESTING_ANGLE - 90.degrees)
 
-	val VELOCITY_TOLERANCE: AngularVelocity = 20.0.rpm
+	val VELOCITY_TOLERANCE: AngularVelocity = 50.0.rpm
 	val ANGLE_TOLERANCE = 1.5.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
@@ -27,12 +27,12 @@ object ShooterConstants {
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = -0.2
 
 	val SHOOTER_PID_GAINS = PIDGains(
-		0.0, 0.006, 0.0,
+		0.0, 0.1, 0.0,
 		kFF = { setpointRpm -> 0.0019 * setpointRpm },
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(0.0, 0.0, 0.0) // PIDGains(45.0, 0.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(45.0, 0.0, 0.0)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
 		MotionMagicCruiseVelocity = 0.8
 		MotionMagicAcceleration = 2.0
@@ -50,6 +50,8 @@ object ShooterConstants {
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = (66.0 / 32.0) * 4 * 4
 
 	const val ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER = 20.0
+
+	const val SHOOTER_VOLTAGE_NEUTRAL_DEADBAND: Volts = 0.5
 
 	/**
 	 * Time between when loading started to when the note is shot.
@@ -76,12 +78,12 @@ object ShooterConstants {
 		}
 
 		companion object {
-			val COLLECT = ShooterState(35.degrees, 0.0.rpm)
-			val TO_AMP = ShooterState(230.degrees, 0.0.rpm)
-			val TO_TRAP = ShooterState(122.degrees, 2300.0.rpm)
+			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
+			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
+			val TO_TRAP = ShooterState(245.degrees, 2300.0.rpm)
 
 			// TODO: Test and find the shooter states
-			val AT_SPEAKER = ShooterState(65.degrees, 2600.rpm)
+			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
 		}
 	}
 }

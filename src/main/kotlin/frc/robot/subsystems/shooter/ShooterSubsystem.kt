@@ -33,6 +33,7 @@ object ShooterSubsystem : SubsystemBase() {
 		restoreFactoryDefaults()
 		inverted = true
 		idleMode = IdleMode.kCoast
+		voltageNeutralDeadband = Constants.SHOOTER_VOLTAGE_NEUTRAL_DEADBAND
 	}
 
 	private val shooterPIDController = SHOOTER_PID_GAINS.toPIDController()
@@ -40,6 +41,7 @@ object ShooterSubsystem : SubsystemBase() {
 	private val shooterSecondaryMotor = HaSparkFlex(ShooterMap.LOWER_MOTOR_ID).apply {
 		restoreFactoryDefaults()
 		idleMode = IdleMode.kCoast
+		voltageNeutralDeadband = Constants.SHOOTER_VOLTAGE_NEUTRAL_DEADBAND
 		follow(shooterMainMotor, true)
 	}
 
@@ -182,7 +184,8 @@ object ShooterSubsystem : SubsystemBase() {
 
 
 	override fun initSendable(builder: SendableBuilder) {
-		super.initSendable(builder)
+		builder.setSmartDashboardType("Subsystem")
+		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
 		builder.addBooleanProperty("Is at min angle limit", { isAtMinAngleLimit }, null)
 		builder.addBooleanProperty("Is at max angle limit", { isAtMaxAngleLimit }, null)
 		builder.addDoubleProperty("Angle deg", { currentAngle.degrees }, null)

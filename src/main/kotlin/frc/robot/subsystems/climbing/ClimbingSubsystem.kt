@@ -102,7 +102,8 @@ object ClimbingSubsystem : SubsystemBase() {
 	}
 
 	override fun initSendable(builder: SendableBuilder) {
-		super.initSendable(builder)
+		builder.setSmartDashboardType("Subsystem")
+		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
 		builder.addBooleanProperty("Left at opened limit", { isLeftAtOpenedLimit }, null)
 		builder.addBooleanProperty("Left at closed limit", { isLeftAtClosedLimit }, null)
 		builder.addBooleanProperty("Right at opened limit", { isRightAtOpenedLimit }, null)

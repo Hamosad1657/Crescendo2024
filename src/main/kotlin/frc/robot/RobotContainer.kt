@@ -7,9 +7,8 @@ import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
-import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.*
-import frc.robot.subsystems.shooter.ShooterConstants
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -44,6 +43,7 @@ object RobotContainer {
 
 	private fun initSendables() {
 		if (Robot.telemetryLevel == Telemetry.Competition) return
+		SmartDashboard.putData(Swerve)
 		SmartDashboard.putData(Climbing)
 		SmartDashboard.putData(Intake)
 		SmartDashboard.putData(Loader)
@@ -56,11 +56,10 @@ object RobotContainer {
 
 		// --- Notes ---
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
-		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
 
-		controllerA.triangle().toggleOnTrue(
-			Notes.loadAndShootCommand(ShooterConstants.ShooterState.AT_SPEAKER)
-		)
+		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
+		controllerA.triangle().toggleOnTrue(Notes.loadAndShootCommand(ShooterState.TO_TRAP))
+		controllerA.R2().toggleOnTrue(Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 
 //		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.openLoopTeleop_shooterVelocity {
 //			simpleDeadband(
@@ -68,20 +67,17 @@ object RobotContainer {
 //				JOYSTICK_DEADBAND
 //			)
 //		})
-
-		Trigger { Robot.isAutonomousEnabled }.onTrue(Shooter.escapeAngleLock())
 	}
-
 
 	private fun setDefaultCommands() {
 		Swerve.defaultCommand = Swerve.teleopDriveCommand(
-			vxSupplier = { simpleDeadband(controllerA.leftY * 0.5, JOYSTICK_DEADBAND) },
-			vySupplier = { simpleDeadband(controllerA.leftX * 0.5, JOYSTICK_DEADBAND) },
-			omegaSupplier = { simpleDeadband(controllerA.rightX * 0.5, JOYSTICK_DEADBAND) },
+			vxSupplier = { simpleDeadband(controllerA.leftY, JOYSTICK_DEADBAND) },
+			vySupplier = { simpleDeadband(controllerA.leftX, JOYSTICK_DEADBAND) },
+			omegaSupplier = { simpleDeadband(controllerA.rightX, JOYSTICK_DEADBAND) },
 			isFieldRelative = { true },
 		)
 
-		//Shooter.defaultCommand = Shooter.getToAngleCommand(ShooterConstants.ANGLE_FOR_INTAKE)
+		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 	}
 
 	fun getAutonomousCommand(): Command {

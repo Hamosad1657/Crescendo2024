@@ -6,7 +6,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoo
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
-import com.hamosad1657.lib.SWERVE_MODULE_NAMES
 import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.toNeutralModeValue
@@ -16,14 +15,12 @@ import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
-import edu.wpi.first.util.sendable.Sendable
-import edu.wpi.first.util.sendable.SendableBuilder
+import edu.wpi.first.util.sendable.*
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.Subsystem
+import edu.wpi.first.wpilibj2.command.*
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.Vision
@@ -37,6 +34,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	Constants.Modules.BACK_RIGHT,
 ), Subsystem, Sendable {
 	init {
+		SendableRegistry.addLW(this, "SwerveSubsystem", "SwerveSubsystem")
+		CommandScheduler.getInstance().registerSubsystem(this)
 		configureAutoBuilder()
 	}
 
@@ -54,7 +53,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 	private inline val currentState: SwerveDriveState get() = super.getState()
 	private inline val modulesStates: Array<SwerveModuleState> get() = currentState.ModuleStates
 	private inline val modulesPositions: Array<SwerveModulePosition> get() = super.m_modulePositions
-
 	// --- Robot State Getters ---
 
 	/** Gets the current yaw angle of the robot, as reported by the IMU (CCW positive, not wrapped). */
@@ -234,22 +232,24 @@ object SwerveSubsystem : SwerveDrivetrain(
 	private val field = Field2d()
 
 	override fun initSendable(builder: SendableBuilder) {
+		builder.setSmartDashboardType("Subsystem")
+		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
+
 		SmartDashboard.putData(field)
 		super.registerTelemetry { state -> field.robotPose = state.Pose }
 
-		builder.setSmartDashboardType("Subsystem")
+		builder.addDoubleProperty("Robot heading", { state.Pose.rotation.degrees }, null)
+		builder.addStringProperty("Robot pose", { state.Pose.translation.toString() }, null)
+		builder.addDoubleArrayProperty("Desired", { state.ModuleTargets.toDoubleArray() }, null)
+		builder.addDoubleArrayProperty("Current", { state.ModuleStates.toDoubleArray() }, null)
+	}
 
-		state.ModuleStates.forEachIndexed { index, module ->
-			val moduleName = SWERVE_MODULE_NAMES[index]
-			builder.addDoubleProperty("Current/$moduleName/MPS", { module.speedMetersPerSecond }, null)
-			builder.addDoubleProperty("Current/$moduleName/Angle", { module.angle.degrees }, null)
+	private fun Array<SwerveModuleState>.toDoubleArray(): DoubleArray {
+		val statesArray = Array(8) { 0.0 }
+		for ((index, module) in this.withIndex()) {
+			statesArray[index * 2] = module.angle.degrees
+			statesArray[index * 2 + 1] = module.speedMetersPerSecond
 		}
-
-		// Desired module states
-		state.ModuleTargets.forEachIndexed { index, module ->
-			val moduleName = SWERVE_MODULE_NAMES[index]
-			builder.addDoubleProperty("Desired/$moduleName/MPS", { module.speedMetersPerSecond }, null)
-			builder.addDoubleProperty("Desired/$moduleName/Angle", { module.angle.degrees }, null)
-		}
+		return statesArray.toDoubleArray()
 	}
 }

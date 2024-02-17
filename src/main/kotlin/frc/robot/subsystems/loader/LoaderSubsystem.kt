@@ -40,7 +40,8 @@ object LoaderSubsystem : SubsystemBase() {
 		get() = abs(motor.get()) > 0.0
 
 	override fun initSendable(builder: SendableBuilder) {
-		super.initSendable(builder)
+		builder.setSmartDashboardType("Subsystem")
+		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
 		builder.addDoubleProperty("Analog channel 0 voltage", { beamBreak.value.toDouble() }, null)
 		builder.addBooleanProperty("Is note detected", { isNoteDetected }, null)
 		builder.addBooleanProperty("Running", { isRunning }, null)

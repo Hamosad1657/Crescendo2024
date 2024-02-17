@@ -6,6 +6,7 @@ import com.hamosad1657.lib.units.PercentOutput
 import com.revrobotics.CANSparkFlex
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
+import kotlin.math.absoluteValue
 
 class HaSparkFlex(
 	deviceID: Int,
@@ -38,6 +39,9 @@ class HaSparkFlex(
 			field = value.coerceAtMost(1.0)
 		}
 
+	/** If the motor's voltage output is smaller than this value, the motor will stop.  */
+	var voltageNeutralDeadband = 0.0
+
 	/** The NEO motor has a temperature sensor inside it.*/
 	val isMotorTempSafe get() = motorTemperature < NEOSafeTempC
 
@@ -48,6 +52,11 @@ class HaSparkFlex(
 			d = gains.kD
 			iZone = gains.kIZone
 		}
+	}
+
+	override fun setVoltage(outputVolts: Double) {
+		if (outputVolts.absoluteValue < voltageNeutralDeadband) super.stopMotor()
+		else super.setVoltage(outputVolts)
 	}
 
 	/**
