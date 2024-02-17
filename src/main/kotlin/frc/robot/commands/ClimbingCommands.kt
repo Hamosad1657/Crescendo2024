@@ -44,25 +44,3 @@ fun ClimbingSubsystem.openLoopTeleopCommand(
 			stop()
 		}
 	}
-
-/**
- * To be used in testing or in other command groups.
- * - Requirements: Climbing.
- */
-private fun ClimbingSubsystem.openLoopGetToPositionCommand(
-	desiredPosition: Rotations,
-	output: PercentOutput
-): Command {
-	val endCondition =
-		if (output < 0.0) {
-			{ currentPosition <= desiredPosition }
-		} else {
-			{ currentPosition >= desiredPosition }
-		}
-
-	return withName("get to setpoint") {
-		run {
-			set(output)
-		} until endCondition
-	}
-}
