@@ -8,20 +8,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Robot
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
-import java.util.function.BooleanSupplier
-import java.util.function.DoubleSupplier
 import kotlin.math.pow
 
 fun SwerveSubsystem.teleopDriveCommand(
-	vxSupplier: DoubleSupplier,
-	vySupplier: DoubleSupplier,
-	omegaSupplier: DoubleSupplier,
-	isFieldRelative: BooleanSupplier,
+	vxSupplier: () -> Double,
+	vySupplier: () -> Double,
+	omegaSupplier: () -> Double,
+	isFieldRelative: () -> Boolean,
 ) = withName("teleop drive") {
 	run {
-		val vx = -vxSupplier.asDouble.pow(3.0) * SwerveConstants.MAX_SPEED_MPS
-		val vy = -vySupplier.asDouble.pow(3.0) * SwerveConstants.MAX_SPEED_MPS
-		val omega = -omegaSupplier.asDouble.pow(3.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs
+		val vx = -vxSupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
+		val vy = -vySupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
+		val omega = -omegaSupplier().pow(3.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs
 
 		if (Robot.telemetryLevel == Telemetry.Testing) {
 			SmartDashboard.putNumber("vx", vx)
@@ -33,7 +31,7 @@ fun SwerveSubsystem.teleopDriveCommand(
 		drive(
 			Translation2d(vx, vy),
 			omega.radPs,
-			isFieldRelative.asBoolean,
+			isFieldRelative(),
 		)
 	}
 }
