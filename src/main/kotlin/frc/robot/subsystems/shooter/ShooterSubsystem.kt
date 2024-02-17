@@ -34,14 +34,18 @@ object ShooterSubsystem : SubsystemBase() {
 		inverted = true
 		idleMode = IdleMode.kCoast
 		voltageNeutralDeadband = Constants.SHOOTER_VOLTAGE_NEUTRAL_DEADBAND
+		closedLoopRampRate = Constants.SHOOTER_RAMP_RATE_SECONDS
 	}
 
 	private val shooterPIDController = SHOOTER_PID_GAINS.toPIDController()
 
+	@Suppress("unused")
 	private val shooterSecondaryMotor = HaSparkFlex(ShooterMap.LOWER_MOTOR_ID).apply {
 		restoreFactoryDefaults()
+		inverted = false
 		idleMode = IdleMode.kCoast
 		voltageNeutralDeadband = Constants.SHOOTER_VOLTAGE_NEUTRAL_DEADBAND
+		closedLoopRampRate = Constants.SHOOTER_RAMP_RATE_SECONDS
 		follow(shooterMainMotor, true)
 	}
 

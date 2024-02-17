@@ -17,8 +17,8 @@ import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
 object Notes
 
 /** - Requirements: Intake, Loader, Shooter. */
-fun Notes.collectCommand(): Command = withName("collect") {
-	(Shooter.getToShooterStateCommand(ShooterState.COLLECT) alongWith
+fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Command = withName("collect") {
+	(Shooter.getToShooterStateCommand(shooterState) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
 		Intake.runIntakeCommand()
 		) until

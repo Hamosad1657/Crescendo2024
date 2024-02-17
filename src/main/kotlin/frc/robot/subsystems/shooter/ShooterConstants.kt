@@ -18,7 +18,7 @@ object ShooterConstants {
 	val FLOOR_RELATIVE_OFFSET: Rotation2d = -(RESTING_ANGLE - 90.degrees)
 
 	val VELOCITY_TOLERANCE: AngularVelocity = 50.0.rpm
-	val ANGLE_TOLERANCE = 1.5.degrees
+	val ANGLE_TOLERANCE = 1.0.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = 0.0
@@ -27,15 +27,17 @@ object ShooterConstants {
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = -0.2
 
 	val SHOOTER_PID_GAINS = PIDGains(
-		0.0, 0.1, 0.0,
+		0.000025, 0.1, 0.0,
 		kFF = { setpointRpm -> 0.0019 * setpointRpm },
 		kIZone = 150.0,
 	)
 
-	val ANGLE_PID_GAINS = PIDGains(45.0, 0.0, 0.0)
+	val ANGLE_PID_GAINS = PIDGains(
+		42.5, 0.0, 0.0,
+	)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
-		MotionMagicCruiseVelocity = 1.0
-		MotionMagicAcceleration = 2.5
+		MotionMagicCruiseVelocity = 2.0
+		MotionMagicAcceleration = 4.0
 	}
 
 	private const val KEEP_PARALLEL_TO_FLOOR_OUTPUT = -0.0185
@@ -52,13 +54,14 @@ object ShooterConstants {
 	const val ANGLE_CLOSED_LOOP_TELEOP_MULTIPLIER = 20.0
 
 	const val SHOOTER_VOLTAGE_NEUTRAL_DEADBAND: Volts = 0.5
+	const val SHOOTER_RAMP_RATE_SECONDS = 0.25
 
 	/**
 	 * Time between when loading started to when the note is shot.
 	 * It might be a little different in different speeds, so put here
 	 * it's maximum value.
 	 */
-	const val SHOOT_TIME_SEC = 1.25
+	const val SHOOT_TIME_SEC = 1.0
 
 	/** This should eject the note quickly without getting it too far away. */
 	const val EJECT_OUTPUT: PercentOutput = 0.3
@@ -80,10 +83,13 @@ object ShooterConstants {
 		companion object {
 			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
-			val TO_TRAP = ShooterState(250.degrees, 2300.0.rpm)
+			val TO_TRAP = ShooterState(251.degrees, 2500.0.rpm)
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
+
+			// TODO: Remove
+			val COLLECT_TO_TRAP = ShooterState(270.degrees, 0.0.rpm)
 		}
 	}
 }

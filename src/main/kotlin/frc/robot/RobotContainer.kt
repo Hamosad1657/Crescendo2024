@@ -28,6 +28,8 @@ object RobotContainer {
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
 
+	private var swerveIsFieldRelative = true
+
 	private val autoChooser = Swerve.let {
 		AutoBuilder.buildAutoChooser().apply {
 			SmartDashboard.putData("Auto Chooser", this)
@@ -53,9 +55,11 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
+		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
 
 		// --- Notes ---
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
+		controllerA.L1().toggleOnTrue(Notes.collectCommand(ShooterState.COLLECT_TO_TRAP))
 
 		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
 		controllerA.triangle().toggleOnTrue(Notes.loadAndShootCommand(ShooterState.TO_TRAP))
@@ -74,11 +78,11 @@ object RobotContainer {
 			vxSupplier = { simpleDeadband(controllerA.leftY, JOYSTICK_DEADBAND) },
 			vySupplier = { simpleDeadband(controllerA.leftX, JOYSTICK_DEADBAND) },
 			omegaSupplier = { simpleDeadband(controllerA.rightX, JOYSTICK_DEADBAND) },
-			isFieldRelative = { true },
-			isClosedLoop = { true }
+			isFieldRelative = { swerveIsFieldRelative },
+			isClosedLoop = { true },
 		)
 
-//		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT_TO_TRAP)
 	}
 
 	fun getAutonomousCommand(): Command {
