@@ -22,7 +22,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-	const val JOYSTICK_DEADBAND = 0.01
+	const val JOYSTICK_DEADBAND = 0.05
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -75,9 +75,10 @@ object RobotContainer {
 			vySupplier = { simpleDeadband(controllerA.leftX, JOYSTICK_DEADBAND) },
 			omegaSupplier = { simpleDeadband(controllerA.rightX, JOYSTICK_DEADBAND) },
 			isFieldRelative = { true },
+			isClosedLoop = { true }
 		)
 
-		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+//		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 	}
 
 	fun getAutonomousCommand(): Command {

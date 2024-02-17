@@ -15,6 +15,7 @@ fun SwerveSubsystem.teleopDriveCommand(
 	vySupplier: () -> Double,
 	omegaSupplier: () -> Double,
 	isFieldRelative: () -> Boolean,
+	isClosedLoop: () -> Boolean = { false }
 ) = withName("teleop drive") {
 	run {
 		val vx = -vxSupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
@@ -32,6 +33,7 @@ fun SwerveSubsystem.teleopDriveCommand(
 			Translation2d(vx, vy),
 			omega.radPs,
 			isFieldRelative(),
+			isClosedLoop()
 		)
 	}
 }

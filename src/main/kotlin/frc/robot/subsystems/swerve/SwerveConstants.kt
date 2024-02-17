@@ -1,6 +1,6 @@
 package frc.robot.subsystems.swerve
 
-import com.ctre.phoenix6.configs.Slot0Configs
+import com.ctre.phoenix6.configs.*
 import com.ctre.phoenix6.mechanisms.swerve.*
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType
@@ -24,18 +24,22 @@ object SwerveConstants {
 	/** When using closed-loop control, the steer motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.
 	private val STEER_PID_GAINS = Slot0Configs().apply {
-		kP = 20.0; kI = 0.0; kD = 0.0
+		kP = 40.0; kI = 0.0; kD = 0.0
 		kS = 0.0; kV = 1.5; kA = 0.0
 	}
 
-	// !!!!!!!!!!!!!!!!!!!!!!!
-	// !!! Tune if you use !!!
-	// !!!!!!!!!!!!!!!!!!!!!!!
 	/** When using closed-loop control, the drive motor uses [ClosedLoopOutputType.Voltage]. */
 	private val DRIVE_PID_GAINS = Slot0Configs().apply {
-		kP = 0.0; kI = 0.0; kD = 0.0
-		kS = 0.0; kV = 0.0; kA = 0.0
+		kP = 0.09; kI = 0.0; kD = 0.0
+		kS = 0.0; kV = 0.12; kA = 0.0
 	}
+	val DRIVE_MOTOR_CONFIG =
+		TalonFXConfiguration().apply {
+			this.ClosedLoopRamps =
+				ClosedLoopRampsConfigs().apply {
+					VoltageClosedLoopRampPeriod = 0.25
+				}
+		}
 
 	/** How many rotations the drive motor does when the module rotates 1 rotation. */
 	private const val COUPLING_GEAR_RATIO = 3.5714285714285716
@@ -87,6 +91,9 @@ object SwerveConstants {
 		private const val FRONT_RIGHT_ENCODER_OFFSET = -0.005859375
 		private const val BACK_LEFT_ENCODER_OFFSET = -0.478759765625
 		private const val BACK_RIGHT_ENCODER_OFFSET = -0.7646484375
+
+		//**FL, FR, BL, BR*/
+		val asArray get() = arrayOf(FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT)
 
 		val FRONT_LEFT: SwerveModuleConstants = CONSTANT_CREATOR.createModuleConstants(
 			SwerveMap.FrontLeft.STEER_MOTOR_ID,

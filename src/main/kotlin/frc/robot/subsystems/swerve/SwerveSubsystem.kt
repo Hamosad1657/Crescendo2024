@@ -37,6 +37,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 		SendableRegistry.addLW(this, "SwerveSubsystem", "SwerveSubsystem")
 		CommandScheduler.getInstance().registerSubsystem(this)
 		configureAutoBuilder()
+		configDriveMotors()
 	}
 
 	override fun periodic() {
@@ -119,6 +120,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	private val controlRequestChassisSpeeds = SwerveRequest.ApplyChassisSpeeds()
+
+	fun configDriveMotors() {
+		for (module in super.Modules) {
+			module.driveMotor.configurator.apply(Constants.DRIVE_MOTOR_CONFIG.ClosedLoopRamps)
+		}
+	}
 
 	/**
 	 * Set chassis speeds with closed-loop velocity control.
