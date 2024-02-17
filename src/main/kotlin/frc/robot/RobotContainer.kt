@@ -56,6 +56,7 @@ object RobotContainer {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
+		controllerA.square().onTrue(InstantCommand({}, Swerve))
 
 		// --- Notes ---
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
@@ -86,7 +87,7 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.pathFindToPathCommand("to_speaker")
+		return Swerve.followAutoCommand("calibration_auto")
 	}
 
 	private fun registerAutoCommands() {

@@ -19,7 +19,7 @@ object SwerveConstants {
 	const val MAX_SPEED_MPS = 5.0 // 9.46 according to CTRE ?
 
 	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
-	val MAX_ANGULAR_VELOCITY = 1.0.rps
+	val MAX_ANGULAR_VELOCITY = 2.0.rps
 
 	/** When using closed-loop control, the steer motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.
@@ -61,14 +61,14 @@ object SwerveConstants {
 
 	// TODO: Tune.
 	val PATH_CONSTRAINTS = PathConstraints(
-		MAX_SPEED_MPS, // Max velocity (meters per second)
-		MAX_SPEED_MPS / 2, // Max acceleration - 2 seconds to max velocity
+		2.0, // Max velocity (meters per second)
+		2.0 / 2, // Max acceleration - 2 seconds to max velocity
 		MAX_ANGULAR_VELOCITY.asRadPs, // Max angular velocity (radians per second)
 		MAX_ANGULAR_VELOCITY.asRadPs * 2, // Max angular acceleration - 1 second to max velocity
 	)
 
-	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(13.0, 1.0, 1.0)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(6.0, 0.0, 0.0)
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(0.0, 0.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(0.0, 0.0, 0.0)
 
 	private val DRIVEBASE_RADIUS = 0.417405.meters
 
