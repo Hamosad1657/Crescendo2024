@@ -9,6 +9,7 @@ import frc.robot.Robot
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import kotlin.math.pow
+import kotlin.math.sign
 
 fun SwerveSubsystem.teleopDriveCommand(
 	vxSupplier: () -> Double,
@@ -20,7 +21,7 @@ fun SwerveSubsystem.teleopDriveCommand(
 	run {
 		val vx = -vxSupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
 		val vy = -vySupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
-		val omega = -omegaSupplier().pow(3.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs
+		val omega = -omegaSupplier().pow(4.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs * sign(omegaSupplier())
 
 		if (Robot.telemetryLevel == Telemetry.Testing) {
 			SmartDashboard.putNumber("vx", vx)

@@ -27,7 +27,7 @@ object ShooterConstants {
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = -0.2
 
 	val SHOOTER_PID_GAINS = PIDGains(
-		0.000025, 0.1, 0.0,
+		0.0, 0.1, 0.0,
 		kFF = { setpointRpm -> 0.0019 * setpointRpm },
 		kIZone = 150.0,
 	)
@@ -83,7 +83,7 @@ object ShooterConstants {
 		companion object {
 			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
-			val TO_TRAP = ShooterState(251.degrees, 2500.0.rpm)
+			val TO_TRAP = ShooterState(251.5.degrees, 2800.0.rpm)
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
