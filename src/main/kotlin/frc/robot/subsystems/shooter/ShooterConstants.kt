@@ -34,8 +34,8 @@ object ShooterConstants {
 
 	val ANGLE_PID_GAINS = PIDGains(45.0, 0.0, 0.0)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
-		MotionMagicCruiseVelocity = 0.8
-		MotionMagicAcceleration = 2.0
+		MotionMagicCruiseVelocity = 1.0
+		MotionMagicAcceleration = 2.5
 	}
 
 	private const val KEEP_PARALLEL_TO_FLOOR_OUTPUT = -0.0185
@@ -80,7 +80,7 @@ object ShooterConstants {
 		companion object {
 			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
-			val TO_TRAP = ShooterState(245.degrees, 2300.0.rpm)
+			val TO_TRAP = ShooterState(250.degrees, 2300.0.rpm)
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
