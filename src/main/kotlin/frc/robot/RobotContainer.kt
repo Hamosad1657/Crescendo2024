@@ -4,6 +4,8 @@ import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
@@ -54,9 +56,16 @@ object RobotContainer {
 
 	private fun configureButtonBindings() {
 		// --- Swerve ---
-		controllerA.options().onTrue(InstantCommand({ Swerve.zeroGyro() }))
+		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
+		controllerA.PS().onTrue(InstantCommand({
+			Swerve.resetOdometry(
+				Pose2d(
+					1.0, 1.0, Rotation2d(1.2)
+				)
+			)
+		}))
 
 		// --- Notes ---
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())

@@ -177,8 +177,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 * @param initialHolonomicPose The pose to set the odometry to.
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
-		val modulePositions = Array(4) { SwerveModulePosition() }
-		poseEstimator.resetPosition(robotHeading, modulePositions, initialHolonomicPose)
+		poseEstimator.resetPosition(initialHolonomicPose.rotation, modulesPositions, initialHolonomicPose)
+		setGyro(initialHolonomicPose.rotation)
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
@@ -226,7 +226,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	fun followAutoCommand(autoName: String): Command {
-		return AutoBuilder.buildAuto(autoName)
+		return InstantCommand({ }).alongWith(AutoBuilder.buildAuto(autoName))
 	}
 
 	fun followPathCommand(pathName: String): Command {
