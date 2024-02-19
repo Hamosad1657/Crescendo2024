@@ -5,7 +5,8 @@ import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.*
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
 import frc.robot.subsystems.loader.LoaderConstants
@@ -62,6 +63,8 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
+		controllerA.R2().toggleOnTrue(Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE))
+		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
 		controllerA.PS().onTrue(InstantCommand({
@@ -72,14 +75,10 @@ object RobotContainer {
 
 		// --- Notes ---
 		// # Controller A #
-		controllerA.R1().toggleOnTrue(Notes.collectCommand())
-		controllerA.R2().whileTrue(Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE))
-		controllerA.square().toggleOnTrue(
-			Notes.loadAndShootCommand(ShooterState.AT_STAGE)
-		)
-		controllerA.circle().toggleOnTrue(Shooter.getToAngleCommand(ShooterState.AT_STAGE.angle))
-		controllerA.L1().toggleOnTrue(Notes.collectCommand(ShooterState.COLLECT_TO_TRAP))
-
+		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
+		controllerB.triangle().toggleOnTrue(Notes.ejectIntoAmpCommand())
+		controllerB.circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
+		controllerB.cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
 	}
 
 	private fun setDefaultCommands() {
@@ -93,14 +92,18 @@ object RobotContainer {
 
 		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 
-		Climbing.defaultCommand = Climbing.openLoopTeleopCommand { controllerB.leftY }
+		Climbing.defaultCommand = Climbing.stopCommand()
+
+
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("calibration_auto")
+		return Swerve.followAutoCommand("three_part_auto")
 	}
 
 	private fun registerAutoCommands() {
-		NamedCommands.registerCommand("HelloCommand", PrintCommand("HelloWorld"))
+		NamedCommands.registerCommand("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
+		NamedCommands.registerCommand("collect_command", Notes.collectCommand())
+
 	}
 }
