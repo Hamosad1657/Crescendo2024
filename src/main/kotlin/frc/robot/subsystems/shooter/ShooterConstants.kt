@@ -102,6 +102,7 @@ object ShooterConstants {
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
+			val AT_STAGE = ShooterState(160.degrees, 4000.rpm)
 
 			// TODO: Remove
 			val COLLECT_TO_TRAP = ShooterState(270.degrees, 0.0.rpm)

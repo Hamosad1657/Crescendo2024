@@ -1,7 +1,6 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.alongWith
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Pose2d
@@ -78,24 +77,11 @@ object RobotContainer {
 		// # Controller A #
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.R2().whileTrue(Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE))
-		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
-		controllerA.L2().toggleOnTrue(
-			Shooter.getToShooterStateCommand(ShooterState.EJECT) alongWith
-				Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE)
+		controllerA.square().toggleOnTrue(
+			Notes.loadAndShootCommand(ShooterState.AT_STAGE)
 		)
-//		controllerA.L1().toggleOnTrue(Notes.collectCommand(ShooterState.COLLECT_TO_TRAP))
-
-
-		// # Controller B #
-		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
-		controllerB.R2().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
-
-//		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.openLoopTeleop_shooterVelocity {
-//			simpleDeadband(
-//				testingController.leftY,
-//				JOYSTICK_DEADBAND
-//			)
-//		})
+		controllerA.circle().toggleOnTrue(Shooter.getToAngleCommand(ShooterState.AT_STAGE.angle))
+		controllerA.L1().toggleOnTrue(Notes.collectCommand(ShooterState.COLLECT_TO_TRAP))
 	}
 
 	private fun setDefaultCommands() {
