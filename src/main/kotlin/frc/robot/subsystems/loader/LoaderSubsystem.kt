@@ -11,14 +11,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.loader.LoaderConstants.ANALOG_READ_NOTE_DETECTED_THRESHOLD
 import kotlin.math.abs
 import frc.robot.RobotMap.Loader as LoaderMap
+import frc.robot.subsystems.loader.LoaderConstants as Constants
 
 object LoaderSubsystem : SubsystemBase() {
 	private val motor = HaTalonFX(LoaderMap.MOTOR_ID).apply {
-		configurator.apply {
-			TalonFXConfiguration()
-		}
+		configurator.apply(TalonFXConfiguration())
 		inverted = false
 		idleMode = IdleMode.kBrake
+		configurator.apply(Constants.MOTORS_CURRENT_LIMIT)
 	}
 
 	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)

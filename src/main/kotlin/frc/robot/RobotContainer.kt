@@ -1,7 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.math.simpleDeadband
+import com.hamosad1657.lib.commands.alongWith
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Pose2d
@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
+import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
@@ -46,7 +47,13 @@ object RobotContainer {
 	}
 
 	private fun initSendables() {
-		if (Robot.telemetryLevel == Telemetry.Competition) return
+		if (Robot.telemetryLevel == Telemetry.Competition) {
+			SmartDashboard.putData("Data") { builder ->
+				builder.addBooleanProperty("Note", Loader::isNoteDetected, null)
+				builder.addBooleanProperty("Intake", Intake::isRunning, null)
+			}
+			return
+		}
 		SmartDashboard.putData(Swerve)
 		SmartDashboard.putData(Climbing)
 		SmartDashboard.putData(Intake)
@@ -68,12 +75,20 @@ object RobotContainer {
 		}))
 
 		// --- Notes ---
+		// # Controller A #
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
-		controllerA.L1().toggleOnTrue(Notes.collectCommand(ShooterState.COLLECT_TO_TRAP))
-
+		controllerA.R2().whileTrue(Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE))
 		controllerA.circle().toggleOnTrue(Notes.ejectIntoAmpCommand())
-		controllerA.triangle().toggleOnTrue(Notes.loadAndShootCommand(ShooterState.TO_TRAP))
-		controllerA.R2().toggleOnTrue(Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
+		controllerA.L2().toggleOnTrue(
+			Shooter.getToShooterStateCommand(ShooterState.EJECT) alongWith
+				Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE)
+		)
+//		controllerA.L1().toggleOnTrue(Notes.collectCommand(ShooterState.COLLECT_TO_TRAP))
+
+
+		// # Controller B #
+		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
+		controllerB.R2().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 
 //		Trigger { Robot.isTeleopEnabled }.onTrue(Shooter.openLoopTeleop_shooterVelocity {
 //			simpleDeadband(
@@ -85,14 +100,16 @@ object RobotContainer {
 
 	private fun setDefaultCommands() {
 		Swerve.defaultCommand = Swerve.teleopDriveCommand(
-			vxSupplier = { simpleDeadband(controllerA.leftY, JOYSTICK_DEADBAND) },
-			vySupplier = { simpleDeadband(controllerA.leftX, JOYSTICK_DEADBAND) },
-			omegaSupplier = { simpleDeadband(controllerA.rightX, JOYSTICK_DEADBAND) },
+			vxSupplier = { controllerA.leftY },
+			vySupplier = { controllerA.leftX },
+			omegaSupplier = { controllerA.rightX },
 			isFieldRelative = { swerveIsFieldRelative },
 			isClosedLoop = { true },
 		)
 
-		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT_TO_TRAP)
+		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+
+//		Climbing.defaultCommand = Climbing.getToOpenLimitCommand()
 	}
 
 	fun getAutonomousCommand(): Command {

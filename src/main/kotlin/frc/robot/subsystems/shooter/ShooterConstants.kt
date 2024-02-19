@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.units.*
@@ -7,6 +8,11 @@ import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
 object ShooterConstants {
+	val ANGLE_CURRENT_LIMITS = CurrentLimitsConfigs().apply {
+		SupplyCurrentLimitEnable = true
+		SupplyCurrentLimit = 30.0
+	}
+
 	/**
 	 * 1 degree should be the lowest possible angle.
 	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
@@ -27,7 +33,7 @@ object ShooterConstants {
 	const val ESCAPE_ANGLE_LOCK_OUTPUT = -0.2
 
 	val SHOOTER_PID_GAINS = PIDGains(
-		0.0, 0.1, 0.0,
+		0.0, 0.075, 0.0,
 		kFF = { setpointRpm -> 0.0019 * setpointRpm },
 		kIZone = 150.0,
 	)
@@ -58,10 +64,15 @@ object ShooterConstants {
 
 	/**
 	 * Time between when loading started to when the note is shot.
-	 * It might be a little different in different speeds, so put here
-	 * it's maximum value.
+	 * It might be a little different in different speeds, so put here it's maximum value.
 	 */
 	const val SHOOT_TIME_SEC = 1.0
+
+	/**
+	 * Time after which we load the note into the shooter no matter the velocity and angle error.
+	 * It might be a little different in different speeds, so put here it's maximum value.
+	 */
+	const val SHOOT_TIMEOUT_SEC = 1.75
 
 	/** This should eject the note quickly without getting it too far away. */
 	const val EJECT_OUTPUT: PercentOutput = 0.3
@@ -74,7 +85,10 @@ object ShooterConstants {
 	// ShooterState is a data class and not an enum, because we might want to make
 	// a continuous shooting function if we have the time. In the meantime, we will
 	// shoot from a few constant positions. Keep instances of ShooterState as constants.
-	data class ShooterState(val angle: Rotation2d, val velocity: AngularVelocity) {
+	data class ShooterState(
+		val angle: Rotation2d,
+		val velocity: AngularVelocity,
+	) {
 		init {
 			require(angle.degrees in 0.0..320.0) { "have a nice day :D" }
 			require(velocity.asRpm in 0.0..6000.0) { "have a nice day :D" }
@@ -84,6 +98,7 @@ object ShooterConstants {
 			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
 			val TO_TRAP = ShooterState(251.5.degrees, 2800.0.rpm)
+			val EJECT = ShooterState(168.degrees, 1000.rpm)
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)

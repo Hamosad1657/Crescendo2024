@@ -67,6 +67,7 @@ object ShooterSubsystem : SubsystemBase() {
 			kD = Constants.ANGLE_PID_GAINS.kD
 		})
 		configurator.apply(Constants.ANGLE_MOTION_MAGIC_CONFIG)
+		configurator.apply(Constants.ANGLE_CURRENT_LIMITS)
 	}
 
 	private val angleCANCoder = CANcoder(ShooterAngleMap.CANCODER_ID).apply {

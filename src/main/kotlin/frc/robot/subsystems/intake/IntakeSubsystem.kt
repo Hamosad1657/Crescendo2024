@@ -9,18 +9,21 @@ import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import kotlin.math.abs
 import frc.robot.RobotMap.Intake as IntakeMap
+import frc.robot.subsystems.intake.IntakeConstants as Constants
 
 object IntakeSubsystem : SubsystemBase() {
 	private val bottomMotor = HaTalonFX(IntakeMap.BOTTOM_MOTOR_ID).apply {
 		configurator.apply(TalonFXConfiguration())
 		inverted = false
 		idleMode = IdleMode.kBrake
+		configurator.apply(Constants.MOTORS_CURRENT_LIMIT)
 	}
 
 	private val topMotor = HaTalonFX(IntakeMap.TOP_MOTOR_ID).apply {
 		configurator.apply(TalonFXConfiguration())
 		inverted = false
 		idleMode = IdleMode.kBrake
+		configurator.apply(Constants.MOTORS_CURRENT_LIMIT)
 	}
 
 	private val controlRequestBottomVoltage = VoltageOut(0.0).apply { EnableFOC = false }

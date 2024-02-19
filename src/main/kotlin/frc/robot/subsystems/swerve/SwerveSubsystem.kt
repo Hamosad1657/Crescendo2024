@@ -37,7 +37,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 		SendableRegistry.addLW(this, "SwerveSubsystem", "SwerveSubsystem")
 		CommandScheduler.getInstance().registerSubsystem(this)
 		configureAutoBuilder()
-		configDriveMotors()
+		configMotors()
 	}
 
 	override fun periodic() {
@@ -54,6 +54,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	private inline val currentState: SwerveDriveState get() = super.getState()
 	private inline val modulesStates: Array<SwerveModuleState> get() = currentState.ModuleStates
 	private inline val modulesPositions: Array<SwerveModulePosition> get() = super.m_modulePositions
+
+
 	// --- Robot State Getters ---
 
 	/** Gets the current yaw angle of the robot, as reported by the IMU (CCW positive, not wrapped). */
@@ -121,9 +123,16 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	private val controlRequestChassisSpeeds = SwerveRequest.ApplyChassisSpeeds()
 
-	fun configDriveMotors() {
+	fun configMotors() {
+		idleMode = IdleMode.kBrake
 		for (module in super.Modules) {
-			module.driveMotor.configurator.apply(Constants.DRIVE_MOTOR_CONFIG.ClosedLoopRamps)
+			module.driveMotor.configurator.apply {
+				apply(Constants.DRIVE_MOTOR_CONFIG.ClosedLoopRamps)
+				apply(Constants.DRIVE_MOTOR_CONFIG.CurrentLimits)
+			}
+			module.steerMotor.configurator.apply {
+				apply(Constants.STEER_MOTOR_CONFIG.CurrentLimits)
+			}
 		}
 	}
 

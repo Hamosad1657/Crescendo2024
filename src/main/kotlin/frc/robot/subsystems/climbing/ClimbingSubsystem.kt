@@ -9,6 +9,7 @@ import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Climbing as ClimbingMap
+import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
 
@@ -19,6 +20,7 @@ object ClimbingSubsystem : SubsystemBase() {
 		// TODO: Verify positive output raises climber
 		inverted = true
 		idleMode = IdleMode.kBrake
+		setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
 	}
 	private val leftSecondaryMotor = HaSparkFlex(ClimbingMap.LEFT_BACK_MOTOR_ID).apply {
 		configSecondaryMotor(leftMainMotor)
@@ -29,6 +31,7 @@ object ClimbingSubsystem : SubsystemBase() {
 		// TODO: Verify positive output raises climber
 		inverted = false
 		idleMode = IdleMode.kBrake
+		setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
 	}
 	private val rightSecondaryMotor = HaSparkFlex(ClimbingMap.RIGHT_BACK_MOTOR_ID).apply {
 		configSecondaryMotor(rightMainMotor)
@@ -51,6 +54,7 @@ object ClimbingSubsystem : SubsystemBase() {
 		apply {
 			restoreFactoryDefaults()
 			idleMode = IdleMode.kBrake
+			setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
 			// TODO: Check if follower motor should oppose master motor or not
 			follow(mainMotor, true)
 		}
