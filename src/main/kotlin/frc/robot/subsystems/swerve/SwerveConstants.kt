@@ -53,7 +53,7 @@ object SwerveConstants {
 	private val CONSTANT_CREATOR = SwerveModuleConstantsFactory().apply {
 		DriveMotorGearRatio = 6.746031746031747
 		SteerMotorGearRatio = 12.8
-		WheelRadius = 4.0 // In inches.
+		WheelRadius = 2.0 // In inches.
 		SlipCurrent = 300.0 // TODO: Tune.
 		SteerMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
 		DriveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
@@ -74,9 +74,9 @@ object SwerveConstants {
 	)
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
-		15.0, 11.0, 0.5
+		15.0, 0.0, 0.0
 	)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(20.0, 10.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(20.0, 0.0, 0.0)
 
 	private val DRIVEBASE_RADIUS = 0.417405.meters
 
