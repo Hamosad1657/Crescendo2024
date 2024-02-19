@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.units.*
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
@@ -109,4 +110,10 @@ object ShooterConstants {
 			val COLLECT_TO_TRAP = ShooterState(270.degrees, 0.0.rpm)
 		}
 	}
+
+	val POSITION_STATE_MAP =
+		mapOf(
+			Pose2d() to ShooterState(0.0.degrees, 0.0.degPs),
+			Pose2d() to ShooterState(0.0.degrees, 0.0.degPs)
+		)
 }

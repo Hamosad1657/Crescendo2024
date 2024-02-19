@@ -82,3 +82,5 @@ fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
 	}
 }
 
+fun ShooterSubsystem.getToAutoState() {}
+
