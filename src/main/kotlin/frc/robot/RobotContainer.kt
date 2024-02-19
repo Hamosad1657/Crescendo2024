@@ -1,6 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Pose2d
@@ -63,7 +64,8 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
-		controllerA.R2().toggleOnTrue(Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE))
+		controllerA.R2().toggleOnTrue(Notes.loadIntoShooterCommand())
+		controllerA.triangle().toggleOnTrue(Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP))
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
@@ -76,7 +78,7 @@ object RobotContainer {
 		// --- Notes ---
 		// # Controller A #
 		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
-		controllerB.triangle().toggleOnTrue(Notes.ejectIntoAmpCommand())
+		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 		controllerB.circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 		controllerB.cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
 	}
@@ -91,8 +93,8 @@ object RobotContainer {
 		)
 
 		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
-
-		Climbing.defaultCommand = Climbing.stopCommand()
+		Climbing.defaultCommand =
+			Climbing.openLoopTeleopCommand { simpleDeadband(controllerB.rightY, JOYSTICK_DEADBAND) }
 
 
 	}
