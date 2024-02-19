@@ -25,6 +25,7 @@ object ShooterConstants {
 
 	val VELOCITY_TOLERANCE: AngularVelocity = 50.0.rpm
 	val ANGLE_TOLERANCE = 1.0.degrees
+	val TRYING_AMP_TOLERANCE = 10.0.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03
 	const val KEEP_AT_MIN_ANGLE_OUTPUT = 0.0

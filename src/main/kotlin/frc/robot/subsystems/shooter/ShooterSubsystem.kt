@@ -154,10 +154,20 @@ object ShooterSubsystem : SubsystemBase() {
 	val isAtMinAngleLimit get() = minAngleLimitSwitch.get()
 	val isAtMaxAngleLimit get() = maxAngleLimitSwitch.get()
 
+	val angleError get() = angleMotor.closedLoopError.value.rotations
+
 	val isWithinVelocityTolerance get() = (currentVelocitySetpoint - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
-	val isWithinAngleTolerance get() = angleMotor.closedLoopError.value.absoluteValue <= Constants.ANGLE_TOLERANCE.rotations
+	val isWithinAngleTolerance get() = angleError.rotations.absoluteValue <= Constants.ANGLE_TOLERANCE.rotations
 	val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
+	fun isWithinVelocityToleranceTo(expectedVelocity: AngularVelocity) =
+		(expectedVelocity - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
+
+	fun isWithinAngleToleranceTo(expectedAngle: Rotation2d) =
+		(expectedAngle - currentAngle).abslouteValue.rotations <= Constants.ANGLE_TOLERANCE.rotations
+
+	fun isWithinAngleToleranceToAmp() =
+		(ShooterState.TO_AMP.angle - currentAngle).abslouteValue.rotations <= Constants.TRYING_AMP_TOLERANCE.rotations
 
 	// --- Testing and Manual Overrides ---
 
