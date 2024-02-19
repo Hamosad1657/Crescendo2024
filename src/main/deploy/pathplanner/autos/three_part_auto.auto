@@ -5,22 +5,60 @@
       "x": 1.3203408224998268,
       "y": 5.503960098829289
     },
-    "rotation": 0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "left_collection"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left_collection"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "collect_command"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "left_to_middle"
+            "name": "eject_command"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left_to_middle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "collect_command"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "eject_command"
           }
         }
       ]
