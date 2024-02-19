@@ -4,7 +4,6 @@ import com.hamosad1657.lib.Telemetry
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
@@ -24,7 +23,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 object RobotContainer {
-	const val JOYSTICK_DEADBAND = 0.05
+	const val JOYSTICK_DEADBAND = 0.02
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -67,9 +66,7 @@ object RobotContainer {
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
 		controllerA.PS().onTrue(InstantCommand({
 			Swerve.resetOdometry(
-				Pose2d(
-					1.0, 1.0, Rotation2d(1.2)
-				)
+				Pose2d()
 			)
 		}))
 
