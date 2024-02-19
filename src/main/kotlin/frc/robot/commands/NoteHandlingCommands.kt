@@ -27,11 +27,12 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
-	Shooter.getToShooterStateCommand(state) raceWith
+	(Shooter.getToShooterStateCommand(state) raceWith
 		(WaitCommand(0.2) andThen
-			waitUntil { Shooter.isWithinTolerance } andThen
+			waitUntil { Shooter.isWithinTolerance }
+				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
 			WaitCommand(0.1) andThen
-			loadIntoShooterCommand())
+			loadIntoShooterCommand()))
 }
 
 /**
@@ -61,7 +62,8 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 fun Notes.ejectIntoAmpCommand(): Command = withName("eject into amp") {
 	Shooter.getToShooterStateCommand(ShooterState.TO_AMP) raceWith
 		(WaitCommand(0.5) andThen
-			waitUntil { Shooter.isWithinAngleTolerance } andThen
+			waitUntil { Shooter.isWithinAngleTolerance }
+				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
 			Loader.ejectCommand())
 }
 

@@ -1,5 +1,6 @@
 package com.hamosad1657.lib.units
 
+import kotlin.math.absoluteValue
 import com.hamosad1657.lib.units.AngularVelocity.Unit as AngularVelocityUnit
 
 /** Represents an angular velocity.
@@ -48,7 +49,7 @@ private constructor(velocity: Double, velocityUnit: AngularVelocityUnit) : Compa
 			AngularVelocityUnit.DegPs -> rpmToDegPs(rpm)
 		}
 
-	fun abs() = if (rpm < 0) fromRpm(-rpm) else this
+	fun abs() = fromRpm(rpm.absoluteValue)
 
 	override fun toString() = "RPM=$rpm"
 	override fun compareTo(other: AngularVelocity): Int = (rpm - other.rpm).toInt()

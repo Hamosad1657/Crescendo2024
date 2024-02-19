@@ -16,7 +16,7 @@ object SwerveConstants {
 	}
 
 	/** Theoretical free speed (m/s) at 12v applied output. */
-	const val MAX_SPEED_MPS = 5.0 // 9.46 according to CTRE ?
+	const val MAX_SPEED_MPS = 9.0 // 9.46 according to CTRE ?
 
 	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
 	val MAX_ANGULAR_VELOCITY = 2.0.rps
@@ -35,10 +35,16 @@ object SwerveConstants {
 	}
 	val DRIVE_MOTOR_CONFIG =
 		TalonFXConfiguration().apply {
+			this.CurrentLimits = CurrentLimits.withSupplyCurrentLimit(40.0).withSupplyCurrentLimitEnable(true)
 			this.ClosedLoopRamps =
 				ClosedLoopRampsConfigs().apply {
 					VoltageClosedLoopRampPeriod = 0.25
 				}
+		}
+
+	val STEER_MOTOR_CONFIG =
+		TalonFXConfiguration().apply {
+			this.CurrentLimits = CurrentLimits.withSupplyCurrentLimit(20.0).withSupplyCurrentLimitEnable(true)
 		}
 
 	/** How many rotations the drive motor does when the module rotates 1 rotation. */
@@ -61,14 +67,16 @@ object SwerveConstants {
 
 	// TODO: Tune.
 	val PATH_CONSTRAINTS = PathConstraints(
-		2.0, // Max velocity (meters per second)
-		2.0 / 2, // Max acceleration - 2 seconds to max velocity
+		MAX_SPEED_MPS, // Max velocity (meters per second)
+		MAX_SPEED_MPS / 2, // Max acceleration - 2 seconds to max velocity
 		MAX_ANGULAR_VELOCITY.asRadPs, // Max angular velocity (radians per second)
 		MAX_ANGULAR_VELOCITY.asRadPs * 2, // Max angular acceleration - 1 second to max velocity
 	)
 
-	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(0.0, 0.0, 0.0)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(0.0, 0.0, 0.0)
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
+		15.0, 11.0, 0.5
+	)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(20.0, 10.0, 0.0)
 
 	private val DRIVEBASE_RADIUS = 0.417405.meters
 
@@ -92,7 +100,7 @@ object SwerveConstants {
 		private const val BACK_LEFT_ENCODER_OFFSET = -0.478759765625
 		private const val BACK_RIGHT_ENCODER_OFFSET = -0.7646484375
 
-		//**FL, FR, BL, BR*/
+		/** FL, FR, BL, BR. */
 		val asArray get() = arrayOf(FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT)
 
 		val FRONT_LEFT: SwerveModuleConstants = CONSTANT_CREATOR.createModuleConstants(
