@@ -79,6 +79,7 @@ object RobotContainer {
 		)
 		controllerA.circle().toggleOnTrue(Shooter.getToAngleCommand(ShooterState.AT_STAGE.angle))
 		controllerA.L1().toggleOnTrue(Notes.collectCommand(ShooterState.COLLECT_TO_TRAP))
+
 	}
 
 	private fun setDefaultCommands() {
@@ -92,7 +93,7 @@ object RobotContainer {
 
 		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 
-//		Climbing.defaultCommand = Climbing.getToOpenLimitCommand()
+		Climbing.defaultCommand = Climbing.openLoopTeleopCommand { controllerB.leftY }
 	}
 
 	fun getAutonomousCommand(): Command {
