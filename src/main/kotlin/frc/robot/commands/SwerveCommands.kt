@@ -5,11 +5,14 @@ import com.hamosad1657.lib.commands.withName
 import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Robot
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import kotlin.math.pow
 import kotlin.math.sign
+
+fun SwerveSubsystem.crossLockWheelsCommand(): Command = runOnce { crossLockWheels() }
 
 fun SwerveSubsystem.teleopDriveCommand(
 	vxSupplier: () -> Double,

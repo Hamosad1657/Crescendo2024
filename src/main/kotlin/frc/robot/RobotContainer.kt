@@ -4,7 +4,6 @@ import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
@@ -63,16 +62,11 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
+		controllerA.PS().onTrue(Swerve.crossLockWheelsCommand())
 		controllerA.R2().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
-		controllerA.PS().onTrue(InstantCommand({
-			Swerve.resetOdometry(
-				Pose2d()
-			)
-		}))
-
 		// --- Notes ---
 		// # Controller A #
 		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
