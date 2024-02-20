@@ -23,7 +23,7 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 		Intake.runIntakeCommand()
 		) until
 		Loader::isNoteDetected
-}
+}.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
