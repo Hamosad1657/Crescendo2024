@@ -134,6 +134,15 @@ object RobotContainer {
 	private fun registerAutoCommands() {
 		NamedCommands.registerCommand("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
 		NamedCommands.registerCommand("collect_command", Notes.collectCommand())
+		NamedCommands.registerCommand(
+			"shoot_auto_line_1_3_command",
+			Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE)
+		)
+		NamedCommands.registerCommand(
+			"shoot_auto_line_2_command",
+			Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO)
+		)
+		NamedCommands.registerCommand("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 
 	}
 }

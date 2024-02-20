@@ -4,7 +4,6 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.units.*
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
@@ -106,18 +105,15 @@ object ShooterConstants {
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
 			val AT_STAGE = ShooterState(160.degrees, 4000.rpm)
 
+
 			// TODO: Remove
 			val COLLECT_TO_TRAP = ShooterState(270.degrees, 0.0.rpm)
+
+
+			// ---Auto---
+			val AUTO_LINE_ONE_THREE = ShooterState(173.degrees, 4000.rpm)
+			val AUTO_LINE_TWO = ShooterState(175.degrees, 4000.rpm)
 		}
 	}
 
-	/**
-	 * A map of pre-determined positions on the field to shooter states.
-	 * To be used during autonomous period.
-	 */
-	val POSITION_STATE_MAP =
-		mapOf(
-			Pose2d() to ShooterState(0.0.degrees, 0.0.degPs),
-			Pose2d() to ShooterState(0.0.degrees, 0.0.degPs)
-		)
 }

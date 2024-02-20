@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "shoot_from_speaker_command"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -33,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "eject_command"
+            "name": "shoot_auto_line_1_3_command"
           }
         },
         {
@@ -58,7 +64,7 @@
         {
           "type": "named",
           "data": {
-            "name": "eject_command"
+            "name": "shoot_auto_line_2_command"
           }
         },
         {
@@ -78,6 +84,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_auto_line_1_3_command"
           }
         }
       ]

@@ -8,7 +8,6 @@ import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.*
 import com.revrobotics.CANSparkBase.IdleMode
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
@@ -21,8 +20,6 @@ import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_PID_GAINS
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.swerve.SwerveConstants
-import kotlin.math.abs
 import kotlin.math.absoluteValue
 import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.RobotMap.Shooter.Angle as ShooterAngleMap
@@ -198,20 +195,6 @@ object ShooterSubsystem : SubsystemBase() {
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun increaseAngleSetpointBy(angle: Rotation2d) {
 		setAngle(currentAngle + angle)
-	}
-
-	fun getAutoShooterStateFromPose(currentPose: Pose2d): ShooterState? {
-		for (poseEntry in Constants.POSITION_STATE_MAP.entries) {
-			(currentPose - poseEntry.key).let {
-				if ((abs(it.x) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
-					(abs(it.y) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
-					(abs(it.rotation.radians) > SwerveConstants.ROTATION_INDICATOR_TOLERANCE.radians)
-				) {
-					return poseEntry.value
-				}
-			}
-		}
-		return null
 	}
 
 

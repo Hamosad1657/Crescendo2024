@@ -114,7 +114,6 @@ fun Notes.waitForNoteToPassCommand() = withName("wait for note to pass") {
  * - Requirements: Intake.
  */
 fun Intake.runIntakeCommand(): Command = withName("run") {
-//	TODO remove voltage from dashboard
 	run {
 		if ((Shooter.isWithinAngleTolerance || Loader.isRunning) && !Loader.isNoteDetected) {
 			setVoltage(IntakeConstants.BOTTOM_MOTOR_VOLTAGE, IntakeConstants.TOP_MOTOR_VOLTAGE)

@@ -5,11 +5,9 @@ import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.TIME_TO_ESCAPE_ANGLE_LOCK_SEC
 import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
  * Run the shooter angle motor at high speed for a short duration to get it out of the angle lock.
@@ -81,16 +79,6 @@ fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
 	run {
 		val delta = changeInVelocity() * multiplier
 		increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
-	}
-}
-
-fun ShooterSubsystem.getToAutoStateCommand(): Command = withName("get to auto state") {
-	getToShooterStateCommand {
-		getAutoShooterStateFromPose(SwerveSubsystem.robotPose).let { state ->
-			if (state != null)
-				return@let state else
-				return@let ShooterConstants.ShooterState.EJECT
-		}
 	}
 }
 

@@ -74,9 +74,7 @@ object SwerveConstants {
 		MAX_ANGULAR_VELOCITY.asRadPs * 2, // Max angular acceleration - 1 second to max velocity
 	)
 
-	val TRANSLATION_INDICATOR_TOLERANCE = 10.centimeters
-
-	val ROTATION_INDICATOR_TOLERANCE = 0.degrees
+	val TRANSLATION_INDICATOR_TOLERANCE = 20.centimeters
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
 		52.0, 0.0, 0.004
