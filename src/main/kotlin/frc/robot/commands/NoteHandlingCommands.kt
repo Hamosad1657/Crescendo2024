@@ -47,6 +47,14 @@ fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("g
 	}
 }
 
+fun Shooter.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
+	run {
+		setShooterState(state())
+	} finallyDo {
+		stopShooterMotors()
+	}
+}
+
 /**
  * - Command has no end condition.
  * - Requirements: Shooter.
