@@ -9,6 +9,6 @@ object IntakeConstants {
 
 	val MOTORS_CURRENT_LIMIT = CurrentLimitsConfigs().apply {
 		SupplyCurrentLimitEnable = true
-		SupplyCurrentLimit = 30.0
+		SupplyCurrentLimit = 40.0
 	}
 }

@@ -12,6 +12,6 @@ object LoaderConstants {
 
 	val MOTORS_CURRENT_LIMIT = CurrentLimitsConfigs().apply {
 		SupplyCurrentLimitEnable = true
-		SupplyCurrentLimit = 25.0
+		SupplyCurrentLimit = 15.0
 	}
 }
