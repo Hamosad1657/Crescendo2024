@@ -21,6 +21,8 @@ import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MAX_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.KEEP_AT_MIN_ANGLE_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_PID_GAINS
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.subsystems.swerve.SwerveConstants
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import frc.robot.RobotMap.Shooter as ShooterMap
 import frc.robot.RobotMap.Shooter.Angle as ShooterAngleMap
@@ -158,17 +160,17 @@ object ShooterSubsystem : SubsystemBase() {
 	val angleError get() = angleMotor.closedLoopError.value.rotations
 
 	val isWithinVelocityTolerance get() = (currentVelocitySetpoint - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
-	val isWithinAngleTolerance get() = angleError.rotations.absoluteValue <= Constants.ANGLE_TOLERANCE.rotations
+	val isWithinAngleTolerance get() = angleError.rotations.absoluteValue <= Constants.SHOOTING_ANGLE_TOLERANCE.rotations
 	val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
 	fun isWithinVelocityToleranceTo(expectedVelocity: AngularVelocity) =
 		(expectedVelocity - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
 
 	fun isWithinAngleToleranceTo(expectedAngle: Rotation2d) =
-		(expectedAngle - currentAngle).abslouteValue.rotations <= Constants.ANGLE_TOLERANCE.rotations
+		(expectedAngle - currentAngle).abslouteValue.rotations <= Constants.SHOOTING_ANGLE_TOLERANCE.rotations
 
 	fun isWithinAngleToleranceToAmp() =
-		(ShooterState.TO_AMP.angle - currentAngle).abslouteValue.rotations <= Constants.TRYING_AMP_TOLERANCE.rotations
+		(ShooterState.TO_AMP.angle - currentAngle).abslouteValue.rotations <= Constants.AMP_ANGLE_TOLERANCE.rotations
 
 	// --- Testing and Manual Overrides ---
 
@@ -199,15 +201,17 @@ object ShooterSubsystem : SubsystemBase() {
 	}
 
 	fun getAutoShooterStateFromPose(currentPose: Pose2d): ShooterState {
-//		for (poseEntry in Constants.POSITION_STATE_MAP.entries) {
-//			if ((currentPose - poseEntry.key).let {
-//					(abs(it.x) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
-//						(abs(it.y) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
-//						(abs(it.rotation.radians) > SwerveConstants.ROTATION_INDICATOR_TOLERANCE.radians)
-//				}) {
-//				return poseEntry.value
-//			}
-//		}
+		for (poseEntry in Constants.POSITION_STATE_MAP.entries) {
+			(currentPose - poseEntry.key).let {
+				if ((abs(it.x) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
+					(abs(it.y) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
+					(abs(it.rotation.radians) > SwerveConstants.ROTATION_INDICATOR_TOLERANCE.radians)
+				) {
+					return poseEntry.value
+				}
+			}
+		}
+		return ShooterState.EJECT
 	}
 
 
