@@ -7,6 +7,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.*
+import edu.wpi.first.math.controller.PIDController
 import frc.robot.RobotMap.Swerve as SwerveMap
 
 object SwerveConstants {
@@ -81,6 +82,10 @@ object SwerveConstants {
 		32.0, 4.0, 0.5
 	)
 	private val PATH_ROTATION_CONSTANTS = PIDConstants(27.0, 0.0, 0.0)
+
+	val CHASSIS_ANGLE_PID_CONTROLLER = PIDController(0.16, 0.0, 0.0).apply {
+		this.enableContinuousInput(-180.0, 180.0)
+	}
 
 	private val DRIVEBASE_RADIUS = 0.417405.meters
 

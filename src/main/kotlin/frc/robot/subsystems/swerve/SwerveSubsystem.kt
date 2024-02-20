@@ -147,6 +147,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 		})
 	}
 
+	fun setAngularVelocity(angularVelocity: AngularVelocity) {
+		super.setControl(controlRequestChassisSpeeds.apply {
+			Speeds = ChassisSpeeds(0.0, 0.0, angularVelocity.asRadPs)
+		})
+	}
+
 	private val controlRequestCrossLockWheels = SwerveRequest.SwerveDriveBrake()
 
 	/** Lock the swerve drive to prevent it from moving. */

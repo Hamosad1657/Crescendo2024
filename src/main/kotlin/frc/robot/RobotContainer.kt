@@ -3,6 +3,8 @@ package frc.robot
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.math.simpleDeadband
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.radians
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -77,8 +79,12 @@ object RobotContainer {
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
+
+//		TODO remove
+		controllerA.PS().toggleOnTrue(Swerve.getToAngleCommand { 90.degrees })
 		// --- Notes ---
 		// # Controller A #
+		
 		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
 		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 		controllerB.circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
