@@ -59,17 +59,15 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 	}
 }
 
-fun Notes.ejectIntoAmpCommand(): Command = withName("eject into amp") {
-	Shooter.getToShooterStateCommand(ShooterState.TO_AMP) raceWith
-		(WaitCommand(0.5) andThen
-			waitUntil { Shooter.isWithinAngleTolerance }
-				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
-			Loader.ejectCommand())
+fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
+	waitUntil { Shooter.isWithinAngleToleranceToAmp() } andThen
+		Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout ShooterConstants.SHOOT_TIME_SEC
 }
 
-private fun Loader.ejectCommand(): Command = withName("eject") {
-	Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout ShooterConstants.SHOOT_TIME_SEC
-}
+fun Loader.loadToShooterOrAmpCommand(): Command = ConditionalCommand(
+	ejectIntoAmpCommand(), // Command on true
+	runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) // Command on false
+) { Shooter.isWithinAngleToleranceToAmp() } // Condition
 
 
 // ---

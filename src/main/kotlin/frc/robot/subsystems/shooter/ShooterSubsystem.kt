@@ -8,6 +8,7 @@ import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.*
 import com.revrobotics.CANSparkBase.IdleMode
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
@@ -154,10 +155,20 @@ object ShooterSubsystem : SubsystemBase() {
 	val isAtMinAngleLimit get() = minAngleLimitSwitch.get()
 	val isAtMaxAngleLimit get() = maxAngleLimitSwitch.get()
 
+	val angleError get() = angleMotor.closedLoopError.value.rotations
+
 	val isWithinVelocityTolerance get() = (currentVelocitySetpoint - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
-	val isWithinAngleTolerance get() = angleMotor.closedLoopError.value.absoluteValue <= Constants.ANGLE_TOLERANCE.rotations
+	val isWithinAngleTolerance get() = angleError.rotations.absoluteValue <= Constants.ANGLE_TOLERANCE.rotations
 	val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
+	fun isWithinVelocityToleranceTo(expectedVelocity: AngularVelocity) =
+		(expectedVelocity - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
+
+	fun isWithinAngleToleranceTo(expectedAngle: Rotation2d) =
+		(expectedAngle - currentAngle).abslouteValue.rotations <= Constants.ANGLE_TOLERANCE.rotations
+
+	fun isWithinAngleToleranceToAmp() =
+		(ShooterState.TO_AMP.angle - currentAngle).abslouteValue.rotations <= Constants.TRYING_AMP_TOLERANCE.rotations
 
 	// --- Testing and Manual Overrides ---
 
@@ -185,6 +196,18 @@ object ShooterSubsystem : SubsystemBase() {
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun increaseAngleSetpointBy(angle: Rotation2d) {
 		setAngle(currentAngle + angle)
+	}
+
+	fun getAutoShooterStateFromPose(currentPose: Pose2d): ShooterState {
+//		for (poseEntry in Constants.POSITION_STATE_MAP.entries) {
+//			if ((currentPose - poseEntry.key).let {
+//					(abs(it.x) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
+//						(abs(it.y) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
+//						(abs(it.rotation.radians) > SwerveConstants.ROTATION_INDICATOR_TOLERANCE.radians)
+//				}) {
+//				return poseEntry.value
+//			}
+//		}
 	}
 
 

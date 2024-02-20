@@ -16,15 +16,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "left_collection"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "collect_command"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left_collection"
                 }
               }
             ]
@@ -41,15 +41,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "left_to_middle"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "collect_command"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left_to_middle"
                 }
               }
             ]
@@ -59,6 +59,25 @@
           "type": "named",
           "data": {
             "name": "eject_command"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "collect_command"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "middle_to_right"
+                }
+              }
+            ]
           }
         }
       ]

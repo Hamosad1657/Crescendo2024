@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
-import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
@@ -64,8 +63,7 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
-		controllerA.R2().toggleOnTrue(Notes.loadIntoShooterCommand())
-		controllerA.triangle().toggleOnTrue(Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP))
+		controllerA.R2().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
 		controllerA.square().onTrue(InstantCommand({}, Swerve))
