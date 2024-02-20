@@ -3,8 +3,9 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "calibration",
-    "basic_auto"
+    "trap_auto",
+    "basic_auto",
+    "calibration"
   ],
   "autoFolders": [],
   "defaultMaxVel": 5.0,

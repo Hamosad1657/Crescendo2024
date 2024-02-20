@@ -128,7 +128,7 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("three_part_auto")
+		return Swerve.followAutoCommand("middle_note_to_trap")
 	}
 
 	private fun registerAutoCommands() {
