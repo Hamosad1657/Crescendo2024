@@ -111,6 +111,10 @@ object ShooterConstants {
 		}
 	}
 
+	/**
+	 * A map of pre-determined positions on the field to shooter states.
+	 * To be used during autonomous period.
+	 */
 	val POSITION_STATE_MAP =
 		mapOf(
 			Pose2d() to ShooterState(0.0.degrees, 0.0.degPs),
