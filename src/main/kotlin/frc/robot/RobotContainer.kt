@@ -1,9 +1,11 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.rpm
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -71,6 +73,27 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
+		var degSP = 74.0
+		var velSP = 750.0
+		fun ampShooting(degSP: Double, velSP: Double) {
+			testingController.square().toggleOnTrue(
+				Notes.collectCommand() andThen
+					Notes.loadAndShootCommand(ShooterState(degSP.degrees, velSP.rpm))
+			)
+		}
+
+		ampShooting(degSP, velSP)
+		SmartDashboard.putData("Amp Shooting") { builder ->
+			builder.addDoubleProperty("Deg SP", { degSP }, {
+				degSP = it
+				ampShooting(degSP, velSP)
+			})
+			builder.addDoubleProperty("Vel SP", { velSP }, {
+				velSP = it
+				ampShooting(degSP, velSP)
+			})
+		}
+
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
 		controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)

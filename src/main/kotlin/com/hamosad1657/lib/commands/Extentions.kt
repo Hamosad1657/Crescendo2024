@@ -7,6 +7,7 @@ fun waitUntil(until: () -> Boolean) = WaitUntilCommand(until)
 infix fun Command.until(condition: () -> Boolean): Command = this.until(condition)
 infix fun Command.andThen(next: Command): Command = this.andThen(next)
 infix fun Command.finallyDo(end: (interrupted: Boolean) -> Unit): Command = this.finallyDo(end)
+infix fun Command.finallyDo(command: Command): Command = this.finallyDo { _ -> command.schedule() }
 
 infix fun Command.alongWith(parallel: Command): Command = this.alongWith(parallel)
 infix fun Command.raceWith(parallel: Command): Command = this.raceWith(parallel)

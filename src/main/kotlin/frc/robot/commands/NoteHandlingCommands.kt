@@ -68,14 +68,22 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 }
 
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
-	waitUntil { Shooter.isWithinAngleToleranceToAmp() } andThen
-		Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout ShooterConstants.SHOOT_TIME_SEC
+	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
+		Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout
+		ShooterConstants.SHOOT_TIME_SEC finallyDo
+		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+}
+
+fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
+	runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) withTimeout
+		ShooterConstants.SHOOT_TIME_SEC finallyDo
+		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 }
 
 fun Loader.loadToShooterOrAmpCommand(): Command = ConditionalCommand(
 	ejectIntoAmpCommand(), // Command on true
-	runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) // Command on false
-) { Shooter.isWithinAngleToleranceToAmp() } // Condition
+	loadIntoShooterCommand() // Command on false
+) { Shooter.isWithinAngleToleranceToAmp() }
 
 
 // ---
@@ -106,6 +114,7 @@ fun Notes.waitForNoteToPassCommand() = withName("wait for note to pass") {
  * - Requirements: Intake.
  */
 fun Intake.runIntakeCommand(): Command = withName("run") {
+//	TODO remove voltage from dashboard
 	run {
 		if ((Shooter.isWithinAngleTolerance || Loader.isRunning) && !Loader.isNoteDetected) {
 			setVoltage(IntakeConstants.BOTTOM_MOTOR_VOLTAGE, IntakeConstants.TOP_MOTOR_VOLTAGE)
