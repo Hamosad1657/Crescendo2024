@@ -200,7 +200,7 @@ object ShooterSubsystem : SubsystemBase() {
 		setAngle(currentAngle + angle)
 	}
 
-	fun getAutoShooterStateFromPose(currentPose: Pose2d): ShooterState {
+	fun getAutoShooterStateFromPose(currentPose: Pose2d): ShooterState? {
 		for (poseEntry in Constants.POSITION_STATE_MAP.entries) {
 			(currentPose - poseEntry.key).let {
 				if ((abs(it.x) > SwerveConstants.TRANSLATION_INDICATOR_TOLERANCE.asMeters) and
@@ -211,7 +211,7 @@ object ShooterSubsystem : SubsystemBase() {
 				}
 			}
 		}
-		return ShooterState.EJECT
+		return null
 	}
 
 

@@ -1,6 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.math.simpleDeadband
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import kotlin.math.absoluteValue
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -24,10 +26,18 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
+	const val JOYSTICK_MOVED_THRESHOLD = 0.1
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
+
+	val controllerAJoysticksMoving: () -> Boolean = {
+		controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD ||
+			controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD
+		controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD ||
+			controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD
+	}
 
 	private var swerveIsFieldRelative = true
 
@@ -62,7 +72,7 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
-		controllerA.cross().onTrue(Swerve.crossLockWheelsCommand())
+		controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
 		controllerA.R2().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))

@@ -12,7 +12,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
 import kotlin.math.pow
 import kotlin.math.sign
 
-fun SwerveSubsystem.crossLockWheelsCommand(): Command = runOnce { crossLockWheels() }
+fun SwerveSubsystem.crossLockWheelsCommand(): Command = run { crossLockWheels() }
 
 fun SwerveSubsystem.teleopDriveCommand(
 	vxSupplier: () -> Double,
