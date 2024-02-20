@@ -62,7 +62,7 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
-		controllerA.PS().onTrue(Swerve.crossLockWheelsCommand())
+		controllerA.cross().onTrue(Swerve.crossLockWheelsCommand())
 		controllerA.R2().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 		controllerA.R1().toggleOnTrue(Notes.collectCommand())
 		controllerA.create().onTrue(InstantCommand({ swerveIsFieldRelative = !swerveIsFieldRelative }))
