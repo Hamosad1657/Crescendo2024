@@ -2,9 +2,7 @@ package frc.robot
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.until
-import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.units.degrees
-import com.hamosad1657.lib.units.rpm
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.util.sendable.SendableRegistry
@@ -89,37 +87,19 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
-		var degSP = ShooterState.TO_TRAP.angle.degrees
-		var velSP = ShooterState.TO_TRAP.velocity.asRpm
-		fun dashboardAdjustableShooting(degSP: Double, velSP: Double) {
-			controllerA.povLeft().toggleOnTrue(
-				Shooter.getToShooterStateCommand(ShooterState(degSP.degrees, velSP.rpm))
-			)
-		}
-
-		dashboardAdjustableShooting(degSP, velSP)
-		SmartDashboard.putData("Adjustable Shooting") { builder ->
-			builder.addDoubleProperty("Deg SP", { degSP }, {
-				degSP = it
-				dashboardAdjustableShooting(degSP, velSP)
-			})
-			builder.addDoubleProperty("Vel SP", { velSP }, {
-				velSP = it
-				dashboardAdjustableShooting(degSP, velSP)
-			})
-		}
-
 		// --- Swerve ---
 		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
 		controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
-		controllerA.R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
-		controllerA.L1().toggleOnTrue(Notes.collectCommand())
 
 //		TODO remove
 		controllerA.PS().toggleOnTrue(Swerve.getToAngleCommand { 90.degrees })
+
 		// --- Notes ---
 		// # Controller A #
-
+		controllerA.R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
+		controllerA.L1().toggleOnTrue(Notes.collectCommand())
+		
+		// # Controller B #
 		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
 		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 		controllerB.circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
@@ -140,9 +120,6 @@ object RobotContainer {
 		// Shooter default commands are set in Robot.kt
 		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
 		Loader.defaultCommand = Loader.run { Loader.stopMotor() }
-
-		Climbing.defaultCommand =
-			Climbing.openLoopTeleopCommand { simpleDeadband(controllerB.rightY, JOYSTICK_DEADBAND) }
 	}
 
 	fun getAutonomousCommand(): Command {

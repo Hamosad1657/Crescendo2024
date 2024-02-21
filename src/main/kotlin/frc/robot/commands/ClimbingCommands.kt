@@ -7,11 +7,21 @@ import frc.robot.subsystems.climbing.ClimbingConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 
 fun ClimbingSubsystem.getToClosedLimitCommand(): Command = withName("open loop get to open limit") {
-	run { set(ClimbingConstants.REACH_UP_OUTPUT) } until { isAtOpenedLimit } finallyDo { stop() }
+	run {
+		setRight(ClimbingConstants.CLOSE_CLIMBING_OUTPUT)
+//		setLeft(ClimbingConstants.REACH_UP_OUTPUT)
+	} until ::isAtClosedLimit finallyDo {
+		stopMotors()
+	}
 }
 
 fun ClimbingSubsystem.getToOpenedLimitCommand(): Command = withName("open loop get to closed limit") {
-	run { set(ClimbingConstants.REACH_DOWN_OUTPUT) } until { isAtClosedLimit } finallyDo { stop() }
+	run {
+		setRight(ClimbingConstants.OPEN_CLIMBING_OUTPUT)
+//		setLeft(ClimbingConstants.REACH_DOWN_OUTPUT)
+	} until ::isAtOpenedLimit finallyDo {
+		stopMotors()
+	}
 }
 
 /**
@@ -23,7 +33,7 @@ fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> PercentOutput): Comman
 		run {
 			set(output())
 		} finallyDo {
-			stop()
+			stopMotors()
 		}
 	}
 
@@ -40,10 +50,10 @@ fun ClimbingSubsystem.openLoopTeleopCommand(
 			setLeft(leftOutput())
 			setRight(rightOutput())
 		} finallyDo {
-			stop()
+			stopMotors()
 		}
 	}
 
 fun ClimbingSubsystem.stopCommand(): Command = run {
-	stop()
+	stopMotors()
 }
