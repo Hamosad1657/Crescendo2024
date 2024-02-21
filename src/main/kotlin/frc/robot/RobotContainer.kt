@@ -104,7 +104,7 @@ object RobotContainer {
 			square().toggleOnTrue(Shooter.getToShooterStateCommand { ShooterState.AT_STAGE })
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
-			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
+			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
 //			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)

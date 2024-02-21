@@ -112,6 +112,7 @@ object ShooterConstants {
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
+			val NEAR_SPEAKER = ShooterState(180.degrees, 3000.rpm)
 
 			/** Modifiable for now */
 			var AT_STAGE = ShooterState(162.5.degrees, 4000.rpm)
