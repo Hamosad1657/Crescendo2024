@@ -75,22 +75,22 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		var degSP = 74.0
 		var velSP = 750.0
-		fun ampShooting(degSP: Double, velSP: Double) {
+		fun dashboardAdjustableShooting(degSP: Double, velSP: Double) {
 			testingController.square().toggleOnTrue(
 				Notes.collectCommand() andThen
 					Notes.loadAndShootCommand(ShooterState(degSP.degrees, velSP.rpm))
 			)
 		}
 
-		ampShooting(degSP, velSP)
-		SmartDashboard.putData("Amp Shooting") { builder ->
+		dashboardAdjustableShooting(degSP, velSP)
+		SmartDashboard.putData("Adjustable Shooting") { builder ->
 			builder.addDoubleProperty("Deg SP", { degSP }, {
 				degSP = it
-				ampShooting(degSP, velSP)
+				dashboardAdjustableShooting(degSP, velSP)
 			})
 			builder.addDoubleProperty("Vel SP", { velSP }, {
 				velSP = it
-				ampShooting(degSP, velSP)
+				dashboardAdjustableShooting(degSP, velSP)
 			})
 		}
 
