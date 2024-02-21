@@ -117,6 +117,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 				VelocityY = translation.y
 				RotationalRate = omega.asRadPs
 				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
+				SteerRequestType = MotionMagic
 			})
 		}
 	}

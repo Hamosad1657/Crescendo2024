@@ -34,6 +34,7 @@ object SwerveConstants {
 		kP = 0.09; kI = 0.0; kD = 0.0
 		kS = 0.0; kV = 0.12; kA = 0.0
 	}
+
 	val DRIVE_MOTOR_CONFIG =
 		TalonFXConfiguration().apply {
 			CurrentLimits = CurrentLimits.apply {
@@ -82,12 +83,16 @@ object SwerveConstants {
 	val TRANSLATION_INDICATOR_TOLERANCE = 20.centimeters
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
-		52.0, 0.1, 0.004
+		52.0, 0.1, 0.004,
 	)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(15.0, 0.9, 0.001)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(
+		15.0, 0.9, 0.001
+	)
 
-	val CHASSIS_ANGLE_PID_CONTROLLER = PIDController(0.16, 0.0, 0.0).apply {
-		this.enableContinuousInput(-180.0, 180.0)
+	val CHASSIS_ANGLE_PID_CONTROLLER = PIDController(
+		0.16, 0.0, 0.0
+	).apply {
+		enableContinuousInput(-180.0, 180.0)
 	}
 
 	private val DRIVEBASE_RADIUS = 0.417405.meters

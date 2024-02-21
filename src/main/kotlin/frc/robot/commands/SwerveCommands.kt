@@ -23,9 +23,9 @@ fun SwerveSubsystem.teleopDriveCommand(
 	isClosedLoop: () -> Boolean = { true }
 ) = withName("teleop drive") {
 	run {
-		val vx = vxSupplier().let { -it.pow(4.0) * SwerveConstants.MAX_SPEED_MPS * it.sign }
-		val vy = vySupplier().let { -it.pow(4.0) * SwerveConstants.MAX_SPEED_MPS * it.sign }
-		val omega = omegaSupplier().let { -it.pow(5.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs }
+		val vx = vxSupplier().let { it.pow(2.0) * SwerveConstants.MAX_SPEED_MPS * -it.sign }
+		val vy = vySupplier().let { it.pow(2.0) * SwerveConstants.MAX_SPEED_MPS * -it.sign }
+		val omega = omegaSupplier().let { it.pow(2.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs * -it.sign }
 
 		if (Robot.telemetryLevel == Telemetry.Testing) {
 			SmartDashboard.putNumber("vx", vx)

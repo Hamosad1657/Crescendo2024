@@ -114,10 +114,11 @@ object ShooterConstants {
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
 
 			/** Modifiable for now */
-			var AT_STAGE = ShooterState(160.degrees, 4000.rpm)
+			var AT_STAGE = ShooterState(162.5.degrees, 4000.rpm)
+
 			fun increaseStageAngleSetpoint() {
 				AT_STAGE = ShooterState(
-					clamp((AT_STAGE.angle + 5.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
+					clamp((AT_STAGE.angle + 3.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
 					AT_STAGE.velocity
 				)
 				robotPrint(AT_STAGE.angle.degrees)
@@ -125,7 +126,7 @@ object ShooterConstants {
 
 			fun decreaseStageAngleSetpoint() {
 				AT_STAGE = ShooterState(
-					clamp((AT_STAGE.angle - 5.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
+					clamp((AT_STAGE.angle - 3.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
 					AT_STAGE.velocity
 				)
 				robotPrint(AT_STAGE.angle.degrees)
