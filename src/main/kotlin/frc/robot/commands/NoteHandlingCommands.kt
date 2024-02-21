@@ -6,6 +6,7 @@ import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.Volts
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.*
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.shooter.ShooterConstants
@@ -18,24 +19,31 @@ object Notes
 
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Command = withName("collect") {
-	(Shooter.getToShooterStateCommand(shooterState) alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
-		Intake.runIntakeCommand()
-		) until
-		Loader::isNoteDetected
-}.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+	(
+		(Shooter.getToShooterStateCommand(shooterState) alongWith
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
+			Intake.runIntakeCommand()
+			) until
+			Loader::isNoteDetected
+		).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+}
 
 /**
  * Like [collectCommand], but interruptable, and the shooter spins continuously.
  * - Requirements: Intake, Loader, Shooter.
  */
-fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
-	(Shooter.getToShooterStateCommand(shooterState) alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
-		Intake.runIntakeCommand()
-		) until
-		Loader::isNoteDetected
-}.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+fun Notes.autoCollectCommand(
+	shooterState: ShooterState = ShooterState.AUTO_COLLECT
+): Command = withName("collect") {
+	(
+		(Shooter.getToShooterStateCommand(shooterState) alongWith
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
+			Intake.runIntakeCommand()
+			) until
+			Loader::isNoteDetected
+		)
+		.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+}
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
@@ -52,7 +60,9 @@ fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and
  * - Requirements: Shooter.
  */
 fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
-	run {
+	runOnce {
+		resetVelocityPIDController()
+	} andThen run {
 		setShooterState(state)
 	} finallyDo {
 		stopShooterMotors()
@@ -64,8 +74,9 @@ fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("g
  * - Requirements: Shooter.
  */
 fun Shooter.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
-	runOnce { resetVelocityPidController() }
-	run {
+	runOnce {
+		resetVelocityPIDController()
+	} andThen run {
 		setShooterState(state())
 	} finallyDo {
 		stopShooterMotors()
@@ -151,10 +162,10 @@ fun Intake.runIntakeCommand(): Command = withName("run") {
 		if ((Shooter.isWithinAngleTolerance || Loader.isRunning) && !Loader.isNoteDetected) {
 			setVoltage(IntakeConstants.BOTTOM_MOTOR_VOLTAGE, IntakeConstants.TOP_MOTOR_VOLTAGE)
 		} else {
-			stop()
+			stopMotors()
 		}
 	} finallyDo {
-		stop()
+		stopMotors()
 	}
 }
 
@@ -166,7 +177,7 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 	run {
 		setVoltage(voltage)
 	} finallyDo {
-		stop()
+		stopMotor()
 	}
 }
 
@@ -193,5 +204,5 @@ fun Intake.ejectFromIntakeCommand(): Command =
 	run {
 		setVoltage(-IntakeConstants.BOTTOM_MOTOR_VOLTAGE, -IntakeConstants.TOP_MOTOR_VOLTAGE)
 	} finallyDo {
-		stop()
+		stopMotors()
 	}

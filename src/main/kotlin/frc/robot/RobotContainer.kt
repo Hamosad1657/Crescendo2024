@@ -137,6 +137,10 @@ object RobotContainer {
 			isClosedLoop = { true },
 		)
 
+		// Shooter default commands are set in Robot.kt
+		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
+		Loader.defaultCommand = Loader.run { Loader.stopMotor() }
+
 		Climbing.defaultCommand =
 			Climbing.openLoopTeleopCommand { simpleDeadband(controllerB.rightY, JOYSTICK_DEADBAND) }
 	}

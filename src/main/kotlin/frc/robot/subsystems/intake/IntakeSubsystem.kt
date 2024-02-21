@@ -34,7 +34,7 @@ object IntakeSubsystem : SubsystemBase() {
 		topMotor.setControl(controlRequestTopVoltage.apply { Output = topVoltage })
 	}
 
-	fun stop() {
+	fun stopMotors() {
 		bottomMotor.stopMotor()
 		topMotor.stopMotor()
 	}

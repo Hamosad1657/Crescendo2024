@@ -32,7 +32,7 @@ object LoaderSubsystem : SubsystemBase() {
 		motor.setControl(controlRequestVoltage.apply { Output = voltage })
 	}
 
-	fun stop() {
+	fun stopMotor() {
 		motor.stopMotor()
 	}
 

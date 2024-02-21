@@ -113,7 +113,7 @@ object ShooterSubsystem : SubsystemBase() {
 		setVelocity(shooterState.velocity)
 	}
 
-	fun resetVelocityPidController() {
+	fun resetVelocityPIDController() {
 		shooterPIDController.reset()
 	}
 
