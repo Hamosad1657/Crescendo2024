@@ -87,27 +87,29 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
-		// --- Swerve ---
-		controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
-		controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
+		with(controllerA) {
+			// --- Swerve ---
+			controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
+			controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
 
-//		TODO remove
-		controllerA.PS().toggleOnTrue(Swerve.getToAngleCommand { 90.degrees })
+			// TODO: Remove
+			controllerA.PS().toggleOnTrue(Swerve.getToAngleCommand { 90.degrees })
+			
+			// --- Notes ---
+			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
+			L1().toggleOnTrue(Notes.collectCommand())
+		}
 
-		// --- Notes ---
-		// # Controller A #
-		controllerA.R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
-		controllerA.L1().toggleOnTrue(Notes.collectCommand())
-
-		// # Controller B #
-		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
-		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
-		controllerB.circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
-		controllerB.cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
-		controllerB.povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
-		controllerB.povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
-		controllerB.R1().onTrue(InstantCommand({ ShooterState.increase_stage_angle_setpoint() }))
-		controllerB.L1().onTrue(InstantCommand({ ShooterState.decrease_stage_angle_setpoint() }))
+		with(controllerB) {
+			square().toggleOnTrue(Shooter.getToShooterStateCommand { ShooterState.AT_STAGE })
+			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
+			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
+			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
+			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
+			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
+			R1().onTrue(InstantCommand(ShooterState::increaseStageAngleSetpoint))
+			L1().onTrue(InstantCommand(ShooterState::decreaseStageAngleSetpoint))
+		}
 	}
 
 	private fun setDefaultCommands() {

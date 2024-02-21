@@ -3,9 +3,12 @@ package frc.robot.subsystems.shooter
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
+import com.hamosad1657.lib.math.clamp
+import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.*
 import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
+
 
 object ShooterConstants {
 	val ANGLE_CURRENT_LIMITS = CurrentLimitsConfigs().apply {
@@ -18,6 +21,8 @@ object ShooterConstants {
 	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
 	 */
 	val CANCODER_OFFSET = (-0.76625).rotations
+
+	val MAX_ANGLE = 293.0.degrees
 
 	/** To set offset let the fall to its resting position while its on coast than subtract 90 degrees */
 	val RESTING_ANGLE = 221.15.degrees
@@ -110,12 +115,20 @@ object ShooterConstants {
 
 			/** Modifiable for now */
 			var AT_STAGE = ShooterState(160.degrees, 4000.rpm)
-			fun increase_stage_angle_setpoint() {
-				AT_STAGE = ShooterState(AT_STAGE.angle + 5.degrees, AT_STAGE.velocity)
+			fun increaseStageAngleSetpoint() {
+				AT_STAGE = ShooterState(
+					clamp((AT_STAGE.angle + 5.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
+					AT_STAGE.velocity
+				)
+				robotPrint(AT_STAGE.angle.degrees)
 			}
 
-			fun decrease_stage_angle_setpoint() {
-				AT_STAGE = ShooterState(AT_STAGE.angle - 5.degrees, AT_STAGE.velocity)
+			fun decreaseStageAngleSetpoint() {
+				AT_STAGE = ShooterState(
+					clamp((AT_STAGE.angle - 5.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
+					AT_STAGE.velocity
+				)
+				robotPrint(AT_STAGE.angle.degrees)
 			}
 
 			// ---Auto---
