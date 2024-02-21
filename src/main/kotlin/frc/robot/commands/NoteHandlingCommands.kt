@@ -35,7 +35,7 @@ fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLL
 		Intake.runIntakeCommand()
 		) until
 		Loader::isNoteDetected
-}.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf)
+}.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
