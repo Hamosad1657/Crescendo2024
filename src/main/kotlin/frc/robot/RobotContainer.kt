@@ -109,7 +109,7 @@ object RobotContainer {
 		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 		controllerB.circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 		controllerB.cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
-		controllerB.povUp().toggleOnTrue(Climbing.getToOpenLimitCommand())
+		controllerB.povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 		controllerB.povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
 	}
 

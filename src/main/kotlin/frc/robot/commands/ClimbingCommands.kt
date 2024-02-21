@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.climbing.ClimbingConstants
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 
-fun ClimbingSubsystem.getToOpenLimitCommand(): Command = withName("open loop get to open limit") {
+fun ClimbingSubsystem.getToClosedLimitCommand(): Command = withName("open loop get to open limit") {
 	run { set(ClimbingConstants.REACH_UP_OUTPUT) } until { isAtOpenedLimit } finallyDo { stop() }
 }
 
-fun ClimbingSubsystem.getToClosedLimitCommand(): Command = withName("open loop get to closed limit") {
+fun ClimbingSubsystem.getToOpenedLimitCommand(): Command = withName("open loop get to closed limit") {
 	run { set(ClimbingConstants.REACH_DOWN_OUTPUT) } until { isAtClosedLimit } finallyDo { stop() }
 }
 
