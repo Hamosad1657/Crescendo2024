@@ -113,9 +113,12 @@ object ShooterSubsystem : SubsystemBase() {
 		setVelocity(shooterState.velocity)
 	}
 
+	fun resetVelocityPidController() {
+		shooterPIDController.reset()
+	}
+
 	fun setVelocity(velocitySetpoint: AngularVelocity) {
 		currentVelocitySetpoint = velocitySetpoint
-		shooterPIDController.reset()
 
 		val ff: Volts = SHOOTER_PID_GAINS.kFF(velocitySetpoint.asRpm)
 		val pidOutput: Volts = shooterPIDController.calculate(currentVelocity.asRpm, velocitySetpoint.asRpm)

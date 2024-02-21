@@ -64,6 +64,7 @@ fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("g
  * - Requirements: Shooter.
  */
 fun Shooter.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
+	runOnce { resetVelocityPidController() }
 	run {
 		setShooterState(state())
 	} finallyDo {

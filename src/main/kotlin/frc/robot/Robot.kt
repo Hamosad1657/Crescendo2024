@@ -26,6 +26,10 @@ import frc.robot.subsystems.vision.Vision
 object Robot : TimedRobot() {
 	val telemetryLevel = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
 
+	init {
+		
+	}
+
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
 
