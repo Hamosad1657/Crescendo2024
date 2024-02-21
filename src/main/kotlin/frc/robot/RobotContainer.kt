@@ -1,6 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.commands.asInstantCommand
 import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
@@ -8,7 +9,6 @@ import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
@@ -89,12 +89,12 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		with(controllerA) {
 			// --- Swerve ---
-			controllerA.options().onTrue(InstantCommand(Swerve::zeroGyro))
+			controllerA.options().onTrue((Swerve::zeroGyro).asInstantCommand)
 			controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
 
 			// TODO: Remove
 			controllerA.PS().toggleOnTrue(Swerve.getToAngleCommand { 90.degrees })
-			
+
 			// --- Notes ---
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 			L1().toggleOnTrue(Notes.collectCommand())
@@ -107,8 +107,8 @@ object RobotContainer {
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
-			R1().onTrue(InstantCommand(ShooterState::increaseStageAngleSetpoint))
-			L1().onTrue(InstantCommand(ShooterState::decreaseStageAngleSetpoint))
+			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)
+			L1().onTrue({ ShooterState.decreaseStageAngleSetpoint() }.asInstantCommand)
 		}
 	}
 
