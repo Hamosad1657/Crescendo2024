@@ -73,8 +73,8 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
-		var degSP = 74.0
-		var velSP = 750.0
+		var degSP = 251.5
+		var velSP = 2800.0
 		fun dashboardAdjustableShooting(degSP: Double, velSP: Double) {
 			testingController.square().toggleOnTrue(
 				Notes.collectCommand() andThen
@@ -127,7 +127,7 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("alternate_middle_note_auto")
+		return Swerve.followAutoCommand("three_part_auto")
 	}
 
 	private fun registerAutoCommands() {
