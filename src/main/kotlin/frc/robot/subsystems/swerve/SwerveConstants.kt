@@ -36,16 +36,21 @@ object SwerveConstants {
 	}
 	val DRIVE_MOTOR_CONFIG =
 		TalonFXConfiguration().apply {
-			this.CurrentLimits = CurrentLimits.withSupplyCurrentLimit(40.0).withSupplyCurrentLimitEnable(true)
-			this.ClosedLoopRamps =
-				ClosedLoopRampsConfigs().apply {
-					VoltageClosedLoopRampPeriod = 0.25
-				}
+			CurrentLimits = CurrentLimits.apply {
+				SupplyCurrentLimit = 40.0
+				SupplyCurrentLimitEnable = true
+			}
+			ClosedLoopRamps = ClosedLoopRampsConfigs().apply {
+				VoltageClosedLoopRampPeriod = 0.25
+			}
 		}
 
 	val STEER_MOTOR_CONFIG =
 		TalonFXConfiguration().apply {
-			this.CurrentLimits = CurrentLimits.withSupplyCurrentLimit(20.0).withSupplyCurrentLimitEnable(true)
+			CurrentLimits = CurrentLimits.apply {
+				SupplyCurrentLimit = 20.0
+				SupplyCurrentLimitEnable = true
+			}
 		}
 
 	/** How many rotations the drive motor does when the module rotates 1 rotation. */

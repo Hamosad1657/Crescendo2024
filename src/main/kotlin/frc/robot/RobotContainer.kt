@@ -98,7 +98,7 @@ object RobotContainer {
 		// # Controller A #
 		controllerA.R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 		controllerA.L1().toggleOnTrue(Notes.collectCommand())
-		
+
 		// # Controller B #
 		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
 		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
@@ -114,7 +114,7 @@ object RobotContainer {
 			vySupplier = { controllerA.leftX },
 			omegaSupplier = { controllerA.rightX },
 			isFieldRelative = { swerveIsFieldRelative },
-			isClosedLoop = { true },
+			isClosedLoop = { Robot.isAutonomous },
 		)
 
 		// Shooter default commands are set in Robot.kt
