@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.commands.escapeAngleLock
+import frc.robot.commands.*
+import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.vision.Vision
@@ -43,11 +44,14 @@ object Robot : TimedRobot() {
 	}
 
 	override fun autonomousInit() {
+		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand()
 		autonomousCommand?.schedule()
 	}
 
 	override fun teleopInit() {
+		ShooterSubsystem.defaultCommand =
+			ShooterSubsystem.getToShooterStateCommand(ShooterConstants.ShooterState.COLLECT)
 		autonomousCommand?.cancel()
 	}
 

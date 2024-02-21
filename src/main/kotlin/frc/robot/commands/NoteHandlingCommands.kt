@@ -25,6 +25,15 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 		Loader::isNoteDetected
 }.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
 
+/** - Requirements: Intake, Loader, Shooter. */
+fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
+	(Shooter.getToShooterStateCommand(shooterState) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
+		Intake.runIntakeCommand()
+		) until
+		Loader::isNoteDetected
+}.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(state) raceWith

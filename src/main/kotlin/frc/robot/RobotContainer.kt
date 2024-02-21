@@ -109,6 +109,8 @@ object RobotContainer {
 		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 		controllerB.circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 		controllerB.cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
+		controllerB.povUp().toggleOnTrue(Climbing.getToOpenLimitCommand())
+		controllerB.povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
 	}
 
 	private fun setDefaultCommands() {
@@ -120,20 +122,17 @@ object RobotContainer {
 			isClosedLoop = { true },
 		)
 
-		Shooter.defaultCommand = Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 		Climbing.defaultCommand =
 			Climbing.openLoopTeleopCommand { simpleDeadband(controllerB.rightY, JOYSTICK_DEADBAND) }
-
-
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("middle_note_to_trap")
+		return Swerve.followAutoCommand("three_part_auto")
 	}
 
 	private fun registerAutoCommands() {
 		NamedCommands.registerCommand("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
-		NamedCommands.registerCommand("collect_command", Notes.collectCommand())
+		NamedCommands.registerCommand("collect_command", Notes.autoCollectCommand())
 		NamedCommands.registerCommand(
 			"shoot_auto_line_1_3_command",
 			Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE)
