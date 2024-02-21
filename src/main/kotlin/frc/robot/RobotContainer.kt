@@ -107,8 +107,8 @@ object RobotContainer {
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
-			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)
-			L1().onTrue({ ShooterState.decreaseStageAngleSetpoint() }.asInstantCommand)
+//			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)
+//			L1().onTrue({ ShooterState.decreaseStageAngleSetpoint() }.asInstantCommand)
 		}
 	}
 
