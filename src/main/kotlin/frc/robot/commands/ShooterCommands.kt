@@ -11,8 +11,20 @@ import frc.robot.subsystems.shooter.ShooterConstants.TIME_TO_ESCAPE_ANGLE_LOCK_S
 import frc.robot.subsystems.shooter.ShooterSubsystem
 
 
+/**
+ * Maintains [ShooterConstants.ShooterState.AUTO_COLLECT].
+ * - Requirements: Shooter.
+ */
 fun ShooterSubsystem.autoDefaultCommand(): Command = withName("auto get to state collect") {
 	getToShooterStateCommand(ShooterConstants.ShooterState.AUTO_COLLECT)
+}
+
+/**
+ * Maintains [ShooterConstants.ShooterState.COLLECT].
+ * - Requirements: Shooter.
+ */
+fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("auto get to state collect") {
+	getToShooterStateCommand(ShooterConstants.ShooterState.COLLECT)
 }
 
 /**

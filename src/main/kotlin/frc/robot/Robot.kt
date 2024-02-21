@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
-import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.vision.Vision
@@ -50,8 +49,7 @@ object Robot : TimedRobot() {
 	}
 
 	override fun teleopInit() {
-		ShooterSubsystem.defaultCommand =
-			ShooterSubsystem.getToShooterStateCommand(ShooterConstants.ShooterState.COLLECT)
+		ShooterSubsystem.defaultCommand = ShooterSubsystem.teleopDefaultCommand()
 		autonomousCommand?.cancel()
 	}
 
