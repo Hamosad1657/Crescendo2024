@@ -77,9 +77,9 @@ object SwerveConstants {
 	val TRANSLATION_INDICATOR_TOLERANCE = 20.centimeters
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
-		52.0, 0.0, 0.004
+		52.0, 0.1, 0.004
 	)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(15.0, 0.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(15.0, 0.9, 0.001)
 
 	val CHASSIS_ANGLE_PID_CONTROLLER = PIDController(0.16, 0.0, 0.0).apply {
 		this.enableContinuousInput(-180.0, 180.0)
