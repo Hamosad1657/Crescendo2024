@@ -98,7 +98,7 @@ object RobotContainer {
 		// # Controller A #
 		controllerA.R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 		controllerA.L1().toggleOnTrue(Notes.collectCommand())
-		
+
 		// # Controller B #
 		controllerB.square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
 		controllerB.triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
@@ -106,6 +106,8 @@ object RobotContainer {
 		controllerB.cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
 		controllerB.povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 		controllerB.povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
+		controllerB.R1().onTrue(InstantCommand({ ShooterState.increase_stage_angle_setpoint() }))
+		controllerB.L1().onTrue(InstantCommand({ ShooterState.decrease_stage_angle_setpoint() }))
 	}
 
 	private fun setDefaultCommands() {
