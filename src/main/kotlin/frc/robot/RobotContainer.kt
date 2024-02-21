@@ -1,7 +1,6 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.units.degrees
@@ -90,12 +89,11 @@ object RobotContainer {
 	}
 
 	private fun configureButtonBindings() {
-		var degSP = 251.5
-		var velSP = 2800.0
+		var degSP = ShooterState.TO_TRAP.angle.degrees
+		var velSP = ShooterState.TO_TRAP.velocity.asRpm
 		fun dashboardAdjustableShooting(degSP: Double, velSP: Double) {
-			testingController.square().toggleOnTrue(
-				Notes.collectCommand() andThen
-					Notes.loadAndShootCommand(ShooterState(degSP.degrees, velSP.rpm))
+			controllerA.povLeft().toggleOnTrue(
+				Shooter.getToShooterStateCommand(ShooterState(degSP.degrees, velSP.rpm))
 			)
 		}
 

@@ -99,7 +99,10 @@ object ShooterConstants {
 			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
 			val AUTO_COLLECT = ShooterState(COLLECT.angle, 2000.rpm)
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
-			val TO_TRAP = ShooterState(251.5.degrees, 2800.0.rpm)
+
+			// PID not tuned properly - shoot immediately with this setpoint, or tune better and adjust setpoint
+			val TO_TRAP = ShooterState(249.0.degrees, 1780.0.rpm)
+
 			val EJECT = ShooterState(168.degrees, 1000.rpm)
 
 			// TODO: Test and find the shooter states
