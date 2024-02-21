@@ -6,4 +6,6 @@ object ClimbingConstants {
 	const val REACH_DOWN_OUTPUT = -0.5
 
 	const val SMART_CURRENT_LIMIT = 40
+
+	const val KEEP_CLOSED_OUTPUT = 0.1
 }

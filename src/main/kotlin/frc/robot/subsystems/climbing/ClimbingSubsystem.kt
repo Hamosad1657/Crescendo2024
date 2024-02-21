@@ -84,13 +84,13 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	fun setLeft(output: PercentOutput) {
 		if (isLeftAtOpenedLimit && output < 0.0) leftMainMotor.set(0.0)
-		else if (isLeftAtClosedLimit && output > 0.0) leftMainMotor.set(0.0)
+		else if (isLeftAtClosedLimit && output > 0.0) leftMainMotor.set(Constants.KEEP_CLOSED_OUTPUT)
 		else leftMainMotor.set(output)
 	}
 
 	fun setRight(output: PercentOutput) {
 		if (isRightAtOpenedLimit && output < 0.0) rightMainMotor.set(0.0)
-		else if (isRightAtClosedLimit && output > 0.0) rightMainMotor.set(0.0)
+		else if (isRightAtClosedLimit && output > 0.0) rightMainMotor.set(Constants.KEEP_CLOSED_OUTPUT)
 		else rightMainMotor.set(output)
 	}
 
