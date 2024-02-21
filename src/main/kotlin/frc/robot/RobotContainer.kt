@@ -8,6 +8,7 @@ import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
+import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
@@ -57,19 +58,35 @@ object RobotContainer {
 		registerAutoCommands()
 	}
 
-	private fun initSendables() {
-		if (Robot.telemetryLevel == Telemetry.Competition) {
-			SmartDashboard.putData("Data") { builder ->
-				builder.addBooleanProperty("Note", Loader::isNoteDetected, null)
-				builder.addBooleanProperty("Intake", Intake::isRunning, null)
-			}
-			return
-		}
+	fun sendSubsystemInfo() {
 		SmartDashboard.putData(Swerve)
 		SmartDashboard.putData(Climbing)
 		SmartDashboard.putData(Intake)
 		SmartDashboard.putData(Loader)
 		SmartDashboard.putData(Shooter)
+	}
+
+	fun sendCompetitionInfo() {
+		SmartDashboard.putData("Data") { builder ->
+			builder.addBooleanProperty("Note detected", Loader::isNoteDetected, null)
+			builder.addBooleanProperty("Shooter at setpoint", Shooter::isWithinAngleTolerance, null)
+		}
+	}
+
+	fun removeSubsystemInfo() {
+		SendableRegistry.remove(Swerve)
+		SendableRegistry.remove(Climbing)
+		SendableRegistry.remove(Intake)
+		SendableRegistry.remove(Loader)
+		SendableRegistry.remove(Shooter)
+	}
+
+	private fun initSendables() {
+		if (Robot.telemetryLevel == Telemetry.Competition) {
+			sendCompetitionInfo()
+			return
+		}
+		sendSubsystemInfo()
 	}
 
 	private fun configureButtonBindings() {
