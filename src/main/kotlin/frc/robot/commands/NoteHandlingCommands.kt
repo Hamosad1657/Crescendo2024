@@ -25,14 +25,17 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 		Loader::isNoteDetected
 }.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
 
-/** - Requirements: Intake, Loader, Shooter. */
+/**
+ * Like [collectCommand], but interruptable, and the shooter spins continuously.
+ * - Requirements: Intake, Loader, Shooter.
+ */
 fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
 	(Shooter.getToShooterStateCommand(shooterState) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
 		Intake.runIntakeCommand()
 		) until
 		Loader::isNoteDetected
-}.withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+}.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf)
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
@@ -56,6 +59,10 @@ fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("g
 	}
 }
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter.
+ */
 fun Shooter.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
 	run {
 		setShooterState(state())
@@ -76,6 +83,12 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 	}
 }
 
+/**
+ * Waits until shooter is within angle tolerance to AMP,
+ * then ejects the note through the loader for [ShooterConstants.SHOOT_TIME_SEC] seconds.
+ * Finally, interrupts shooter subsystem so it goes back to it's default command.
+ * - Requirements: Loader (until the command ends, then Shooter).
+ */
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
 		Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout
@@ -83,12 +96,22 @@ fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 }
 
+/**
+ * Runs the loader motor for [ShooterConstants.SHOOT_TIME_SEC] seconds.
+ * Finally, interrupts shooter subsystem so it goes back to it's default command.
+ * - Requirements: Loader (until the command ends, then Shooter.)
+ */
 fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) withTimeout
 		ShooterConstants.SHOOT_TIME_SEC finallyDo
 		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 }
 
+/**
+ * Schedules [loadIntoShooterCommand] or [ejectIntoAmpCommand] based on the angle of the shooter.
+ * Interrupts shooter subsystem when the scheduled command ends.
+ * - Requirements: Loader (until the scheduled command ends, then Shooter).
+ */
 fun Loader.loadToShooterOrAmpCommand(): Command = ConditionalCommand(
 	ejectIntoAmpCommand(), // Command on true
 	loadIntoShooterCommand() // Command on false
@@ -136,7 +159,6 @@ fun Intake.runIntakeCommand(): Command = withName("run") {
 
 
 /**
- * Apart from testing, should only be used in [collectCommand] or [loadIntoShooterCommand], or in a manual override.
  * - Requirements: Loader.
  */
 fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
@@ -148,7 +170,6 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 }
 
 /**
- * Apart from testing, should only be used in [loadAndShootCommand] or in a manual override.
  * - Requirements: Loader.
  */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
