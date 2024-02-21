@@ -35,3 +35,6 @@ fun withName(commandName: String, commandSupplier: () -> Command): Command =
  */
 fun SubsystemBase.withName(commandName: String, commandSupplier: () -> Command): Command =
 	commandSupplier().also { it.name = "$commandName : ${this.name}" }
+
+/** THIS COMMAND DOES NOT REQUIRE ANY SUBSYSTEMS. */
+val (() -> Unit).asInstantCommand: Command get() = InstantCommand(this)
