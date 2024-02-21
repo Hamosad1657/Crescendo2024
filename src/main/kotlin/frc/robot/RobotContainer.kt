@@ -106,6 +106,8 @@ object RobotContainer {
 		controllerB.cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
 		controllerB.povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 		controllerB.povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
+		controllerB.R1().onTrue(InstantCommand({ ShooterState.increase_stage_angle_setpoint() }))
+		controllerB.L1().onTrue(InstantCommand({ ShooterState.decrease_stage_angle_setpoint() }))
 	}
 
 	private fun setDefaultCommands() {

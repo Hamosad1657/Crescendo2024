@@ -107,12 +107,16 @@ object ShooterConstants {
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
-			val AT_STAGE = ShooterState(160.degrees, 4000.rpm)
 
+			/** Modifiable for now */
+			var AT_STAGE = ShooterState(160.degrees, 4000.rpm)
+			fun increase_stage_angle_setpoint() {
+				AT_STAGE = ShooterState(AT_STAGE.angle + 5.degrees, AT_STAGE.velocity)
+			}
 
-			// TODO: Remove
-			val COLLECT_TO_TRAP = ShooterState(270.degrees, 0.0.rpm)
-
+			fun decrease_stage_angle_setpoint() {
+				AT_STAGE = ShooterState(AT_STAGE.angle - 5.degrees, AT_STAGE.velocity)
+			}
 
 			// ---Auto---
 			val AUTO_LINE_ONE_THREE = ShooterState(173.degrees, 3500.rpm)
