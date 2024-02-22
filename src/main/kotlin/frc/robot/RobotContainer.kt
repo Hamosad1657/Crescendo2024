@@ -101,7 +101,7 @@ object RobotContainer {
 		}
 
 		with(controllerB) {
-			square().toggleOnTrue(Shooter.getToShooterStateCommand { ShooterState.AT_STAGE })
+			square().toggleOnTrue(Shooter.getToShooterStateCommand { ShooterState.TO_TRAP })
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
