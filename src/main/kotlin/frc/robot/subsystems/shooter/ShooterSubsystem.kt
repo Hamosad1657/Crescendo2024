@@ -170,10 +170,10 @@ object ShooterSubsystem : SubsystemBase() {
 		(expectedVelocity - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
 
 	fun isWithinAngleToleranceTo(expectedAngle: Rotation2d) =
-		(expectedAngle - currentAngle).abslouteValue.rotations <= Constants.SHOOTING_ANGLE_TOLERANCE.rotations
+		(expectedAngle - currentAngle).absoluteValue.rotations <= Constants.SHOOTING_ANGLE_TOLERANCE.rotations
 
 	fun isWithinAngleToleranceToAmp() =
-		(ShooterState.TO_AMP.angle - currentAngle).abslouteValue.rotations <= Constants.AMP_ANGLE_TOLERANCE.rotations
+		(ShooterState.TO_AMP.angle - currentAngle).absoluteValue.rotations <= Constants.AMP_ANGLE_TOLERANCE.rotations
 
 	// --- Testing and Manual Overrides ---
 

@@ -29,7 +29,7 @@ inline val Number.degrees: Rotation2d get() = Rotation2d.fromDegrees(this.toDoub
 inline val Number.radians: Rotation2d get() = Rotation2d.fromRadians(this.toDouble())
 inline val Number.rotations: Rotation2d get() = Rotation2d.fromRotations(this.toDouble())
 
-inline val Rotation2d.abslouteValue: Rotation2d get() = Rotation2d.fromRotations(this.rotations.absoluteValue)
+inline val Rotation2d.absoluteValue: Rotation2d get() = Rotation2d.fromRotations(this.rotations.absoluteValue)
 
 // --- NeutralMode and IdleMode
 

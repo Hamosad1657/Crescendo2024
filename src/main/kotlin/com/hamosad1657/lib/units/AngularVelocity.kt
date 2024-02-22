@@ -51,7 +51,7 @@ private constructor(velocity: Double, velocityUnit: AngularVelocityUnit) : Compa
 
 	fun abs() = fromRpm(rpm.absoluteValue)
 
-	override fun toString() = "RPM=$rpm"
+	override fun toString() = "RPM($rpm)"
 	override fun compareTo(other: AngularVelocity): Int = (rpm - other.rpm).toInt()
 
 	operator fun plus(other: AngularVelocity) = fromRpm(rpm + other.rpm)

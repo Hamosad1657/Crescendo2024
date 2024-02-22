@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
+import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.subsystems.vision.Vision
 import kotlin.math.absoluteValue
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
@@ -109,6 +111,16 @@ object RobotContainer {
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
 //			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)
 //			L1().onTrue({ ShooterState.decreaseStageAngleSetpoint() }.asInstantCommand)
+
+			var shooterState = ShooterState.AT_STAGE
+			R2().toggleOnTrue(
+				Shooter.getToShooterStateCommand {
+					Vision.estimatedPose2d?.translation?.let { estimatedPose ->
+						DynamicShooting.calculateShooterState(estimatedPose)
+							.also { shooterState = it }
+					} ?: shooterState
+				}
+			)
 		}
 	}
 

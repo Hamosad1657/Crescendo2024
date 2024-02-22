@@ -57,7 +57,7 @@ class Length private constructor(length: Number, lengthUnit: Unit) : Comparable<
 			Length.Unit.Inches -> metersToInches(meters)
 		}
 
-	override fun toString() = "Meters=$meters"
+	override fun toString() = "Meters($meters)"
 	override fun compareTo(other: Length) = (meters - other.meters).toInt()
 
 	operator fun plus(other: Length) = fromMeters(meters + other.meters)

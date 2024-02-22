@@ -26,7 +26,7 @@ object ShooterConstants {
 
 	/** To set offset let the fall to its resting position while its on coast than subtract 90 degrees */
 	val RESTING_ANGLE = 221.15.degrees
-	val FLOOR_RELATIVE_OFFSET: Rotation2d = -(RESTING_ANGLE - 90.degrees)
+	val FLOOR_RELATIVE_OFFSET: Rotation2d = RESTING_ANGLE - 90.degrees
 
 	val VELOCITY_TOLERANCE: AngularVelocity = 50.0.rpm
 	val SHOOTING_ANGLE_TOLERANCE = 1.0.degrees
@@ -55,7 +55,7 @@ object ShooterConstants {
 	private const val KEEP_PARALLEL_TO_FLOOR_OUTPUT = -0.0185
 
 	fun calculateAngleFF(currentAngle: Rotation2d): Volts {
-		val floorRelativeAngle = currentAngle + FLOOR_RELATIVE_OFFSET
+		val floorRelativeAngle = currentAngle - FLOOR_RELATIVE_OFFSET
 		val ff = cos(floorRelativeAngle.radians) * KEEP_PARALLEL_TO_FLOOR_OUTPUT * 12.0
 		return if (currentAngle.radians < RESTING_ANGLE.radians) ff * 1.125 - 0.1 else ff + 0.125
 	}
@@ -96,8 +96,8 @@ object ShooterConstants {
 		val velocity: AngularVelocity,
 	) {
 		init {
-			require(angle.degrees in 0.0..320.0) { "have a nice day :D" }
-			require(velocity.asRpm in 0.0..6000.0) { "have a nice day :D" }
+			require(angle.degrees in 0.0..MAX_ANGLE.degrees) { "angle ${angle.degrees}: have a nice day :D" }
+			require(velocity.asRpm in 0.0..5000.0) { "velocity ${velocity.asRpm}: have a nice day :D" }
 		}
 
 		companion object {
