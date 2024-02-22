@@ -9,7 +9,7 @@ import frc.robot.subsystems.climbing.ClimbingSubsystem
 fun ClimbingSubsystem.getToClosedLimitCommand(): Command = withName("open loop get to open limit") {
 	run {
 		setRight(ClimbingConstants.CLOSE_CLIMBING_OUTPUT)
-//		setLeft(ClimbingConstants.REACH_UP_OUTPUT)
+		setLeft(ClimbingConstants.CLOSE_CLIMBING_OUTPUT)
 	} until ::isAtClosedLimit finallyDo {
 		stopMotors()
 	}
@@ -18,7 +18,7 @@ fun ClimbingSubsystem.getToClosedLimitCommand(): Command = withName("open loop g
 fun ClimbingSubsystem.getToOpenedLimitCommand(): Command = withName("open loop get to closed limit") {
 	run {
 		setRight(ClimbingConstants.OPEN_CLIMBING_OUTPUT)
-//		setLeft(ClimbingConstants.REACH_DOWN_OUTPUT)
+		setLeft(ClimbingConstants.OPEN_CLIMBING_OUTPUT)
 	} until ::isAtOpenedLimit finallyDo {
 		stopMotors()
 	}
