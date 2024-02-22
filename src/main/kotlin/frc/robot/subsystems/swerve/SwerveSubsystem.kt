@@ -41,7 +41,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-//		poseEstimator.update(robotHeading, modulesPositions)
 //		addVisionMeasurement()
 	}
 
