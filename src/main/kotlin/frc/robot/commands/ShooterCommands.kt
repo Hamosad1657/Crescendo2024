@@ -23,7 +23,7 @@ fun ShooterSubsystem.autoDefaultCommand(): Command = withName("auto get to state
  * Maintains [ShooterConstants.ShooterState.COLLECT].
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("auto get to state collect") {
+fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("teleop get to state collect") {
 	getToShooterStateCommand(ShooterConstants.ShooterState.COLLECT)
 }
 

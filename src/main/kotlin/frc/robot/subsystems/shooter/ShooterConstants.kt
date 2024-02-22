@@ -20,7 +20,7 @@ object ShooterConstants {
 	 * 1 degree should be the lowest possible angle.
 	 * It should be 1 degree and not 0 so that it doesn't wrap to 360 by accident.
 	 */
-	val CANCODER_OFFSET = (-0.76625).rotations
+	val CANCODER_OFFSET = (-274.0).degrees
 
 	val MAX_ANGLE = 293.0.degrees
 
@@ -102,7 +102,7 @@ object ShooterConstants {
 
 		companion object {
 			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
-			val AUTO_COLLECT = ShooterState(COLLECT.angle, 2000.rpm)
+			val AUTO_COLLECT = ShooterState(COLLECT.angle, 3000.rpm)
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
 
 			// PID not tuned properly - shoot immediately with this setpoint, or tune better and adjust setpoint
@@ -112,12 +112,14 @@ object ShooterConstants {
 
 			// TODO: Test and find the shooter states
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
+			val NEAR_SPEAKER = ShooterState(180.degrees, 3000.rpm)
 
 			/** Modifiable for now */
-			var AT_STAGE = ShooterState(160.degrees, 4000.rpm)
+			var AT_STAGE = ShooterState(162.5.degrees, 4000.rpm)
+
 			fun increaseStageAngleSetpoint() {
 				AT_STAGE = ShooterState(
-					clamp((AT_STAGE.angle + 5.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
+					clamp((AT_STAGE.angle + 3.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
 					AT_STAGE.velocity
 				)
 				robotPrint(AT_STAGE.angle.degrees)
@@ -125,7 +127,7 @@ object ShooterConstants {
 
 			fun decreaseStageAngleSetpoint() {
 				AT_STAGE = ShooterState(
-					clamp((AT_STAGE.angle - 5.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
+					clamp((AT_STAGE.angle - 3.degrees).degrees, 0.0, MAX_ANGLE.degrees).degrees,
 					AT_STAGE.velocity
 				)
 				robotPrint(AT_STAGE.angle.degrees)
@@ -136,5 +138,4 @@ object ShooterConstants {
 			val AUTO_LINE_TWO = ShooterState(175.degrees, 3500.rpm)
 		}
 	}
-
 }

@@ -66,6 +66,9 @@ object ShooterSubsystem : SubsystemBase() {
 			kI = Constants.ANGLE_PID_GAINS.kI
 			kD = Constants.ANGLE_PID_GAINS.kD
 		})
+		configurator.apply(ClosedLoopGeneralConfigs().apply {
+			ContinuousWrap = false
+		})
 		configurator.apply(Constants.ANGLE_MOTION_MAGIC_CONFIG)
 		configurator.apply(Constants.ANGLE_CURRENT_LIMITS)
 	}
