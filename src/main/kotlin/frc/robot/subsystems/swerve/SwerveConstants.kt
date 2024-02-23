@@ -90,7 +90,7 @@ object SwerveConstants {
 	)
 
 	val CHASSIS_ANGLE_PID_CONTROLLER = PIDController(
-		0.16, 0.0, 0.0
+		0.14, 0.0, 0.0
 	).apply {
 		enableContinuousInput(-180.0, 180.0)
 	}

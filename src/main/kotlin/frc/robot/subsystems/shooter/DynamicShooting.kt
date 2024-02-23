@@ -33,7 +33,7 @@ object DynamicShooting {
 		Point2D.Double(1.0, MIN_ANGLE)
 	)
 
-	private val speakerPosition
+	val speakerPosition
 		get() = when (robotAlliance) {
 			Alliance.Red -> SPEAKER_RED_POSITION_METERS
 			Alliance.Blue -> SPEAKER_BLUE_POSITION_METERS

@@ -1,8 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.asInstantCommand
-import com.hamosad1657.lib.commands.until
+import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -91,7 +90,13 @@ object RobotContainer {
 			// --- Swerve ---
 			controllerA.options().onTrue((Swerve::zeroGyro).asInstantCommand)
 			controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
-
+			controllerA.square().whileTrue(
+				Swerve.aimAtSpeakerWhileDriving(
+					vxSupplier = { controllerA.leftY },
+					vySupplier = { controllerA.leftX },
+					isFieldRelative = { swerveIsFieldRelative },
+				) alongWith Shooter.dynamicShootingCommand()
+			)
 			// TODO: Remove
 			controllerA.PS().toggleOnTrue(Swerve.getToAngleCommand { 90.degrees })
 
@@ -112,7 +117,11 @@ object RobotContainer {
 
 			var shooterState = ShooterState.AT_SPEAKER
 			R2().toggleOnTrue(
-				Shooter.dynamicShootingCommand()
+				Swerve.aimAtSpeakerWhileDriving(
+					vxSupplier = { controllerA.leftY },
+					vySupplier = { controllerA.leftX },
+					isFieldRelative = { swerveIsFieldRelative },
+				) alongWith Shooter.dynamicShootingCommand()
 			)
 		}
 	}
