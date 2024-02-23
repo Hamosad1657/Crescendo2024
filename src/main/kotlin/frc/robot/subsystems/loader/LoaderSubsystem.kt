@@ -21,6 +21,12 @@ object LoaderSubsystem : SubsystemBase() {
 		configurator.apply(Constants.MOTORS_CURRENT_LIMIT)
 	}
 
+	var idleMode = IdleMode.kBrake
+		set(value) {
+			motor.idleMode = value
+			field = value
+		}
+
 	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)
 
 	/** Beam-break is positioned between loader and shooter. */

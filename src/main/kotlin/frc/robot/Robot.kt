@@ -2,6 +2,7 @@ package frc.robot
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.andThen
+import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
+import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.vision.Vision
@@ -56,5 +58,13 @@ object Robot : TimedRobot() {
 	override fun testInit() {
 		// Cancels all running commands at the start of test mode.
 		commandScheduler.cancelAll()
+	}
+
+	override fun disabledInit() {
+		LoaderSubsystem.idleMode = IdleMode.kCoast
+	}
+
+	override fun disabledExit() {
+		LoaderSubsystem.idleMode = IdleMode.kBrake
 	}
 }
