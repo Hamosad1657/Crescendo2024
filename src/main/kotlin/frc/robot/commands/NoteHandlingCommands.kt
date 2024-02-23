@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj2.command.*
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
+import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -92,6 +94,12 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 		setAngle(angle)
 	} finallyDo {
 		stopShooterMotors()
+	}
+}
+
+fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
+	SwerveSubsystem.robotPose.let { estimatedPose ->
+		DynamicShooting.calculateShooterState(estimatedPose.translation)
 	}
 }
 

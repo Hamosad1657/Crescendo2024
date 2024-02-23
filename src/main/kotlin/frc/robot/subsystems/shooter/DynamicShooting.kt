@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter
 
 import com.hamosad1657.lib.math.clamp
+import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
@@ -18,7 +19,7 @@ import java.awt.geom.Point2D
  */
 object DynamicShooting {
 	private const val MIN_DISTANCE_TO_SPEAKER = 2.5 // Meters
-	private const val MAX_DISTANCE_TO_SPEAKER = 6.5 // Meters
+	private const val MAX_DISTANCE_TO_SPEAKER = 5.8 // Meters
 
 	private const val MIN_ANGLE = 162.0 // Degrees
 	private const val MAX_ANGLE = 180.0 // Degrees
@@ -28,7 +29,7 @@ object DynamicShooting {
 
 	private val ANGLE_INTERPOLATION_TABLE = LinearInterpolationTable(
 		Point2D.Double(0.0, MAX_ANGLE),
-		Point2D.Double(0.329333, 165.296685),
+		Point2D.Double(0.414600, 169.0),
 		Point2D.Double(1.0, MIN_ANGLE)
 	)
 
@@ -40,6 +41,9 @@ object DynamicShooting {
 	/** This function assumes the robot is directly facing the speaker. */
 	fun calculateShooterState(robotPosition: Translation2d): ShooterState {
 		val robotToSpeakerFlatDistance = robotPosition.getDistance(speakerPosition)
+		SmartDashboard.putNumber(
+			"robot to speaker distance", robotToSpeakerFlatDistance
+		)
 		val distanceToSpeaker01 = distanceToSpeaker01(robotToSpeakerFlatDistance)
 
 		SmartDashboard.putNumber("Dynamic shooting factor", distanceToSpeaker01)
@@ -51,7 +55,13 @@ object DynamicShooting {
 
 	/** Calculate the distance from the shooter as a 0.0->1.0 factor. */
 	private fun distanceToSpeaker01(shooterToSpeakerFlatDistance: Double): Double {
-		val distance = (shooterToSpeakerFlatDistance - MIN_DISTANCE_TO_SPEAKER) / MAX_DISTANCE_TO_SPEAKER
+		val distance = mapRange(
+			shooterToSpeakerFlatDistance,
+			MIN_DISTANCE_TO_SPEAKER,
+			MAX_DISTANCE_TO_SPEAKER,
+			0.0,
+			1.0
+		)
 		return clamp(distance, min = 0.0, max = 1.0)
 	}
 

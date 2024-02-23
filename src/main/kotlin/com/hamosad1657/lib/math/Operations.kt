@@ -58,7 +58,6 @@ fun clamp(value: Double, min: Double, max: Double): Double {
 fun mapRange(value: Double, startMin: Double, startMax: Double, endMin: Double, endMax: Double): Double {
 	require(startMin < startMax)
 	require(endMin < endMax)
-	require(value in startMin..startMax)
 	return endMin + (endMax - endMin) / (startMax - startMin) * (value - startMin)
 }
 

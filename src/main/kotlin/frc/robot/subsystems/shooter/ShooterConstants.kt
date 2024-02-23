@@ -29,7 +29,7 @@ object ShooterConstants {
 	val FLOOR_RELATIVE_OFFSET: Rotation2d = RESTING_ANGLE - 90.degrees
 
 	val VELOCITY_TOLERANCE: AngularVelocity = 50.0.rpm
-	val SHOOTING_ANGLE_TOLERANCE = 1.0.degrees
+	val SHOOTING_ANGLE_TOLERANCE = 0.5.degrees
 	val AMP_ANGLE_TOLERANCE = 10.0.degrees
 
 	const val KEEP_AT_MAX_ANGLE_OUTPUT = 0.03

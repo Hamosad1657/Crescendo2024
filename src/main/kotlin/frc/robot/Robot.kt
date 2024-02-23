@@ -26,7 +26,7 @@ import frc.robot.subsystems.vision.Vision
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
+	val telemetryLevel: Telemetry = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
 
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
@@ -37,6 +37,7 @@ object Robot : TimedRobot() {
 		// Access the RobotContainer object so that it is initialized. This will perform all our
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
 		Vision.estimatedGlobalPose?.let { SwerveSubsystem.setGyro(it.estimatedPose.rotation.toRotation2d()) }
+
 		RobotContainer
 	}
 
