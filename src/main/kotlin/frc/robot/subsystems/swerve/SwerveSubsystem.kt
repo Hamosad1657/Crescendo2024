@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
 import edu.wpi.first.util.sendable.*
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
@@ -41,7 +40,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-//		addVisionMeasurement()
+		addVisionMeasurement()
 	}
 
 
@@ -198,14 +197,18 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		Vision.estimatedPose2d?.let { estimatedPose ->
-			val poseDelta = estimatedPose.relativeTo(robotPose)
-			if (
-				poseDelta.x < Vision.MAX_VISION_TO_ODOMETRY_DELTA.asMeters &&
-				poseDelta.y < Vision.MAX_VISION_TO_ODOMETRY_DELTA.asMeters
-			) {
-				super.addVisionMeasurement(estimatedPose, Timer.getFPGATimestamp())
-			}
+		Vision.latestResult?.let { latestResult ->
+			if (!latestResult.hasTargets()) return
+		}
+
+		Vision.estimatedGlobalPose?.let { estimatedPose ->
+			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
+			
+			super.addVisionMeasurement(
+				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
+				estimatedPose.timestampSeconds,
+				Vision.poseEstimationStdDevs,
+			)
 		}
 	}
 

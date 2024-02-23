@@ -4,6 +4,8 @@ import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.meters
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.*
 import org.photonvision.*
 import org.photonvision.PhotonPoseEstimator.PoseStrategy
@@ -21,8 +23,8 @@ object Vision {
 
 	private val robotToCamera =
 		Transform3d(
-			Translation3d(0.135, 0.375, -0.465),
-			Rotation3d(0.degrees.radians, 60.degrees.radians, 90.degrees.radians)
+			Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, -0.4),
+			Rotation3d(0.0, 60.degrees.radians, 0.0)
 		)
 
 	var aprilTags: AprilTagFieldLayout =
@@ -40,6 +42,19 @@ object Vision {
 	} else {
 		null
 	}
+
+	val poseEstimationStdDevs
+		get() = Matrix(Nat.N3(), Nat.N1()).apply {
+			if (latestResult!!.targets.size == 1) {
+				this[0, 0] = 0.9
+				this[1, 0] = 0.9
+				this[2, 0] = 0.95
+			}
+			this[0, 0] = 0.5
+			this[1, 0] = 0.5
+			this[2, 0] = 0.95
+
+		}
 
 	/**
 	 * Gets the estimated robot position from the PhotonVision camera.
