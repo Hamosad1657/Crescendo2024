@@ -6,7 +6,10 @@ import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.DriverStation.Alliance
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import frc.robot.Utilities.LinearInterpolationTable
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import java.awt.geom.Point2D
 
 /**
  * - The position and distance units are meters.
@@ -17,11 +20,17 @@ object DynamicShooting {
 	private const val MIN_DISTANCE_TO_SPEAKER = 2.5 // Meters
 	private const val MAX_DISTANCE_TO_SPEAKER = 6.5 // Meters
 
-	private const val MIN_ANGLE = 144.0 // Degrees
+	private const val MIN_ANGLE = 162.0 // Degrees
 	private const val MAX_ANGLE = 180.0 // Degrees
 
 	private const val MIN_VELOCITY = 3000.0 // RPM
 	private const val MAX_VELOCITY = 4000.0 // RPM
+
+	private val ANGLE_INTERPOLATION_TABLE = LinearInterpolationTable(
+		Point2D.Double(0.0, MAX_ANGLE),
+		Point2D.Double(0.329333, 165.296685),
+		Point2D.Double(1.0, MIN_ANGLE)
+	)
 
 	private val speakerPosition = when (robotAlliance) {
 		Alliance.Red -> SPEAKER_RED_POSITION_METERS
@@ -33,6 +42,7 @@ object DynamicShooting {
 		val robotToSpeakerFlatDistance = robotPosition.getDistance(speakerPosition)
 		val distanceToSpeaker01 = distanceToSpeaker01(robotToSpeakerFlatDistance)
 
+		SmartDashboard.putNumber("Dynamic shooting factor", distanceToSpeaker01)
 		return ShooterState(
 			calculateAngleSetpoint(distanceToSpeaker01).degrees,
 			calculateVelocitySetpoint(distanceToSpeaker01).rpm,
@@ -47,7 +57,13 @@ object DynamicShooting {
 
 	/** Calculate the required shooter angle from the 0.0->1.0 distance factor. */
 	private fun calculateAngleSetpoint(distanceToSpeaker01: Double): Double {
-		val angle = (1.0 - distanceToSpeaker01) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE
+		//val factor = 1 - sqrt(distanceToSpeaker01)
+//		val factor = 1 - distanceToSpeaker01
+		val angle = ANGLE_INTERPOLATION_TABLE.getOutput(distanceToSpeaker01)
+		SmartDashboard.putNumber(
+			"Dynamic shooting angle",
+			clamp(angle, MIN_ANGLE, MAX_ANGLE)
+		)
 		return clamp(angle, MIN_ANGLE, MAX_ANGLE)
 	}
 

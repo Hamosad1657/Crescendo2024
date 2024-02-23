@@ -112,7 +112,7 @@ object RobotContainer {
 //			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)
 //			L1().onTrue({ ShooterState.decreaseStageAngleSetpoint() }.asInstantCommand)
 
-			var shooterState = ShooterState.AT_STAGE
+			var shooterState = ShooterState.AT_SPEAKER
 			R2().toggleOnTrue(
 				Shooter.getToShooterStateCommand {
 					Vision.estimatedPose2d?.translation?.let { estimatedPose ->
