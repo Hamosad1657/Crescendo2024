@@ -80,8 +80,6 @@ object SwerveConstants {
 		MAX_ANGULAR_VELOCITY.asRadPs * 2, // Max angular acceleration - 1 second to max velocity
 	)
 
-	val TRANSLATION_INDICATOR_TOLERANCE = 20.centimeters
-
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
 		52.0, 0.1, 0.004,
 	)
@@ -90,7 +88,7 @@ object SwerveConstants {
 	)
 
 	val CHASSIS_ANGLE_PID_CONTROLLER = PIDController(
-		0.14, 0.0, 0.0
+		0.12, 0.0, 0.0
 	).apply {
 		enableContinuousInput(-180.0, 180.0)
 	}
