@@ -91,7 +91,7 @@ object RobotContainer {
 			controllerA.options().onTrue((Swerve::zeroGyro).asInstantCommand)
 			controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
 			controllerA.square().whileTrue(
-				Swerve.aimAtSpeakerWhileDriving(
+				Swerve.aimAtSpeakerWhileDrivingCommand(
 					vxSupplier = { controllerA.leftY },
 					vySupplier = { controllerA.leftX },
 					isFieldRelative = { swerveIsFieldRelative },
@@ -117,7 +117,7 @@ object RobotContainer {
 
 			var shooterState = ShooterState.AT_SPEAKER
 			R2().toggleOnTrue(
-				Swerve.aimAtSpeakerWhileDriving(
+				Swerve.aimAtSpeakerWhileDrivingCommand(
 					vxSupplier = { controllerA.leftY },
 					vySupplier = { controllerA.leftX },
 					isFieldRelative = { swerveIsFieldRelative },

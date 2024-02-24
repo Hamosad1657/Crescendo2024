@@ -1,8 +1,8 @@
-package frc.robot.Utilities
+package com.hamosad1657.lib.math
 
 import java.awt.geom.Point2D
 
-/* This should be updated to use binary search at some point */
+/* This should be updated to use binary search at some point. */
 class LinearInterpolationTable(vararg points: Point2D) {
 	private var m_maxInput = Double.NEGATIVE_INFINITY
 	private var m_minInput = Double.POSITIVE_INFINITY

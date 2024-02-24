@@ -12,13 +12,13 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Robot
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants
-import frc.robot.subsystems.swerve.SwerveSubsystem
 import kotlin.math.pow
 import kotlin.math.sign
+import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
-fun SwerveSubsystem.crossLockWheelsCommand(): Command = run { crossLockWheels() }
+fun Swerve.crossLockWheelsCommand(): Command = run { crossLockWheels() }
 
-fun SwerveSubsystem.teleopDriveCommand(
+fun Swerve.teleopDriveCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	omegaSupplier: () -> Double,
@@ -46,12 +46,12 @@ fun SwerveSubsystem.teleopDriveCommand(
 	}
 }
 
-fun SwerveSubsystem.teleopDriveWithAutoAngleCommand(
+fun Swerve.teleopDriveWithAutoAngleCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	angleSupplier: () -> Rotation2d,
 	isFieldRelative: () -> Boolean,
-) = SwerveSubsystem.run {
+) = Swerve.run {
 	SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angleSupplier().degrees
 
 	val vx = -vxSupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
@@ -73,7 +73,7 @@ fun SwerveSubsystem.teleopDriveWithAutoAngleCommand(
 	)
 }
 
-fun SwerveSubsystem.getToAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
+fun Swerve.getToAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
 	run {
 		SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle().degrees
 		setAngularVelocity(
@@ -82,21 +82,29 @@ fun SwerveSubsystem.getToAngleCommand(angle: () -> Rotation2d): Command = withNa
 	}
 }
 
-fun SwerveSubsystem.aimAtSpeakerCommand(): Command = getToAngleCommand {
-	val value = (robotPose.translation - DynamicShooting.speakerPosition).angle.degrees
-	mapRange(value, 0.0, 360.0, -180.0, 180.0).degrees
-}
-
-fun SwerveSubsystem.aimAtSpeakerWhileDriving(
+fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	isFieldRelative: () -> Boolean,
-): Command = SwerveSubsystem.teleopDriveWithAutoAngleCommand(
+): Command = aimAtGoalWhileDrivingCommand(
+	vxSupplier,
+	vySupplier,
+	{ DynamicShooting.speakerPosition },
+	isFieldRelative,
+)
+
+fun Swerve.aimAtGoalWhileDrivingCommand(
+	vxSupplier: () -> Double,
+	vySupplier: () -> Double,
+	goalSupplier: () -> Translation2d,
+	isFieldRelative: () -> Boolean,
+): Command = teleopDriveWithAutoAngleCommand(
 	vxSupplier,
 	vySupplier,
 	{
-		val value = (robotPose.translation - DynamicShooting.speakerPosition).angle.degrees
-		mapRange(value, 0.0, 360.0, -180.0, 180.0).degrees
+		val robotToGoal = robotPose.translation - goalSupplier()
+		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
 	},
-	isFieldRelative
+	isFieldRelative,
 )
+

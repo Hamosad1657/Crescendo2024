@@ -50,8 +50,8 @@ object Vision {
 				this[1, 0] = 0.9
 				this[2, 0] = 0.95
 			}
-			this[0, 0] = 0.5
-			this[1, 0] = 0.5
+			this[0, 0] = 0.2
+			this[1, 0] = 0.2
 			this[2, 0] = 0.95
 
 		}
