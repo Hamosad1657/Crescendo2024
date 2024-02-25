@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkFlex
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.subsystems.climbing.ClimbingConstants
 import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
@@ -45,6 +46,9 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val rightOpenedLimitSwitch = DigitalInput(ClimbingMap.RIGHT_OPENED_LIMIT_CHANNEL)
 	private val rightClosedLimitSwitch = DigitalInput(ClimbingMap.RIGHT_CLOSED_LIMIT_CHANNEL)
 
+	private val leftTrapSwitch = DigitalInput(ClimbingMap.LEFT_TRAP_SWITCH)
+	private val rightTrapSwitch = DigitalInput(ClimbingMap.RIGHT_TRAP_SWITCH)
+
 	private var lastSetpoint: Rotations = 0.0
 
 
@@ -67,6 +71,9 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val isLeftAtOpenedLimit get() = leftOpenedLimitSwitch.get()
 	private val isRightAtClosedLimit get() = rightClosedLimitSwitch.get()
 	private val isRightAtOpenedLimit get() = rightOpenedLimitSwitch.get()
+
+	val isLeftTrapSwitchPressed get() = leftTrapSwitch.get()
+	val isRightTrapSwitchPressed get() = rightTrapSwitch.get()
 
 	val isAtClosedLimit get() = isLeftAtClosedLimit && isRightAtClosedLimit
 	val isAtOpenedLimit get() = isLeftAtOpenedLimit && isRightAtOpenedLimit
@@ -115,5 +122,8 @@ object ClimbingSubsystem : SubsystemBase() {
 		builder.addDoubleProperty("Left output", { leftMainMotor.get() }, null)
 		builder.addDoubleProperty("Right output", { rightMainMotor.get() }, null)
 		builder.addDoubleProperty("Position rotations", { currentPosition }, null)
+		builder.addBooleanProperty("Left trap switch pressed", { isLeftTrapSwitchPressed }, null)
+		builder.addBooleanProperty("Right trap switch pressed", { isRightTrapSwitchPressed }, null)
+		
 	}
 }
