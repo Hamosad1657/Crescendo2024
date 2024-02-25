@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.subsystems.vision.Vision
 import java.awt.geom.Point2D
 
 /**
@@ -36,6 +37,16 @@ object DynamicShooting {
 			Alliance.Red -> SPEAKER_RED_POSITION_METERS
 			Alliance.Blue -> SPEAKER_BLUE_POSITION_METERS
 		}
+
+	val speakerTagId
+		get() = when (robotAlliance) {
+			Alliance.Red -> SPEAKER_RED_TAG_ID
+			Alliance.Blue -> SPEAKER_BLUE_TAG_ID
+		}
+
+	val seesSpeakerTag
+		get() = Vision.getTag(speakerTagId) != null
+
 
 	/** This function assumes the robot is directly facing the speaker. */
 	fun calculateShooterState(robotPosition: Translation2d): ShooterState {
@@ -81,26 +92,23 @@ object DynamicShooting {
 		val rpm = distanceToSpeaker01 * (MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY
 		return clamp(rpm, MIN_VELOCITY, MAX_VELOCITY)
 	}
+
+	/**
+	 * The Translation2d of the blue speaker if you are in the blue alliance, according to WPILib's
+	 * field coordinate system.
+	 */
+	private val SPEAKER_BLUE_POSITION_METERS = Translation2d(-0.04, 5.55) // Meters
+
+	/**
+	 * The Translation2d of the red speaker if you are in the red alliance, according to WPILib's
+	 * field coordinate system.
+	 */
+	private val SPEAKER_RED_POSITION_METERS = Translation2d(16.58, 5.55) // Meters
+
+	/**id of the april tag in the center of the speaker*/
+	const val SPEAKER_RED_TAG_ID = 4
+
+	/**id of the april tag in the center of the speaker*/
+	const val SPEAKER_BLUE_TAG_ID = 7
 }
 
-/**
- * The Translation2d of the blue speaker if you are in the blue alliance, according to WPILib's
- * field coordinate system.
- * Like last year, the field is not rotationally symmetrical, and we use the convention of "origin
- * follows alliance", so the speaker position will be different depending on our alliance.
- *
- * For more information:
- * https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html#origin-follows-your-alliance
- */
-private val SPEAKER_BLUE_POSITION_METERS = Translation2d(-0.04, 5.55) // Meters
-
-/**
- * The Translation2d of the red speaker if you are in the red alliance, according to WPILib's
- * field coordinate system.
- * Like last year, the field is not rotationally symmetrical, and we use the convention of "origin
- * follows alliance", so the speaker position will be different depending on our alliance.
- *
- * For more information:
- * https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html#origin-follows-your-alliance
- */
-private val SPEAKER_RED_POSITION_METERS = Translation2d(16.58, 5.55) // Meters

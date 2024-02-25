@@ -7,8 +7,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocit
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
 import com.hamosad1657.lib.robotAlliance
-import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.toNeutralModeValue
+import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
@@ -57,7 +56,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	// --- Robot State Getters ---
 
 	/** Gets the current yaw angle of the robot, as reported by the IMU (CCW positive, not wrapped). */
-	val robotHeading: Rotation2d get() = Rotation2d.fromDegrees(pigeon.yaw.valueAsDouble)
+	val robotHeading: Rotation2d get() = pigeon.rotation2d
 
 	/** Gets the current pitch angle of the robot, as reported by the imu. */
 	val robotPitch: Rotation2d get() = Rotation2d.fromDegrees(pigeon.pitch.valueAsDouble)
@@ -174,11 +173,13 @@ object SwerveSubsystem : SwerveDrivetrain(
 	/** Sets the gyroscope angle to 0. */
 	fun zeroGyro() {
 		pigeon.reset()
+		poseEstimator.resetPosition(0.degrees, modulesPositions, robotPose.let { Pose2d(it.x, it.y, 0.degrees) })
 	}
 
 	/** Sets the expected gyroscope angle. */
 	fun setGyro(angle: Rotation2d) {
 		pigeon.setYaw(angle.degrees)
+		poseEstimator.resetPosition(angle, modulesPositions, robotPose.let { Pose2d(it.x, it.y, angle) })
 	}
 
 	/**
@@ -203,7 +204,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 		Vision.estimatedGlobalPose?.let { estimatedPose ->
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
-			
+
 			super.addVisionMeasurement(
 				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
 				estimatedPose.timestampSeconds,

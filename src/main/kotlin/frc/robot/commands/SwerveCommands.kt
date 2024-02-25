@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Robot
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants
+import frc.robot.subsystems.vision.Vision
 import kotlin.math.pow
 import kotlin.math.sign
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
@@ -86,10 +87,17 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	isFieldRelative: () -> Boolean,
-): Command = aimAtGoalWhileDrivingCommand(
+): Command = teleopDriveWithAutoAngleCommand(
 	vxSupplier,
 	vySupplier,
-	{ DynamicShooting.speakerPosition },
+	{
+		if (DynamicShooting.seesSpeakerTag) {
+			(robotHeading.degrees + Vision.getTag(DynamicShooting.speakerTagId)!!.yaw).degrees
+		} else {
+			val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+			mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+		}
+	},
 	isFieldRelative,
 )
 
@@ -107,4 +115,6 @@ fun Swerve.aimAtGoalWhileDrivingCommand(
 	},
 	isFieldRelative,
 )
+
+
 

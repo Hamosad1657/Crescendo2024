@@ -14,8 +14,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
 import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.swerve.SwerveSubsystem
-import frc.robot.subsystems.vision.Vision
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -36,7 +34,6 @@ object Robot : TimedRobot() {
 		HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
 		// Access the RobotContainer object so that it is initialized. This will perform all our
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
-		Vision.estimatedGlobalPose?.let { SwerveSubsystem.setGyro(it.estimatedPose.rotation.toRotation2d()) }
 
 		RobotContainer
 	}

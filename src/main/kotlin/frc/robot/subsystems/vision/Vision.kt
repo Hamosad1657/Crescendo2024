@@ -46,14 +46,13 @@ object Vision {
 	val poseEstimationStdDevs
 		get() = Matrix(Nat.N3(), Nat.N1()).apply {
 			if (latestResult!!.targets.size == 1) {
-				this[0, 0] = 0.9
-				this[1, 0] = 0.9
-				this[2, 0] = 0.95
+				this[0, 0] = 0.9 // Translation X
+				this[1, 0] = 0.9 // Translation Y
+				this[2, 0] = 0.95 // Rotation
 			}
-			this[0, 0] = 0.2
-			this[1, 0] = 0.2
-			this[2, 0] = 0.95
-
+			this[0, 0] = 0.2 // Translation X
+			this[1, 0] = 0.2 // Translation Y
+			this[2, 0] = 0.95 // Rotation
 		}
 
 	/**
