@@ -1,14 +1,12 @@
 package frc.robot.subsystems.shooter
 
-import com.hamosad1657.lib.math.clamp
-import com.hamosad1657.lib.math.mapRange
+import com.hamosad1657.lib.math.*
 import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import frc.robot.Utilities.LinearInterpolationTable
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import java.awt.geom.Point2D
 
