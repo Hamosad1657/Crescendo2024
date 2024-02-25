@@ -113,7 +113,7 @@ object SwerveConstants {
 		private const val FRONT_LEFT_ENCODER_OFFSET = -0.367920
 		private const val FRONT_RIGHT_ENCODER_OFFSET = -0.008057
 		private const val BACK_LEFT_ENCODER_OFFSET = -0.482910
-		private const val BACK_RIGHT_ENCODER_OFFSET = -0.235107
+		private const val BACK_RIGHT_ENCODER_OFFSET = -0.235107 + 0.5
 
 		/** FL, FR, BL, BR. */
 		val asArray get() = arrayOf(FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT)
