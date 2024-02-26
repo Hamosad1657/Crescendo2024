@@ -2,6 +2,7 @@ package frc.robot
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.util.sendable.SendableRegistry
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.subsystems.swerve.SwerveConstants
 import kotlin.math.absoluteValue
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
@@ -107,7 +109,13 @@ object RobotContainer {
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
-			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_CLOSER_STAGE))
+			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_CLOSER_STAGE) alongWith
+				Swerve.getToOneAngleCommand {
+					(SwerveConstants.AT_CLOSER_SPEAKER_ANGLE.degrees +
+						Swerve.robotHeading.degrees).degrees
+				})
+
+
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
 //			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)

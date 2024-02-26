@@ -1,6 +1,7 @@
 package frc.robot.commands
 
 import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.commands.andThen
 import com.hamosad1657.lib.commands.withName
 import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.units.degrees
@@ -74,9 +75,31 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	)
 }
 
+fun Swerve.getToOneAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
+	var setpoint = 0.0.degrees
+	runOnce {
+		setpoint = angle()
+	} andThen
+		run {
+			SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = setpoint.degrees
+			setAngularVelocity(
+				(SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+			)
+		}
+}
+
 fun Swerve.getToAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
 	run {
 		SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle().degrees
+		setAngularVelocity(
+			(SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+		)
+	}
+}
+
+fun Swerve.getToAngleCommand(angle: Rotation2d): Command = withName("get to angle command") {
+	run {
+		SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle.degrees
 		setAngularVelocity(
 			(SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
 		)
@@ -116,5 +139,6 @@ fun Swerve.aimAtGoalWhileDrivingCommand(
 	isFieldRelative,
 )
 
+fun Swerve.driveToTrapCommand() {
 
-
+}

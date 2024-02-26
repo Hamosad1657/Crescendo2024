@@ -37,6 +37,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "raise_climbing_command"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "middle_note_trap"

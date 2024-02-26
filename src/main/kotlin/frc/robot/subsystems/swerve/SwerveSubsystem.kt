@@ -39,7 +39,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		addVisionMeasurement()
+//		addVisionMeasurement()
 	}
 
 
