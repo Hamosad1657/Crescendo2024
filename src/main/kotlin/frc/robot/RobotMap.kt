@@ -19,8 +19,8 @@ object RobotMap {
 		const val RIGHT_OPENED_LIMIT_CHANNEL = 5
 
 		//TODO: Set the channels
-		const val LEFT_TRAP_SWITCH = 9
-		const val RIGHT_TRAP_SWITCH = 8
+		const val LEFT_TRAP_SWITCH = 8
+		const val RIGHT_TRAP_SWITCH = 9
 	}
 
 	object Intake {

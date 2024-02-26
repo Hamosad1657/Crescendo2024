@@ -157,5 +157,6 @@ object RobotContainer {
 		)
 		NamedCommands.registerCommand("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 
+		NamedCommands.registerCommand("shoot_trap_command", Notes.loadAndShootCommand(ShooterState.TO_TRAP))
 	}
 }

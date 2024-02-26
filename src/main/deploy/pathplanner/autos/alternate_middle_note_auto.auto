@@ -41,6 +41,12 @@
           "data": {
             "pathName": "middle_note_trap"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_trap_command"
+          }
         }
       ]
     }

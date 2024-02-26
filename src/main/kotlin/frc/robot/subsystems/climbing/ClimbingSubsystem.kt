@@ -71,8 +71,8 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val isRightAtClosedLimit get() = rightClosedLimitSwitch.get()
 	private val isRightAtOpenedLimit get() = rightOpenedLimitSwitch.get()
 
-	val isLeftTrapSwitchPressed get() = leftTrapSwitch.get()
-	val isRightTrapSwitchPressed get() = rightTrapSwitch.get()
+	val isLeftTrapSwitchPressed get() = !leftTrapSwitch.get()
+	val isRightTrapSwitchPressed get() = !rightTrapSwitch.get()
 
 	val isAtClosedLimit get() = isLeftAtClosedLimit && isRightAtClosedLimit
 	val isAtOpenedLimit get() = isLeftAtOpenedLimit && isRightAtOpenedLimit
