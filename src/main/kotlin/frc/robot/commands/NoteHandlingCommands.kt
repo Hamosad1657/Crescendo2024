@@ -211,6 +211,6 @@ fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
 fun Intake.ejectFromIntakeCommand(): Command =
 	run {
 		setVoltage(-IntakeConstants.BOTTOM_MOTOR_VOLTAGE, -IntakeConstants.TOP_MOTOR_VOLTAGE)
-	} finallyDo {
+	} withTimeout (IntakeConstants.EJECT_TIME_SEC) finallyDo {
 		stopMotors()
 	}
