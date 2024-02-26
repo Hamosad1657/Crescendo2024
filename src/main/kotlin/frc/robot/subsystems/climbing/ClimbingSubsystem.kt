@@ -73,6 +73,7 @@ object ClimbingSubsystem : SubsystemBase() {
 
 	val isLeftTrapSwitchPressed get() = !leftTrapSwitch.get()
 	val isRightTrapSwitchPressed get() = !rightTrapSwitch.get()
+	val areBothTrapSwitchesPressed get() = isLeftTrapSwitchPressed && isRightTrapSwitchPressed
 
 	val isAtClosedLimit get() = isLeftAtClosedLimit && isRightAtClosedLimit
 	val isAtOpenedLimit get() = isLeftAtOpenedLimit && isRightAtOpenedLimit

@@ -1,8 +1,7 @@
 package frc.robot.commands
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.andThen
-import com.hamosad1657.lib.commands.withName
+import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.radPs
@@ -11,7 +10,9 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Robot
+import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.Vision
@@ -147,6 +148,18 @@ fun Swerve.aimAtGoalWhileDrivingCommand(
 	isFieldRelative,
 )
 
-fun Swerve.driveToTrapCommand() {
-
+fun Swerve.driveToTrapCommand(): Command = withName("drive to trap") {
+	val rotationSupplier: () -> Double = {
+		if (ClimbingSubsystem.areBothTrapSwitchesPressed) 0.0
+		else if (ClimbingSubsystem.isLeftTrapSwitchPressed) 0.3
+		else if (ClimbingSubsystem.isRightTrapSwitchPressed) -0.3
+		else 0.0
+	}
+	teleopDriveCommand({ 0.2 }, { 0.0 }, rotationSupplier, { false }) until
+		{ ClimbingSubsystem.areBothTrapSwitchesPressed } andThen
+		(teleopDriveCommand(
+			{ -0.2 },
+			{ 0.0 },
+			{ 0.0 },
+			{ false }) withTimeout (0.15)) finallyDo InstantCommand({ stop() })
 }

@@ -134,6 +134,11 @@ object SwerveSubsystem : SwerveDrivetrain(
 		}
 	}
 
+	fun stop() {
+		super.setControl(SwerveRequest.ApplyChassisSpeeds())
+
+	}
+
 	/**
 	 * Set chassis speeds with closed-loop velocity control.
 	 *

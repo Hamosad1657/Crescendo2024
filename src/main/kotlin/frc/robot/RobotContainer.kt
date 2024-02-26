@@ -92,6 +92,7 @@ object RobotContainer {
 			options().onTrue((Swerve::zeroGyro).asInstantCommand)
 			cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
+			circle().toggleOnTrue(Swerve.driveToTrapCommand().andThen(Notes.loadAndShootCommand(ShooterState.TO_TRAP)))
 			square().toggleOnTrue(
 				Swerve.aimAtSpeakerWhileDrivingCommand(
 					vxSupplier = { controllerA.leftY },
@@ -137,7 +138,7 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("alternate_middle_note_auto")
+		return Swerve.followAutoCommand("calibration_auto")
 	}
 
 	private fun registerAutoCommands() {
@@ -156,5 +157,10 @@ object RobotContainer {
 		NamedCommands.registerCommand("shoot_trap_command", Notes.loadAndShootCommand(ShooterState.TO_TRAP))
 
 		NamedCommands.registerCommand("raise_climbing_command", Climbing.getToOpenedLimitCommand())
+
+		NamedCommands.registerCommand(
+			"drive_to_speaker_command",
+			Swerve.driveToTrapCommand().andThen(Notes.loadAndShootCommand(ShooterState.TO_TRAP))
+		)
 	}
 }
