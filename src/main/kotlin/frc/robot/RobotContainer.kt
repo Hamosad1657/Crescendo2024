@@ -91,12 +91,13 @@ object RobotContainer {
 			// --- Swerve ---
 			options().onTrue((Swerve::zeroGyro).asInstantCommand)
 			cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
-			square().whileTrue(
+			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
+			square().toggleOnTrue(
 				Swerve.aimAtSpeakerWhileDrivingCommand(
 					vxSupplier = { controllerA.leftY },
 					vySupplier = { controllerA.leftX },
 					isFieldRelative = { swerveIsFieldRelative },
-				) alongWith Shooter.dynamicShootingCommand()
+				)
 			)
 
 			// --- Notes ---
@@ -115,20 +116,9 @@ object RobotContainer {
 						Swerve.robotHeading.degrees).degrees
 				})
 
-
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
-//			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)
-//			L1().onTrue({ ShooterState.decreaseStageAngleSetpoint() }.asInstantCommand)
-
-			var shooterState = ShooterState.AT_SPEAKER
-			R2().toggleOnTrue(
-				Swerve.aimAtSpeakerWhileDrivingCommand(
-					vxSupplier = { controllerA.leftY },
-					vySupplier = { controllerA.leftX },
-					isFieldRelative = { swerveIsFieldRelative },
-				) alongWith Shooter.dynamicShootingCommand()
-			)
+			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 		}
 	}
 

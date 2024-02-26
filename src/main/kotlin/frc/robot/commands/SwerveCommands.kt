@@ -6,6 +6,7 @@ import com.hamosad1657.lib.commands.withName
 import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.radPs
+import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -53,8 +54,9 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	vySupplier: () -> Double,
 	angleSupplier: () -> Rotation2d,
 	isFieldRelative: () -> Boolean,
+	pidController: () -> PIDController = { SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER },
 ) = Swerve.run {
-	SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angleSupplier().degrees
+	pidController().setpoint = angleSupplier().degrees
 
 	val vx = -vxSupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
 	val vy = -vySupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
@@ -113,15 +115,21 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 ): Command = teleopDriveWithAutoAngleCommand(
 	vxSupplier,
 	vySupplier,
-	{
-		if (DynamicShooting.seesSpeakerTag) {
-			(robotHeading.degrees + Vision.getTag(DynamicShooting.speakerTagId)!!.yaw).degrees
-		} else {
-			val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-			mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+	angleSupplier@{
+		SmartDashboard.putBoolean("seesSpeakerTag", DynamicShooting.seesSpeakerTag)
+
+		Vision.getTag(DynamicShooting.speakerTagId)?.let { tag ->
+			return@angleSupplier (robotHeading.degrees - tag.yaw).degrees
 		}
+		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+		return@angleSupplier mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+
 	},
 	isFieldRelative,
+	{
+		if (DynamicShooting.seesSpeakerTag) SwerveConstants.CHASSIS_VISION_ANGLE_PID_CONTROLLER
+		else SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
+	},
 )
 
 fun Swerve.aimAtGoalWhileDrivingCommand(
