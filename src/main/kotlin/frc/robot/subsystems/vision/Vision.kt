@@ -67,5 +67,5 @@ object Vision {
 
 	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
 
-	fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.getOrNull(tagID)
+	fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
 }
