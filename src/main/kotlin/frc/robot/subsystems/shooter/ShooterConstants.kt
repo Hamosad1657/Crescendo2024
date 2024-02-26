@@ -106,7 +106,7 @@ object ShooterConstants {
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
 
 			// PID not tuned properly - shoot immediately with this setpoint, or tune better and adjust setpoint
-			val TO_TRAP = ShooterState(252.0.degrees, 1750.0.rpm)
+			val TO_TRAP = ShooterState(252.0.degrees, 2000.0.rpm)
 
 			val EJECT = ShooterState(168.degrees, 1000.rpm)
 
