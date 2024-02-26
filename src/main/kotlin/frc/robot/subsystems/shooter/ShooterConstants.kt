@@ -114,6 +114,8 @@ object ShooterConstants {
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
 			val NEAR_SPEAKER = ShooterState(180.degrees, 3000.rpm)
 
+			val AT_CLOSER_STAGE = ShooterState(175.0.degrees, 3500.rpm)
+
 			/** Modifiable for now */
 			var AT_STAGE = ShooterState(162.5.degrees, 4000.rpm)
 

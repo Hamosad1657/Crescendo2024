@@ -2,7 +2,6 @@ package frc.robot
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
-import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.util.sendable.SendableRegistry
@@ -88,17 +87,15 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		with(controllerA) {
 			// --- Swerve ---
-			controllerA.options().onTrue((Swerve::zeroGyro).asInstantCommand)
-			controllerA.cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
-			controllerA.square().whileTrue(
+			options().onTrue((Swerve::zeroGyro).asInstantCommand)
+			cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
+			square().whileTrue(
 				Swerve.aimAtSpeakerWhileDrivingCommand(
 					vxSupplier = { controllerA.leftY },
 					vySupplier = { controllerA.leftX },
 					isFieldRelative = { swerveIsFieldRelative },
 				) alongWith Shooter.dynamicShootingCommand()
 			)
-			// TODO: Remove
-			controllerA.PS().toggleOnTrue(Swerve.getToAngleCommand { 90.degrees })
 
 			// --- Notes ---
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
@@ -110,6 +107,7 @@ object RobotContainer {
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
+			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_CLOSER_STAGE))
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
 //			R1().onTrue({ ShooterState.increaseStageAngleSetpoint() }.asInstantCommand)
@@ -141,7 +139,7 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("three_part_auto")
+		return Swerve.followAutoCommand("alternate_middle_note_auto")
 	}
 
 	private fun registerAutoCommands() {
@@ -158,5 +156,7 @@ object RobotContainer {
 		NamedCommands.registerCommand("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 
 		NamedCommands.registerCommand("shoot_trap_command", Notes.loadAndShootCommand(ShooterState.TO_TRAP))
+
+		NamedCommands.registerCommand("raise_climbing_command", Climbing.getToOpenedLimitCommand())
 	}
 }
