@@ -197,6 +197,12 @@ fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
 		ShooterConstants.SHOOT_TIME_SEC
 }
 
+fun Notes.collectAndEject(): Command = withName("collect and eject") {
+	Intake.runIntakeCommand() alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) alongWith
+		Shooter.getToShooterStateCommand(ShooterState.EJECT)
+}
+
 
 // ---
 //
