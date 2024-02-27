@@ -118,7 +118,7 @@ object RobotContainer {
 
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
-			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
+			// R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 		}
 	}
 
