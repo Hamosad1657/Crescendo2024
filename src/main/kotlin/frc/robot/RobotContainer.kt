@@ -1,8 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.asInstantCommand
-import com.hamosad1657.lib.commands.until
+import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -93,7 +92,11 @@ object RobotContainer {
 			options().onTrue((Swerve::zeroGyro).asInstantCommand)
 			cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
-			circle().toggleOnTrue(Swerve.driveToTrapCommand().andThen(Notes.loadAndShootCommand(ShooterState.TO_TRAP)))
+			circle().toggleOnTrue(
+				(Swerve.driveToTrapCommand() raceWith
+					Shooter.getToShooterStateCommand(ShooterState.TO_TRAP)) andThen
+					Notes.loadAndShootCommand(ShooterState.TO_TRAP)
+			)
 			square().toggleOnTrue(Swerve.getToOneAngleCommand {
 				(SwerveConstants.AT_CLOSER_SPEAKER_ANGLE.degrees +
 					Swerve.robotHeading.degrees).degrees
