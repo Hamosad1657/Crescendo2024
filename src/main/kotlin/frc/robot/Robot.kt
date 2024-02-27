@@ -1,12 +1,21 @@
 package frc.robot
 
+import com.hamosad1657.lib.Telemetry
+import com.hamosad1657.lib.commands.andThen
+import com.hamosad1657.lib.units.degrees
+import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import frc.robot.commands.*
+import frc.robot.subsystems.loader.LoaderSubsystem
+import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -17,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
+	val telemetryLevel: Telemetry = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
 
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
@@ -26,6 +36,7 @@ object Robot : TimedRobot() {
 		HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
 		// Access the RobotContainer object so that it is initialized. This will perform all our
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
+
 		RobotContainer
 	}
 
@@ -34,16 +45,27 @@ object Robot : TimedRobot() {
 	}
 
 	override fun autonomousInit() {
-		autonomousCommand = RobotContainer.getAutonomousCommand()
+		SwerveSubsystem.setGyro(60.0.degrees)
+		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
+		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand()
 		autonomousCommand?.schedule()
 	}
 
 	override fun teleopInit() {
+		ShooterSubsystem.defaultCommand = ShooterSubsystem.teleopDefaultCommand()
 		autonomousCommand?.cancel()
 	}
 
 	override fun testInit() {
 		// Cancels all running commands at the start of test mode.
 		commandScheduler.cancelAll()
+	}
+
+	override fun disabledInit() {
+		LoaderSubsystem.idleMode = IdleMode.kCoast
+	}
+
+	override fun disabledExit() {
+		LoaderSubsystem.idleMode = IdleMode.kBrake
 	}
 }

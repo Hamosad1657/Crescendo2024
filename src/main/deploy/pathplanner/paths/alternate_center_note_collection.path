@@ -1,0 +1,63 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.6452516819624394,
+        "y": 4.3627103149817215
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.7742453729272825,
+        "y": 1.6944455241223657
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.65671414652387,
+        "y": 4.11050362756931
+      },
+      "prevControl": {
+        "x": 3.5052102254851873,
+        "y": 4.353958444253557
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "center_note_collection"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.0,
+      "rotationDegrees": 120.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.85,
+      "rotationDegrees": 180.0,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 700.0,
+    "maxAngularAcceleration": 1000.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "trap_auto",
+  "previewStartingState": {
+    "rotation": 124.15969454566944,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

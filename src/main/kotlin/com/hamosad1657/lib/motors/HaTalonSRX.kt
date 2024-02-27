@@ -1,10 +1,11 @@
 package com.hamosad1657.lib.motors
 
 import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
-import com.hamosad1657.lib.math.clamp
-import com.hamosad1657.lib.math.wrapPositionSetpoint
-import com.hamosad1657.lib.math.PIDGains
+import com.hamosad1657.lib.math.*
+import com.hamosad1657.lib.units.toNeutralMode
+import com.revrobotics.CANSparkBase
 
 class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	init {
@@ -33,6 +34,20 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 		set(value) {
 			field = value.coerceAtMost(1.0)
 		}
+
+	/**
+	 * Sets the [NeutralMode] of the motor.
+	 *
+	 * Use only as setter.
+	 * */
+	var idleMode: CANSparkBase.IdleMode
+		get() = throw UnsupportedOperationException("use this field only as a setter")
+		set(value) = setNeutralMode(idleMode.toNeutralMode())
+
+	/** USE [idleMode] SETTER INSTEAD. */
+	override fun setNeutralMode(neutralMode: NeutralMode?) {
+		throw UnsupportedOperationException("use [idleMode] setter instead")
+	}
 
 	private var minPositionSetpoint: Double = 0.0
 	private var maxPositionSetpoint: Double = 0.0

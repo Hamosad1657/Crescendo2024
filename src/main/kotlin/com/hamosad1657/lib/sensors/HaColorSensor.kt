@@ -25,7 +25,7 @@ class HaColorSensor(port: I2C.Port) : Sendable {
 	/** The blue value of the raw detected color. */
 	val blueRaw get() = colorSensor.blue
 
-	/** The IR value of the raw detected color (in CIE 1931 XYZ colorspace). */
+	/** The IR value of the raw detected color (in CIE 1931 XYZ color-space). */
 	val ir get() = colorSensor.ir
 
 	/** The proximity value of the sensor ranging from 0 (object is close) to 2047 (object is far away). */
@@ -55,22 +55,22 @@ class HaColorSensor(port: I2C.Port) : Sendable {
 	fun isRawColorInRange(minColorRaw: RawColor, maxColorRaw: RawColor): Boolean {
 		val color = colorSensor.rawColor
 		return color.red >= minColorRaw.red &&
-				color.red <= maxColorRaw.red &&
-				color.blue >= minColorRaw.blue &&
-				color.blue <= maxColorRaw.blue &&
-				color.green >= minColorRaw.green &&
-				color.green <= maxColorRaw.green
+			color.red <= maxColorRaw.red &&
+			color.blue >= minColorRaw.blue &&
+			color.blue <= maxColorRaw.blue &&
+			color.green >= minColorRaw.green &&
+			color.green <= maxColorRaw.green
 	}
 
 	/** Checks whether the detected color is in the specified range (inclusive). */
 	fun isColorInRange(minColor: Color, maxColor: Color): Boolean {
 		val color = colorSensor.color
 		return color.red >= minColor.red &&
-				color.red <= maxColor.red &&
-				color.blue >= minColor.blue &&
-				color.blue <= maxColor.blue &&
-				color.green >= minColor.green &&
-				color.green <= maxColor.green
+			color.red <= maxColor.red &&
+			color.blue >= minColor.blue &&
+			color.blue <= maxColor.blue &&
+			color.green >= minColor.green &&
+			color.green <= maxColor.green
 	}
 
 	/** Checks whether the detected proximity is in the specified range (inclusive). */
@@ -88,7 +88,7 @@ class HaColorSensor(port: I2C.Port) : Sendable {
 		builder.addDoubleProperty("Red %", { red }, null)
 		builder.addDoubleProperty("Green %", { green }, null)
 		builder.addDoubleProperty("Blue %", { blue }, null)
-		builder.addDoubleProperty("Proximity (CM)", { proximityCentimeters.centimeters }, null)
+		builder.addDoubleProperty("Proximity (CM)", { proximityCentimeters.asCentimeters }, null)
 		builder.addIntegerProperty("Proximity (0-2047)", { proximityRaw.toLong() }, null)
 	}
 

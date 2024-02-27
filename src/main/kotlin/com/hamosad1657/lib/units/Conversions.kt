@@ -63,7 +63,7 @@ fun degPsToRadPs(degPs: Number) = Math.toRadians(degPs.toDouble())
  *
  * Wheel radius should be greater than 0. */
 fun rpmToMps(rpm: Number, wheelRadius: Length) =
-	require(wheelRadius.meters > 0.0).run { rpm.toDouble() / 60.0 * (wheelRadius.meters * 2.0 * Math.PI) }
+	require(wheelRadius.asMeters > 0.0).run { rpm.toDouble() / 60.0 * (wheelRadius.asMeters * 2.0 * Math.PI) }
 
 /** Radians per second to meters per second.
  *
@@ -79,7 +79,7 @@ fun degPsToMps(degPs: Number, wheelRadius: Length) = rpmToMps(degPsToRpm(degPs),
  *
  * Wheel radius should be greater than 0. */
 fun mpsToRpm(mps: Number, wheelRadius: Length) =
-	require(wheelRadius.meters > 0.0).run { mps.toDouble() * 60.0 / (wheelRadius.meters * 2.0 * Math.PI) }
+	require(wheelRadius.asMeters > 0.0).run { mps.toDouble() * 60.0 / (wheelRadius.asMeters * 2.0 * Math.PI) }
 
 /** Meters per second to radians per second.
  *
@@ -134,6 +134,7 @@ fun degToCANCoderTicks(mechanismDeg: Number, gearRatio: Number = 1.0) =
  *
  * @return The angle of the mechanism in degrees.
  */
+@Suppress("FunctionName")
 fun CANCoderTicksToDeg(ticks: Number, gearRatio: Number = 1.0) =
 	ticks.toDouble() / CANCODER_TICKS_PER_ROTATION / gearRatio.toDouble() * 360.0
 
@@ -201,7 +202,7 @@ fun falconTicksPer100msToRpm(ticksPer100ms: Number, gearRatio: Number = 1.0) =
  * @return New position relative to robot's alliance.
  */
 fun matchPoseToAlliance(position: Pose2d): Pose2d {
-	val alliance = DriverStation.getAlliance();
+	val alliance = DriverStation.getAlliance()
 	if (alliance.isEmpty) {
 		throw NoSuchElementException("Alliance invalid or can't fetch alliance from DriverStation")
 	}
@@ -209,7 +210,7 @@ fun matchPoseToAlliance(position: Pose2d): Pose2d {
 		DriverStation.Alliance.Blue -> position
 		DriverStation.Alliance.Red ->
 			Pose2d(
-				CRESCENDO_FIELD_LENGTH.meters - position.x,
+				CRESCENDO_FIELD_LENGTH.asMeters - position.x,
 				position.y,
 				position.rotation.rotateBy(180.degrees)
 			)
