@@ -47,6 +47,7 @@ object RobotContainer {
 
 	init {
 		SwerveSubsystem
+		registerAutoCommands()
 	}
 
 	private val autoChooser = AutoBuilder.buildAutoChooser("two_part_auto").also {
@@ -54,10 +55,9 @@ object RobotContainer {
 	}
 
 	init {
-		initSendables()
 		configureButtonBindings()
+		initSendables()
 		setDefaultCommands()
-		registerAutoCommands()
 	}
 
 	fun sendSubsystemInfo() {

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6452516819624394,
-      "y": 4.3627103149817215
+      "x": 0.7426336086361384,
+      "y": 4.391924892983831
     },
     "rotation": 120.0
   },
@@ -12,19 +12,13 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shoot_from_speaker_command"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "alternate_center_note_collection"
+                  "pathName": "right_collection"
                 }
               },
               {
@@ -39,19 +33,7 @@
         {
           "type": "named",
           "data": {
-            "name": "raise_climbing_command"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "middle_note_trap"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot_trap_command"
+            "name": "shoot_auto_line_1_3_command"
           }
         }
       ]
