@@ -5,7 +5,7 @@ import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
-import edu.wpi.first.util.sendable.SendableRegistry
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
@@ -64,18 +64,12 @@ object RobotContainer {
 	}
 
 	fun sendCompetitionInfo() {
-		SmartDashboard.putData("Data") { builder ->
-			builder.addBooleanProperty("Note detected", Loader::isNoteDetected, null)
-			builder.addBooleanProperty("Shooter at setpoint", Shooter::isWithinAngleTolerance, null)
+		with(Shuffleboard.getTab("Driving")) {
+			addBoolean("Note detected", Loader::isNoteDetected).withPosition(1, 1)
+			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withPosition(2, 1)
+			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(5, 1)
+			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(5, 2)
 		}
-	}
-
-	fun removeSubsystemInfo() {
-		SendableRegistry.remove(Swerve)
-		SendableRegistry.remove(Climbing)
-		SendableRegistry.remove(Intake)
-		SendableRegistry.remove(Loader)
-		SendableRegistry.remove(Shooter)
 	}
 
 	private fun initSendables() {
