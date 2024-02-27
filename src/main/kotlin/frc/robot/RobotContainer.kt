@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
+import frc.robot.subsystems.swerve.SwerveSubsystem
 import kotlin.math.absoluteValue
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
@@ -44,10 +45,12 @@ object RobotContainer {
 
 	private var swerveIsFieldRelative = true
 
-	private val autoChooser = Swerve.let {
-		AutoBuilder.buildAutoChooser().apply {
-			SmartDashboard.putData("Auto Chooser", this)
-		}
+	init {
+		SwerveSubsystem
+	}
+
+	private val autoChooser = AutoBuilder.buildAutoChooser("two_part_auto").also {
+		SmartDashboard.putData("Auto chooser", it)
 	}
 
 	init {
@@ -67,10 +70,11 @@ object RobotContainer {
 
 	fun sendCompetitionInfo() {
 		with(Shuffleboard.getTab("Driving")) {
-			addBoolean("Note detected", Loader::isNoteDetected).withPosition(1, 1)
-			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withPosition(2, 1)
-			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(5, 1)
-			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(5, 2)
+			addBoolean("Note detected", Loader::isNoteDetected).withPosition(1, 1).withSize(3, 1)
+			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withPosition(1, 2).withSize(3, 1)
+			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
+			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1)
+				.withSize(2, 1)
 		}
 	}
 
@@ -133,7 +137,7 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("three_part_auto")
+		return autoChooser.selected
 	}
 
 	private fun registerAutoCommands() {
