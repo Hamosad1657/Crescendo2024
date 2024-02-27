@@ -33,6 +33,8 @@ object RobotContainer {
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
 
+	private var swerveTeleopMultiplier = 1.0
+
 	val controllerAJoysticksMoving: () -> Boolean = {
 		(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
 			(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
@@ -95,6 +97,8 @@ object RobotContainer {
 				(SwerveConstants.AT_CLOSER_SPEAKER_ANGLE.degrees +
 					Swerve.robotHeading.degrees).degrees
 			} until controllerAJoysticksMoving)
+			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
+			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
 
 			// --- Notes ---
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
@@ -116,9 +120,9 @@ object RobotContainer {
 
 	private fun setDefaultCommands() {
 		Swerve.defaultCommand = Swerve.teleopDriveCommand(
-			vxSupplier = { controllerA.leftY },
-			vySupplier = { controllerA.leftX },
-			omegaSupplier = { controllerA.rightX },
+			vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+			vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+			omegaSupplier = { controllerA.rightX * swerveTeleopMultiplier },
 			isFieldRelative = { swerveIsFieldRelative },
 			isClosedLoop = { Robot.isAutonomous },
 		)
@@ -129,7 +133,7 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return Swerve.followAutoCommand("calibration_auto")
+		return Swerve.followAutoCommand("three_part_auto")
 	}
 
 	private fun registerAutoCommands() {
