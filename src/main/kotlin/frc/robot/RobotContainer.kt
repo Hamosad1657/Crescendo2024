@@ -1,7 +1,8 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.commands.asInstantCommand
+import com.hamosad1657.lib.commands.until
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -34,10 +35,10 @@ object RobotContainer {
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
 
 	val controllerAJoysticksMoving: () -> Boolean = {
-		controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD ||
-			controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD
-		controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD ||
-			controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD
+		(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
 	}
 
 	private var swerveIsFieldRelative = true
@@ -93,13 +94,10 @@ object RobotContainer {
 			cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
 			circle().toggleOnTrue(Swerve.driveToTrapCommand().andThen(Notes.loadAndShootCommand(ShooterState.TO_TRAP)))
-			square().toggleOnTrue(
-				Swerve.aimAtSpeakerWhileDrivingCommand(
-					vxSupplier = { controllerA.leftY },
-					vySupplier = { controllerA.leftX },
-					isFieldRelative = { swerveIsFieldRelative },
-				)
-			)
+			square().toggleOnTrue(Swerve.getToOneAngleCommand {
+				(SwerveConstants.AT_CLOSER_SPEAKER_ANGLE.degrees +
+					Swerve.robotHeading.degrees).degrees
+			} until controllerAJoysticksMoving)
 
 			// --- Notes ---
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
@@ -111,11 +109,7 @@ object RobotContainer {
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
-			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_CLOSER_STAGE) alongWith
-				Swerve.getToOneAngleCommand {
-					(SwerveConstants.AT_CLOSER_SPEAKER_ANGLE.degrees +
-						Swerve.robotHeading.degrees).degrees
-				})
+			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_CLOSER_STAGE))
 
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
