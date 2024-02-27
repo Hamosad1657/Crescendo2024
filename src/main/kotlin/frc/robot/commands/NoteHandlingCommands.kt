@@ -34,9 +34,7 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
  * Like [collectCommand], but interruptable, and the shooter spins continuously.
  * - Requirements: Intake, Loader, Shooter.
  */
-fun Notes.autoCollectCommand(
-	shooterState: ShooterState = ShooterState.AUTO_COLLECT
-): Command = withName("collect") {
+fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
 	(
 		(Shooter.getToShooterStateCommand(shooterState) alongWith
 			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
