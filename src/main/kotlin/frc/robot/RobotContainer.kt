@@ -2,6 +2,7 @@ package frc.robot
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -28,6 +29,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
+	const val CLIMBING_DEADBAND = 0.08
 	const val JOYSTICK_MOVED_THRESHOLD = 0.1
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
@@ -134,6 +136,9 @@ object RobotContainer {
 		// Shooter default commands are set in Robot.kt
 		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
 		Loader.defaultCommand = Loader.run { Loader.stopMotor() }
+
+		Climbing.defaultCommand =
+			Climbing.openLoopTeleopCommand { simpleDeadband(controllerB.leftY, CLIMBING_DEADBAND) }
 	}
 
 	fun getAutonomousCommand(): Command {
