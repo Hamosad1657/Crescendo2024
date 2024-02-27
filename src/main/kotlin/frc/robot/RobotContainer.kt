@@ -50,7 +50,7 @@ object RobotContainer {
 	}
 
 	private val autoChooser = AutoBuilder.buildAutoChooser("two_part_auto").also {
-		SmartDashboard.putData("Auto chooser", it)
+		Shuffleboard.getTab("Auto").add("Auto chooser", it).withPosition(1, 1).withSize(2, 1)
 	}
 
 	init {
