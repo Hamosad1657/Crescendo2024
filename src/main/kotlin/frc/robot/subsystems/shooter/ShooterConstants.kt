@@ -137,8 +137,8 @@ object ShooterConstants {
 			}
 
 			// ---Auto---
-			val AUTO_LINE_ONE_THREE = ShooterState(173.degrees, 3500.rpm)
-			val AUTO_LINE_TWO = ShooterState(175.degrees, 3500.rpm)
+			val AUTO_LINE_ONE_THREE = ShooterState(176.degrees, 3500.rpm)
+			val AUTO_LINE_TWO = ShooterState(178.degrees, 3500.rpm)
 		}
 	}
 }
