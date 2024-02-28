@@ -79,6 +79,7 @@ object RobotContainer {
 		with(Shuffleboard.getTab("Driving")) {
 			addBoolean("Note detected", Loader::isNoteDetected).withPosition(1, 1).withSize(3, 1)
 			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withPosition(1, 2).withSize(3, 1)
+			addBoolean("Is intake running", Intake::isRunning).withPosition(6, 3).withSize(2, 1)
 			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
 			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1)
 				.withSize(2, 1)
