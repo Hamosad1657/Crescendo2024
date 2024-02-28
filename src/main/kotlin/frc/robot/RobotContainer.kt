@@ -45,6 +45,11 @@ object RobotContainer {
 			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
 	}
 
+	val controllerBLeftJoystickMoving: () -> Boolean = {
+		(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
+	}
+
 	private var swerveIsFieldRelative = true
 
 	init {
@@ -118,8 +123,8 @@ object RobotContainer {
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_CLOSER_STAGE))
 
-			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand())
-			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand())
+			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBLeftJoystickMoving))
+			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBLeftJoystickMoving))
 			// R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 		}
 	}
