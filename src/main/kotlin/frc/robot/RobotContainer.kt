@@ -108,7 +108,7 @@ object RobotContainer {
 					Notes.loadAndShootCommand(ShooterState.TO_TRAP)
 			)
 			square().toggleOnTrue(Swerve.getToOneAngleCommand {
-				(SwerveConstants.AT_CLOSER_SPEAKER_ANGLE.degrees +
+				(SwerveConstants.AT_PODIUM_ANGLE.degrees +
 					Swerve.robotHeading.degrees).degrees
 			} until controllerAJoysticksMoving)
 			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
@@ -125,7 +125,7 @@ object RobotContainer {
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
-			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_CLOSER_STAGE))
+			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
 
 			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBLeftJoystickMoving))
 			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBLeftJoystickMoving))

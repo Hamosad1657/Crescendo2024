@@ -117,8 +117,8 @@ object SwerveConstants {
 		ReplanningConfig(),
 	)
 
-	/**offset from closer at stage setpoint to speaker*/
-	val AT_CLOSER_SPEAKER_ANGLE get() = if (robotAlliance == DriverStation.Alliance.Blue) (-25).degrees else 25.degrees
+	/**offset from podium setpoint to speaker*/
+	val AT_PODIUM_ANGLE get() = if (robotAlliance == DriverStation.Alliance.Blue) (-25).degrees else 25.degrees
 
 	object Modules {
 		private val DISTANCE_TO_MODULE_X = 11.62.inches
