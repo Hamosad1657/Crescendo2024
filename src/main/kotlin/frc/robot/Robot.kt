@@ -47,7 +47,6 @@ object Robot : TimedRobot() {
 	}
 
 	override fun autonomousInit() {
-		SwerveSubsystem.setGyro(60.0.degrees)
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand()
 		autonomousCommand?.schedule()
