@@ -103,6 +103,7 @@ object ShooterConstants {
 		companion object {
 			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
 			val AUTO_COLLECT = ShooterState(COLLECT.angle, 3000.rpm)
+			val COLLECT_FROM_HP = ShooterState(43.degrees, 0.0.rpm)
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
 
 			// PID not tuned properly - shoot immediately with this setpoint, or tune better and adjust setpoint

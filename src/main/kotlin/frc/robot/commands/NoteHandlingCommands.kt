@@ -201,6 +201,12 @@ fun Notes.collectAndEject(): Command = withName("collect and eject") {
 		Shooter.getToShooterStateCommand(ShooterState.EJECT)
 }
 
+fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
+	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_HP) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE)) until
+		Loader::isNoteDetected
+}
+
 
 // ---
 //

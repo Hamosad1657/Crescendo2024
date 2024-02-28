@@ -115,6 +115,7 @@ object RobotContainer {
 			// --- Notes ---
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 			L1().toggleOnTrue(Notes.collectCommand())
+			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
 		}
 
 		with(controllerB) {
