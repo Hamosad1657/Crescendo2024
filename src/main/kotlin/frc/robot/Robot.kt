@@ -2,11 +2,13 @@ package frc.robot
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.andThen
+import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.degrees
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
@@ -49,6 +51,12 @@ object Robot : TimedRobot() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand()
 		autonomousCommand?.schedule()
+	}
+
+	override fun autonomousExit() {
+		if (robotAlliance == DriverStation.Alliance.Red) {
+			SwerveSubsystem.setGyro((SwerveSubsystem.robotHeading.degrees - 180.0).degrees)
+		}
 	}
 
 	override fun teleopInit() {
