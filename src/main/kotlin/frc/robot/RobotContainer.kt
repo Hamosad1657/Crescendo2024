@@ -3,6 +3,7 @@ package frc.robot
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.math.simpleDeadband
+import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -57,8 +58,9 @@ object RobotContainer {
 		registerAutoCommands()
 	}
 
-	private val autoChooser = AutoBuilder.buildAutoChooser("two_part_auto").also {
-		Shuffleboard.getTab("Auto").add("Auto chooser", it).withPosition(1, 1).withSize(2, 1)
+	private val autoChooser = AutoBuilder.buildAutoChooser("shoot_one").also { chooser ->
+		Shuffleboard.getTab("Auto").add("Auto chooser", chooser).withPosition(1, 1).withSize(2, 1)
+		chooser.onChange { robotPrint(it.name) }
 	}
 
 	init {
