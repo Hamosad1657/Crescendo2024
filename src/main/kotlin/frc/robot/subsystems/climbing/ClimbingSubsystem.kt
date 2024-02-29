@@ -101,9 +101,17 @@ object ClimbingSubsystem : SubsystemBase() {
 		else rightMainMotor.set(output)
 	}
 
-	fun stopMotors() {
+	fun stopLeft() {
 		leftMainMotor.stopMotor()
+	}
+
+	fun stopRight() {
 		rightMainMotor.stopMotor()
+	}
+
+	fun stopMotors() {
+		stopLeft()
+		stopRight()
 	}
 
 

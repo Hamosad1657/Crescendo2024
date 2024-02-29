@@ -1,8 +1,8 @@
 package frc.robot
 
+//import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
-import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
@@ -16,7 +16,6 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import kotlin.math.absoluteValue
-import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -30,7 +29,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
-	const val CLIMBING_DEADBAND = 0.08
+
+	//	const val CLIMBING_DEADBAND = 0.08
 	const val JOYSTICK_MOVED_THRESHOLD = 0.1
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
@@ -73,7 +73,7 @@ object RobotContainer {
 
 	fun sendSubsystemInfo() {
 		SmartDashboard.putData(Swerve)
-		SmartDashboard.putData(Climbing)
+//		SmartDashboard.putData(Climbing)
 		SmartDashboard.putData(Intake)
 		SmartDashboard.putData(Loader)
 		SmartDashboard.putData(Shooter)
@@ -84,8 +84,8 @@ object RobotContainer {
 			addBoolean("Note detected", Loader::isNoteDetected).withPosition(1, 1).withSize(3, 1)
 			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withPosition(1, 2).withSize(3, 1)
 			addBoolean("Is intake running", Intake::isRunning).withPosition(6, 3).withSize(2, 1)
-			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
-			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1)
+//			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
+//			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1)
 				.withSize(2, 1)
 		}
 	}
@@ -129,8 +129,8 @@ object RobotContainer {
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
 
-			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBJoysticksMoving))
-			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBJoysticksMoving))
+//			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBJoysticksMoving))
+//			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBJoysticksMoving))
 			// R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 		}
 	}
@@ -148,10 +148,10 @@ object RobotContainer {
 		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
 		Loader.defaultCommand = Loader.run { Loader.stopMotor() }
 
-		Climbing.defaultCommand =
-			Climbing.openLoopTeleopCommand(
-				{ simpleDeadband(controllerB.leftY, CLIMBING_DEADBAND) },
-				{ simpleDeadband(controllerB.rightY, CLIMBING_DEADBAND) })
+//		Climbing.defaultCommand =
+//			Climbing.brokenOpenLoopTeleopCommand(
+//				{ simpleDeadband(controllerB.leftY, CLIMBING_DEADBAND) },
+//				{ simpleDeadband(controllerB.rightY, CLIMBING_DEADBAND) })
 	}
 
 	fun getAutonomousCommand(): Command {
@@ -173,7 +173,7 @@ object RobotContainer {
 
 		NamedCommands.registerCommand("shoot_trap_command", Notes.loadAndShootCommand(ShooterState.TO_TRAP))
 
-		NamedCommands.registerCommand("raise_climbing_command", Climbing.getToOpenedLimitCommand())
+//		NamedCommands.registerCommand("raise_climbing_command", Climbing.getToOpenedLimitCommand())
 
 		NamedCommands.registerCommand(
 			"drive_to_speaker_command",

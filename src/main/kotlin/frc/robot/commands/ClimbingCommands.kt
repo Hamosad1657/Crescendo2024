@@ -43,12 +43,29 @@ fun ClimbingSubsystem.openLoopTeleopCommand(output: () -> PercentOutput): Comman
  */
 fun ClimbingSubsystem.openLoopTeleopCommand(
 	leftOutput: () -> PercentOutput,
-	rightOutput: () -> PercentOutput
+	rightOutput: () -> PercentOutput,
 ): Command =
 	withName("climbing open loop teleop") {
 		run {
 			setLeft(leftOutput())
 			setRight(rightOutput())
+		} finallyDo {
+			stopMotors()
+		}
+	}
+
+/**
+ * [output] is assumed -1 to 1, will come from joysticks.
+ * - Requirements: Climbing.
+ */
+fun ClimbingSubsystem.brokenOpenLoopTeleopCommand(
+	bothOutput: () -> PercentOutput,
+	rightOutput: () -> PercentOutput,
+): Command =
+	withName("climbing open loop teleop") {
+		run {
+			setLeft(bothOutput())
+			setRight(bothOutput() + rightOutput())
 		} finallyDo {
 			stopMotors()
 		}
