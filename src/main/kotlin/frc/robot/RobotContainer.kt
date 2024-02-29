@@ -3,9 +3,7 @@ package frc.robot
 //import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
-import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
-import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -60,10 +58,10 @@ object RobotContainer {
 		registerAutoCommands()
 	}
 
-	private val autoChooser = AutoBuilder.buildAutoChooser("shoot_one").also { chooser ->
-		Shuffleboard.getTab("Auto").add("Auto chooser", chooser).withPosition(1, 1).withSize(2, 1)
-		chooser.onChange { robotPrint(it.name) }
-	}
+//	private val autoChooser = AutoBuilder.buildAutoChooser("shoot_one").also { chooser ->
+//		Shuffleboard.getTab("Auto").add("Auto chooser", chooser).withPosition(1, 1).withSize(2, 1)
+//		chooser.onChange { robotPrint(it.name) }
+//	}
 
 	init {
 		configureButtonBindings()
@@ -155,7 +153,8 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-		return autoChooser.selected
+//		return autoChooser.selected
+		return Swerve.followAutoCommand("shoot_and_move_away")
 	}
 
 	private fun registerAutoCommands() {
