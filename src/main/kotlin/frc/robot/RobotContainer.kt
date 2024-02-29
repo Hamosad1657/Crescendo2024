@@ -46,9 +46,11 @@ object RobotContainer {
 			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
 	}
 
-	val controllerBLeftJoystickMoving: () -> Boolean = {
+	val controllerBJoysticksMoving: () -> Boolean = {
 		(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
+			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
 	}
 
 	private var swerveIsFieldRelative = true
@@ -127,8 +129,8 @@ object RobotContainer {
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
 
-			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBLeftJoystickMoving))
-			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBLeftJoystickMoving))
+			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBJoysticksMoving))
+			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBJoysticksMoving))
 			// R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 		}
 	}
@@ -147,7 +149,9 @@ object RobotContainer {
 		Loader.defaultCommand = Loader.run { Loader.stopMotor() }
 
 		Climbing.defaultCommand =
-			Climbing.openLoopTeleopCommand { simpleDeadband(controllerB.leftY, CLIMBING_DEADBAND) }
+			Climbing.openLoopTeleopCommand(
+				{ simpleDeadband(controllerB.leftY, CLIMBING_DEADBAND) },
+				{ simpleDeadband(controllerB.rightY, CLIMBING_DEADBAND) })
 	}
 
 	fun getAutonomousCommand(): Command {

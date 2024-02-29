@@ -10,7 +10,7 @@ fun ClimbingSubsystem.getToClosedLimitCommand(): Command = withName("open loop g
 	run {
 		setRight(ClimbingConstants.CLOSE_CLIMBING_OUTPUT)
 		setLeft(ClimbingConstants.CLOSE_CLIMBING_OUTPUT)
-	} until ::isAtClosedLimit finallyDo {
+	} until ::isLeftAtClosedLimit finallyDo {
 		stopMotors()
 	}
 }
@@ -19,7 +19,7 @@ fun ClimbingSubsystem.getToOpenedLimitCommand(): Command = withName("open loop g
 	run {
 		setRight(ClimbingConstants.OPEN_CLIMBING_OUTPUT)
 		setLeft(ClimbingConstants.OPEN_CLIMBING_OUTPUT)
-	} until ::isAtOpenedLimit finallyDo {
+	} until ::isLeftAtOpenedLimit finallyDo {
 		stopMotors()
 	}
 }
