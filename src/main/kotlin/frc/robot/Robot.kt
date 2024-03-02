@@ -30,6 +30,7 @@ object Robot : TimedRobot() {
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
 
+	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
 
 	override fun robotInit() {
