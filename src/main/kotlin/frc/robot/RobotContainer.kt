@@ -135,7 +135,7 @@ object RobotContainer {
 					Notes.loadAndShootCommand(ShooterState.TO_TRAP)
 			)
 			square().toggleOnTrue(Swerve.getToOneAngleCommand {
-				(SwerveConstants.AT_PODIUM_ANGLE.degrees +
+				(SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION.degrees +
 					Swerve.robotHeading.degrees).degrees
 			} until controllerAJoysticksMoving)
 			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
