@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter
 import com.hamosad1657.lib.math.LinearInterpolationTable
 import com.hamosad1657.lib.math.clamp
 import com.hamosad1657.lib.math.mapRange
+import com.hamosad1657.lib.math.*
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Translation2d
@@ -35,6 +36,7 @@ object DynamicShooting {
 			0.415 to 167.0,
 			1.0 to MIN_ANGLE,
 		)
+	
 
 	// --- Calculations ---
 

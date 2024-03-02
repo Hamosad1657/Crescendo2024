@@ -32,7 +32,7 @@ fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("teleop get to s
  * Run the shooter angle motor at high speed for a short duration to get it out of the angle lock.
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.escapeAngleLock(): Command = withName("escape angle lock") {
+fun ShooterSubsystem.escapeAngleLockCommand(): Command = withName("escape angle lock") {
 	run {
 		setAngleMotorOutput(ESCAPE_ANGLE_LOCK_OUTPUT)
 	} withTimeout TIME_TO_ESCAPE_ANGLE_LOCK_SEC finallyDo {

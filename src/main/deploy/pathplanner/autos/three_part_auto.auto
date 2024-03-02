@@ -1,12 +1,6 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.3203408224998268,
-      "y": 5.503960098829289
-    },
-    "rotation": 180.0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
@@ -18,96 +12,57 @@
           }
         },
         {
-          "type": "race",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "collect_command"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "middle_to_left_collection"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              }
-            ]
+            "pathName": "middle_to_left_collection"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot_auto_line_1_3_command"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "collect_command"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "left_to_middle"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              }
-            ]
+            "name": "collect_with_timeout_command"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot_auto_line_2_command"
+            "name": "shoot_command"
           }
         },
         {
-          "type": "race",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "collect_command"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "middle_to_right"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              }
-            ]
+            "pathName": "left_to_middle"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot_auto_line_1_3_command"
+            "name": "collect_with_timeout_command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle_to_right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "collect_with_timeout_command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
           }
         }
       ]

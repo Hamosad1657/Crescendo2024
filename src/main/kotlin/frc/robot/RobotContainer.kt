@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
+import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
@@ -48,7 +49,7 @@ object RobotContainer {
 		initSendables()
 	}
 
-	
+
 	// --- Robot Operation ---
 
 	private fun configureButtonBindings() {
@@ -72,6 +73,7 @@ object RobotContainer {
 				} until areControllerAJoysticksMoving
 			)
 
+
 			// --- Notes ---
 
 			// Collect
@@ -79,6 +81,9 @@ object RobotContainer {
 
 			// Collect from human player
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
+
+			// Dynamic shooting
+			R3().whileTrue(Shooter.dynamicShootingCommand())
 
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
@@ -99,6 +104,7 @@ object RobotContainer {
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
+			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 
 			// Other
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
@@ -107,7 +113,6 @@ object RobotContainer {
 			// Climbing
 //			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBJoysticksMoving))
 //			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBJoysticksMoving))
-			// R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 		}
 	}
 
@@ -160,9 +165,9 @@ object RobotContainer {
 	// --- Telemetry ---
 
 	private fun initSendables() {
-		when (Robot.telemetryLevel) {
-			Telemetry.Competition -> sendCompetitionInfo()
-			Telemetry.Testing -> sendSubsystemInfo()
+		sendCompetitionInfo()
+		if (Robot.telemetryLevel == Telemetry.Testing) {
+			sendSubsystemInfo()
 		}
 	}
 
@@ -199,15 +204,13 @@ object RobotContainer {
 
 		r("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
 		r("collect_command", Notes.autoCollectCommand())
+		r("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0)
+		r("shoot_command",
+			Notes.loadAndShootCommand { DynamicShooting.calculateShooterState(Swerve.robotPose.translation) }
+		)
 		r("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
 		r("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
 		r("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
-		r("shoot_trap_command", Notes.loadAndShootCommand(ShooterState.TO_TRAP))
-		r(
-			"drive_to_speaker_command",
-			Swerve.driveToTrapCommand().andThen(Notes.loadAndShootCommand(ShooterState.TO_TRAP))
-		)
-//		r("raise_climbing_command", Climbing.getToOpenedLimitCommand())
 	}
 
 

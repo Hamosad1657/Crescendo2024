@@ -69,16 +69,8 @@ object SwerveConstants {
 
 	// --- PathPlanner ---
 
-	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(52.0, 0.1, 0.004)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(15.0, 0.9, 0.001)
-
-	val PATH_PLANNER_CONFIG = HolonomicPathFollowerConfig(
-		PATH_TRANSLATION_CONSTANTS,
-		PATH_ROTATION_CONSTANTS,
-		MAX_SPEED_MPS,
-		DRIVEBASE_RADIUS.asMeters,
-		ReplanningConfig(),
-	)
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(38.5, 0.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(15.0, 0.0, 0.00)
 
 	// TODO: Tune.
 	val PATH_CONSTRAINTS = PathConstraints(
@@ -86,6 +78,14 @@ object SwerveConstants {
 		MAX_SPEED_MPS / 2, // Max acceleration - 2 seconds to max velocity
 		MAX_ANGULAR_VELOCITY.asRadPs, // Max angular velocity (radians per second)
 		MAX_ANGULAR_VELOCITY.asRadPs * 2, // Max angular acceleration - 1 second to max velocity
+	)
+
+	val PATH_PLANNER_CONFIG = HolonomicPathFollowerConfig(
+		PATH_TRANSLATION_CONSTANTS,
+		PATH_ROTATION_CONSTANTS,
+		MAX_SPEED_MPS,
+		DRIVEBASE_RADIUS.asMeters,
+		ReplanningConfig(),
 	)
 
 

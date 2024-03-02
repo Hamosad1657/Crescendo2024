@@ -6,6 +6,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoo
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.toNeutralModeValue
@@ -20,11 +21,13 @@ import edu.wpi.first.math.kinematics.*
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.util.sendable.SendableRegistry
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Subsystem
+import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.Vision
@@ -45,7 +48,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		// addVisionMeasurement()
+		addVisionMeasurement()
 	}
 
 
@@ -71,7 +74,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	val robotVelocity: ChassisSpeeds get() = kinematics.toChassisSpeeds(*modulesStates)
 
 	/** Gets the current pose (position and rotation) of the robot, as reported by odometry. */
-	val robotPose: Pose2d get() = state.Pose
+	val robotPose: Pose2d get() = poseEstimator.estimatedPosition
 
 
 	// --- Drive & Module States Control
@@ -206,6 +209,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
 		poseEstimator.resetPosition(robotHeading, m_modulePositions, initialHolonomicPose)
+		robotPrintError("Reset odometry to:  $initialHolonomicPose")
+		robotPrintError("robot pose:  $robotPose")
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
@@ -213,6 +218,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 		Vision.latestResult?.let { latestResult ->
 			if (!latestResult.hasTargets()) return
 		}
+
 
 		Vision.estimatedGlobalPose?.let { estimatedPose ->
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
@@ -239,7 +245,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 				// Boolean supplier that controls when the path will be mirrored for the red alliance
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-				false
+				Robot.alliance == DriverStation.Alliance.Red
 			},
 			this
 		)
