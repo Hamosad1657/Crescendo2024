@@ -30,7 +30,7 @@ object ShooterConstants {
 	const val SHOOTER_RAMP_RATE_SEC = 0.25
 
 
-	// --- Important Positions ---
+	// --- Constants ---
 
 	val MAX_ANGLE = 293.degrees
 
