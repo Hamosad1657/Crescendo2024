@@ -14,25 +14,35 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Robot
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.shooter.DynamicShooting
-import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.Vision
 import kotlin.math.pow
 import kotlin.math.sign
+import frc.robot.subsystems.swerve.SwerveConstants as Constants
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
-fun Swerve.crossLockWheelsCommand(): Command = run { crossLockWheels() }
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
+fun Swerve.crossLockWheelsCommand(): Command = withName("cross lock") {
+	run { crossLockWheels() }
+}
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.teleopDriveCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	omegaSupplier: () -> Double,
 	isFieldRelative: () -> Boolean,
-	isClosedLoop: () -> Boolean = { true }
+	isClosedLoop: () -> Boolean = { true },
 ) = withName("teleop drive") {
 	run {
-		val vx = vxSupplier().let { it.pow(2.0) * SwerveConstants.MAX_SPEED_MPS * -it.sign }
-		val vy = vySupplier().let { it.pow(2.0) * SwerveConstants.MAX_SPEED_MPS * -it.sign }
-		val omega = omegaSupplier().let { it.pow(2.0) * SwerveConstants.MAX_ANGULAR_VELOCITY.asRadPs * -it.sign }
+		val vx = vxSupplier().let { it.pow(2.0) * Constants.MAX_SPEED_MPS * -it.sign }
+		val vy = vySupplier().let { it.pow(2.0) * Constants.MAX_SPEED_MPS * -it.sign }
+		val omega = omegaSupplier().let { it.pow(2.0) * Constants.MAX_ANGULAR_VELOCITY.asRadPs * -it.sign }
 
 		if (Robot.telemetryLevel == Telemetry.Testing) {
 			SmartDashboard.putNumber("vx", vx)
@@ -50,104 +60,139 @@ fun Swerve.teleopDriveCommand(
 	}
 }
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.teleopDriveWithAutoAngleCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	angleSupplier: () -> Rotation2d,
 	isFieldRelative: () -> Boolean,
-	pidController: () -> PIDController = { SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER },
-) = Swerve.run {
-	pidController().setpoint = angleSupplier().degrees
+	pidController: () -> PIDController = { Constants.CHASSIS_ANGLE_PID_CONTROLLER },
+): Command = withName("teleop drive with auto angle") {
+	run {
+		pidController().setpoint = angleSupplier().degrees
 
-	val vx = -vxSupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
-	val vy = -vySupplier().pow(3.0) * SwerveConstants.MAX_SPEED_MPS
-	val omega = SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)
+		val vx = -vxSupplier().pow(3.0) * Constants.MAX_SPEED_MPS
+		val vy = -vySupplier().pow(3.0) * Constants.MAX_SPEED_MPS
+		val omega = Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)
 
-	if (Robot.telemetryLevel == Telemetry.Testing) {
-		SmartDashboard.putNumber("vx", vx)
-		SmartDashboard.putNumber("vy", vy)
-		SmartDashboard.putNumber("omega", omega)
+		if (Robot.telemetryLevel == Telemetry.Testing) {
+			SmartDashboard.putNumber("vx", vx)
+			SmartDashboard.putNumber("vy", vy)
+			SmartDashboard.putNumber("omega", omega)
+		}
+
+		// Drive using raw values.
+		drive(
+			Translation2d(vx, vy),
+			omega.radPs,
+			isFieldRelative(),
+			true
+		)
 	}
-
-	// Drive using raw values.
-	drive(
-		Translation2d(vx, vy),
-		omega.radPs,
-		isFieldRelative(),
-		true
-	)
 }
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.getToOneAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
 	var setpoint = 0.0.degrees
 	runOnce {
 		setpoint = angle()
 	} andThen
 		run {
-			SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = setpoint.degrees
+			Constants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = setpoint.degrees
 			setAngularVelocity(
-				(SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+				(Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
 			)
 		}
 }
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.getToAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
 	run {
-		SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle().degrees
+		Constants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle().degrees
 		setAngularVelocity(
-			(SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+			(Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
 		)
 	}
 }
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.getToAngleCommand(angle: Rotation2d): Command = withName("get to angle command") {
 	run {
-		SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle.degrees
+		Constants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle.degrees
 		setAngularVelocity(
-			(SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+			(Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
 		)
 	}
 }
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	isFieldRelative: () -> Boolean,
-): Command = teleopDriveWithAutoAngleCommand(
-	vxSupplier,
-	vySupplier,
-	angleSupplier@{
-		SmartDashboard.putBoolean("seesSpeakerTag", DynamicShooting.seesSpeakerTag)
+): Command = withName("aim at speaker while driving") {
+	teleopDriveWithAutoAngleCommand(
+		vxSupplier,
+		vySupplier,
+		{
+			SmartDashboard.putBoolean("Speaker tag detected", DynamicShooting.isSpeakerTagDetected)
 
-		Vision.getTag(DynamicShooting.speakerTagId)?.let { tag ->
-			return@angleSupplier (robotHeading.degrees - tag.yaw).degrees
-		}
-		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-		return@angleSupplier mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+			val tag = Vision.getTag(DynamicShooting.speakerTagId)
+			if (tag != null) {
+				(robotHeading.degrees - tag.yaw).degrees
+			} else {
+				val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+				mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+			}
+		},
+		isFieldRelative,
+		{
+			if (DynamicShooting.isSpeakerTagDetected) Constants.CHASSIS_VISION_ANGLE_PID_CONTROLLER
+			else Constants.CHASSIS_ANGLE_PID_CONTROLLER
+		},
+	)
+}
 
-	},
-	isFieldRelative,
-	{
-		if (DynamicShooting.seesSpeakerTag) SwerveConstants.CHASSIS_VISION_ANGLE_PID_CONTROLLER
-		else SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
-	},
-)
-
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.aimAtGoalWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	goalSupplier: () -> Translation2d,
 	isFieldRelative: () -> Boolean,
-): Command = teleopDriveWithAutoAngleCommand(
-	vxSupplier,
-	vySupplier,
-	{
-		val robotToGoal = robotPose.translation - goalSupplier()
-		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
-	},
-	isFieldRelative,
-)
+): Command = withName("aim at goal while driving") {
+	teleopDriveWithAutoAngleCommand(
+		vxSupplier,
+		vySupplier,
+		{
+			val robotToGoal = robotPose.translation - goalSupplier()
+			mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+		},
+		isFieldRelative,
+	)
+}
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Swerve.
+ */
 fun Swerve.driveToTrapCommand(): Command = withName("drive to trap") {
 	val rotationSupplier: () -> Double = {
 		if (ClimbingSubsystem.areBothTrapSwitchesPressed) 0.0

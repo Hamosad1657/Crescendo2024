@@ -21,12 +21,9 @@ object Notes
 
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Command = withName("collect") {
-	(
-		(Shooter.getToShooterStateCommand(shooterState) alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
-			Intake.runIntakeCommand()
-			) until
-			Loader::isNoteDetected
+	((Shooter.getToShooterStateCommand(shooterState) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
+		Intake.runIntakeCommand()) until Loader::isNoteDetected
 		).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
 }
 
@@ -35,14 +32,10 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
  * - Requirements: Intake, Loader, Shooter.
  */
 fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
-	(
-		(Shooter.getToShooterStateCommand(shooterState) alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
-			Intake.runIntakeCommand()
-			) until
-			Loader::isNoteDetected
-		)
-		.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+	((Shooter.getToShooterStateCommand(shooterState) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
+		Intake.runIntakeCommand()) until Loader::isNoteDetected
+		).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
 }
 
 /** - Requirements: Loader, Shooter. */
@@ -95,6 +88,7 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 	}
 }
 
+/** - Requirements: Shooter. */
 fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
 	SwerveSubsystem.robotPose.let { estimatedPose ->
 		DynamicShooting.calculateShooterState(estimatedPose.translation)
@@ -163,6 +157,7 @@ fun Notes.waitForNoteToPassCommand() = withName("wait for note to pass") {
  * Apart from testing, should only be used in [collectCommand] or in a manual override.
  *
  * Runs intake only if shooter angle is within tolerance, and loader is running.
+ * - Command has no end condition.
  * - Requirements: Intake.
  */
 fun Intake.runIntakeCommand(): Command = withName("run") {
@@ -177,8 +172,8 @@ fun Intake.runIntakeCommand(): Command = withName("run") {
 	}
 }
 
-
 /**
+ * - Command has no end condition.
  * - Requirements: Loader.
  */
 fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
@@ -189,40 +184,34 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 	}
 }
 
-/**
- * - Requirements: Loader.
- */
+/** - Requirements: Loader. */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
 		ShooterConstants.SHOOT_TIME_SEC
 }
 
+/** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectAndEject(): Command = withName("collect and eject") {
 	Intake.runIntakeCommand() alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
 		Shooter.getToShooterStateCommand(ShooterState.EJECT)
 }
 
+/** - Requirements: Loader, Shooter. */
 fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
 	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_FEEDER) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
 		Loader::isNoteDetected
 }
 
-
-// ---
-//
-// Manual overrides
-//
-// ---
-
 /**
  * Runs the intake in reverse, regardless of shooter angle.
  * - Requirements: Intake.
  */
-fun Intake.ejectFromIntakeCommand(): Command =
+fun Intake.ejectFromIntakeCommand(): Command = withName("eject from intake") {
 	run {
 		setVoltage(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
-	} withTimeout (IntakeConstants.EJECT_TIME_SEC) finallyDo {
+	} withTimeout IntakeConstants.EJECT_TIME_SEC finallyDo {
 		stopMotors()
 	}
+}
