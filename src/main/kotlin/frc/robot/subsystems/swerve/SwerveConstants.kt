@@ -83,10 +83,10 @@ object SwerveConstants {
 	)
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
-		40.0, 0.0, 0.0,
+		38.5, 0.0, 0.0,
 	)
 	private val PATH_ROTATION_CONSTANTS = PIDConstants(
-		35.0, 0.0, 0.00
+		15.0, 0.0, 0.00
 	)
 
 	/**
