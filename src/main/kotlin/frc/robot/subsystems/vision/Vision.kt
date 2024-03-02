@@ -50,8 +50,8 @@ object Vision {
 				this[1, 0] = 0.9 // Translation Y
 				this[2, 0] = 0.95 // Rotation
 			}
-			this[0, 0] = 0.2 // Translation X
-			this[1, 0] = 0.2 // Translation Y
+			this[0, 0] = 0.3 // Translation X
+			this[1, 0] = 0.3 // Translation Y
 			this[2, 0] = 0.95 // Rotation
 		}
 
