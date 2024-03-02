@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
@@ -29,12 +30,14 @@ object Robot : TimedRobot() {
 	private var autonomousCommand: Command? = null
 	private var commandScheduler = CommandScheduler.getInstance()
 
+	var alliance = Alliance.Blue
+
 	override fun robotInit() {
 		// Report the use of the Kotlin Language for "FRC Usage Report" statistics
 		HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
+
 		// Access the RobotContainer object so that it is initialized. This will perform all our
 		// button bindings, set default commands, and put our autonomous chooser on the dashboard.
-
 		RobotContainer
 	}
 
@@ -46,9 +49,6 @@ object Robot : TimedRobot() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand()
 		autonomousCommand?.schedule()
-	}
-
-	override fun autonomousExit() {
 	}
 
 	override fun teleopInit() {

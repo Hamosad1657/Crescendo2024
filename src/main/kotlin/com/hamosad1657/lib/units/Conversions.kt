@@ -2,6 +2,7 @@ package com.hamosad1657.lib.units
 
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 
 const val INCHES_IN_METER = 39.3700787402
 const val CANCODER_TICKS_PER_ROTATION = 4096.0
@@ -197,16 +198,12 @@ fun falconTicksPer100msToRpm(ticksPer100ms: Number, gearRatio: Number = 1.0) =
 	ticksPer100ms.toDouble() / gearRatio.toDouble() / FALCON_TICKS_PER_ROTATION * 600.0
 
 /**
- *
- * @param position - MUST be Blue Alliance.
+ * @param position - MUST be blue alliance.
+ * @param alliance - The current alliance.
  * @return New position relative to robot's alliance.
  */
-fun matchPoseToAlliance(position: Pose2d): Pose2d {
-	val alliance = DriverStation.getAlliance()
-	if (alliance.isEmpty) {
-		throw NoSuchElementException("Alliance invalid or can't fetch alliance from DriverStation")
-	}
-	return when (alliance.get()) {
+fun matchPoseToAlliance(position: Pose2d, alliance: Alliance): Pose2d {
+	return when (alliance) {
 		DriverStation.Alliance.Blue -> position
 		DriverStation.Alliance.Red ->
 			Pose2d(

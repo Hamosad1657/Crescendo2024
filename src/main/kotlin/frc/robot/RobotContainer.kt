@@ -3,9 +3,14 @@ package frc.robot
 //import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
+import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
+import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
@@ -13,6 +18,7 @@ import frc.robot.commands.*
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.absoluteValue
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -58,10 +64,28 @@ object RobotContainer {
 		registerAutoCommands()
 	}
 
-//	private val autoChooser = AutoBuilder.buildAutoChooser("shoot_one").also { chooser ->
-//		Shuffleboard.getTab("Auto").add("Auto chooser", chooser).withPosition(1, 1).withSize(2, 1)
-//		chooser.onChange { robotPrint(it.name) }
-//	}
+	private val autoChooser =
+		AutoBuilder.buildAutoChooser("shoot_one").apply {
+			onChange {
+				robotPrint(it.name)
+			}
+		}
+
+	private val allianceChooser =
+		SendableChooser<Alliance>().apply {
+			setDefaultOption("Blue", Alliance.Blue)
+			addOption("Red", Alliance.Red)
+
+			DriverStation.getAlliance().getOrNull()?.let {
+				Robot.alliance = it
+				setDefaultOption(it.name, it)
+			}
+
+			onChange {
+				Robot.alliance = it
+				robotPrint(it.name)
+			}
+		}
 
 	init {
 		configureButtonBindings()
@@ -78,22 +102,25 @@ object RobotContainer {
 	}
 
 	fun sendCompetitionInfo() {
+		with(Shuffleboard.getTab("Auto")) {
+			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
+			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
+		}
+
 		with(Shuffleboard.getTab("Driving")) {
-			addBoolean("Note detected", Loader::isNoteDetected).withPosition(1, 1).withSize(3, 1)
-			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withPosition(1, 2).withSize(3, 1)
-			addBoolean("Is intake running", Intake::isRunning).withPosition(6, 3).withSize(2, 1)
+			addBoolean("Note detected", Loader::isNoteDetected).withSize(3, 1).withPosition(2, 1)
+			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withSize(3, 1).withPosition(2, 3)
+			addBoolean("Intake running", Intake::isRunning).withSize(3, 1).withPosition(7, 1)
 //			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
-//			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1)
-				.withSize(2, 1)
+//			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1).withSize(2, 1)
 		}
 	}
 
 	private fun initSendables() {
-		if (Robot.telemetryLevel == Telemetry.Competition) {
-			sendCompetitionInfo()
-			return
+		when (Robot.telemetryLevel) {
+			Telemetry.Competition -> sendCompetitionInfo()
+			Telemetry.Testing -> sendSubsystemInfo()
 		}
-		sendSubsystemInfo()
 	}
 
 	private fun configureButtonBindings() {
