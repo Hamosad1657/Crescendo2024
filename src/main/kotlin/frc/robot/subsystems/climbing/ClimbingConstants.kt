@@ -1,12 +1,13 @@
 package frc.robot.subsystems.climbing
 
+import com.hamosad1657.lib.units.Amps
+import com.hamosad1657.lib.units.PercentOutput
+
 object ClimbingConstants {
-	//TODO: Test and find the outputs.
-	const val CLOSE_CLIMBING_OUTPUT = 0.8
-	const val OPEN_CLIMBING_OUTPUT = -0.8
+	const val SMART_CURRENT_LIMIT: Amps = 40
 
-	const val SMART_CURRENT_LIMIT = 40
+	const val CLOSE_CLIMBING_OUTPUT: PercentOutput = 0.8
+	const val OPEN_CLIMBING_OUTPUT: PercentOutput = -0.8
 
-	//const val KEEP_CLOSED_OUTPUT = 0.01
-	const val KEEP_CLOSED_OUTPUT = 0.0
+	const val KEEP_CLOSED_OUTPUT: PercentOutput = 0.0 // 0.01
 }

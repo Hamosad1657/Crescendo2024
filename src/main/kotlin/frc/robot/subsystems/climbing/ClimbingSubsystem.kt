@@ -13,29 +13,29 @@ import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
 
-	// --- Motors and Sensors ---
+	// --- Motors & Sensors ---
 
-	private val leftMainMotor = HaSparkFlex(ClimbingMap.LEFT_FRONT_MOTOR_ID).apply {
-		restoreFactoryDefaults()
-		// TODO: Verify positive output raises climber
-		inverted = true
-		idleMode = IdleMode.kBrake
-		setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
-	}
-	private val leftSecondaryMotor = HaSparkFlex(ClimbingMap.LEFT_BACK_MOTOR_ID).apply {
-		configSecondaryMotor(leftMainMotor)
-	}
+	private val leftMainMotor =
+		HaSparkFlex(ClimbingMap.LEFT_FRONT_MOTOR_ID).apply {
+			restoreFactoryDefaults()
+			configMainMotor(inverted = true)
+		}
+	private val leftSecondaryMotor =
+		HaSparkFlex(ClimbingMap.LEFT_BACK_MOTOR_ID).apply {
+			restoreFactoryDefaults()
+			configSecondaryMotor(leftMainMotor)
+		}
 
-	private val rightMainMotor = HaSparkFlex(ClimbingMap.RIGHT_FRONT_MOTOR_ID).apply {
-		restoreFactoryDefaults()
-		// TODO: Verify positive output raises climber
-		inverted = false
-		idleMode = IdleMode.kBrake
-		setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
-	}
-	private val rightSecondaryMotor = HaSparkFlex(ClimbingMap.RIGHT_BACK_MOTOR_ID).apply {
-		configSecondaryMotor(rightMainMotor)
-	}
+	private val rightMainMotor =
+		HaSparkFlex(ClimbingMap.RIGHT_FRONT_MOTOR_ID).apply {
+			restoreFactoryDefaults()
+			configMainMotor(inverted = false)
+		}
+	private val rightSecondaryMotor =
+		HaSparkFlex(ClimbingMap.RIGHT_BACK_MOTOR_ID).apply {
+			restoreFactoryDefaults()
+			configSecondaryMotor(rightMainMotor)
+		}
 
 	private val leftEncoder = leftMainMotor.encoder
 	private val rightEncoder = rightMainMotor.encoder
@@ -48,23 +48,26 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val leftTrapSwitch = DigitalInput(ClimbingMap.LEFT_TRAP_SWITCH)
 	private val rightTrapSwitch = DigitalInput(ClimbingMap.RIGHT_TRAP_SWITCH)
 
-	private var lastSetpoint: Rotations = 0.0
-
 
 	// --- Motors Configuration ---
 
-	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
+	private fun CANSparkFlex.configMainMotor(inverted: Boolean) =
 		apply {
-			restoreFactoryDefaults()
+			this.inverted = inverted
 			idleMode = IdleMode.kBrake
 			setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
-			// TODO: Check if follower motor should oppose master motor or not
+		}
+
+	private fun CANSparkFlex.configSecondaryMotor(mainMotor: CANSparkFlex) =
+		apply {
+			inverted = false
+			idleMode = IdleMode.kBrake
+			setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
 			follow(mainMotor, true)
 		}
 
-	// --- Switches ---
 
-	// TODO: Check if switches are wired normally open or normally closed.
+	// --- Limit Switches ---
 
 	val isLeftAtClosedLimit get() = leftClosedLimitSwitch.get()
 	val isLeftAtOpenedLimit get() = leftOpenedLimitSwitch.get()
@@ -115,6 +118,8 @@ object ClimbingSubsystem : SubsystemBase() {
 	}
 
 
+	// --- Periodic & Telemetry ---
+
 	override fun periodic() {
 		if (isLeftAtClosedLimit) leftEncoder.position = 0.0
 		if (isRightAtClosedLimit) rightEncoder.position = 0.0
@@ -132,6 +137,5 @@ object ClimbingSubsystem : SubsystemBase() {
 		builder.addDoubleProperty("Position rotations", { currentPosition }, null)
 		builder.addBooleanProperty("Left trap switch pressed", { isLeftTrapSwitchPressed }, null)
 		builder.addBooleanProperty("Right trap switch pressed", { isRightTrapSwitchPressed }, null)
-
 	}
 }
