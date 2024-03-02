@@ -6,7 +6,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoo
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
-import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
@@ -15,7 +14,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
 import edu.wpi.first.util.sendable.*
-import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
@@ -197,8 +195,10 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 * @param initialHolonomicPose The pose to set the odometry to.
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
-		poseEstimator.resetPosition(initialHolonomicPose.rotation, modulesPositions, initialHolonomicPose)
-		setGyro(initialHolonomicPose.rotation)
+//		poseEstimator.resetPosition(initialHolonomicPose.rotation, modulesPositions, initialHolonomicPose)
+//		setGyro(initialHolonomicPose.rotation)
+
+		poseEstimator.resetPosition(robotHeading, m_modulePositions, initialHolonomicPose)
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
@@ -232,8 +232,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 				// Boolean supplier that controls when the path will be mirrored for the red alliance
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-				robotAlliance == Alliance.Red
-//				false
+				false
 			},
 			this
 		)
@@ -246,17 +245,14 @@ object SwerveSubsystem : SwerveDrivetrain(
 		)
 	}
 
-	fun pathFindToPoseCommand(pose: Pose2d): Command {
-		return AutoBuilder.pathfindToPose(pose, SwerveConstants.PATH_CONSTRAINTS)
-	}
+	fun pathFindToPoseCommand(pose: Pose2d): Command =
+		AutoBuilder.pathfindToPose(pose, SwerveConstants.PATH_CONSTRAINTS)
 
-	fun followAutoCommand(autoName: String): Command {
-		return InstantCommand({ }).alongWith(AutoBuilder.buildAuto(autoName))
-	}
+	fun followAutoCommand(autoName: String): Command =
+		AutoBuilder.buildAuto(autoName)
 
-	fun followPathCommand(pathName: String): Command {
-		return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
-	}
+	fun followPathCommand(pathName: String): Command =
+		AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
 
 
 	// --- Telemetry ---
