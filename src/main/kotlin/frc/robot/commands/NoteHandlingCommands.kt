@@ -130,10 +130,12 @@ fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
  * Interrupts shooter subsystem when the scheduled command ends.
  * - Requirements: Loader (until the scheduled command ends, then Shooter).
  */
-fun Loader.loadToShooterOrAmpCommand(): Command = ConditionalCommand(
-	ejectIntoAmpCommand(), // Command on true
-	loadIntoShooterCommand() // Command on false
-) { Shooter.isWithinAngleToleranceToAmp() }
+fun Loader.loadToShooterOrAmpCommand(): Command =
+	ConditionalCommand(
+		ejectIntoAmpCommand(), // Command on true
+		loadIntoShooterCommand(), // Command on false
+		Shooter::isWithinAngleToleranceToAmp,
+	)
 
 
 // ---
@@ -202,7 +204,7 @@ fun Notes.collectAndEject(): Command = withName("collect and eject") {
 }
 
 fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
-	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_HP) alongWith
+	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_FEEDER) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
 		Loader::isNoteDetected
 }
