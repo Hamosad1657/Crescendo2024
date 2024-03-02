@@ -1,6 +1,5 @@
 package frc.robot
 
-//import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.robotPrint
@@ -8,7 +7,6 @@ import com.hamosad1657.lib.units.degrees
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -33,127 +31,80 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
-
 	//	const val CLIMBING_DEADBAND = 0.08
-	const val JOYSTICK_MOVED_THRESHOLD = 0.1
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
 	private val testingController = CommandPS5Controller(RobotMap.TESTING_CONTROLLER_PORT)
 
 	private var swerveTeleopMultiplier = 1.0
-
-	val controllerAJoysticksMoving: () -> Boolean = {
-		(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
-	}
-
-	val controllerBJoysticksMoving: () -> Boolean = {
-		(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
-	}
-
 	private var swerveIsFieldRelative = true
 
 	init {
 		SwerveSubsystem
 		registerAutoCommands()
-	}
-
-	private val autoChooser =
-		AutoBuilder.buildAutoChooser("shoot_one").apply {
-			onChange {
-				robotPrint(it.name)
-			}
-		}
-
-	private val allianceChooser =
-		SendableChooser<Alliance>().apply {
-			setDefaultOption("Blue", Alliance.Blue)
-			addOption("Red", Alliance.Red)
-
-			DriverStation.getAlliance().getOrNull()?.let {
-				Robot.alliance = it
-				setDefaultOption(it.name, it)
-			}
-
-			onChange {
-				Robot.alliance = it
-				robotPrint(it.name)
-			}
-		}
-
-	init {
 		configureButtonBindings()
-		initSendables()
 		setDefaultCommands()
+		initSendables()
 	}
 
-	fun sendSubsystemInfo() {
-		SmartDashboard.putData(Swerve)
-//		SmartDashboard.putData(Climbing)
-		SmartDashboard.putData(Intake)
-		SmartDashboard.putData(Loader)
-		SmartDashboard.putData(Shooter)
-	}
-
-	fun sendCompetitionInfo() {
-		with(Shuffleboard.getTab("Auto")) {
-			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
-			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
-		}
-
-		with(Shuffleboard.getTab("Driving")) {
-			addBoolean("Note detected", Loader::isNoteDetected).withSize(3, 1).withPosition(2, 1)
-			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withSize(3, 1).withPosition(2, 3)
-			addBoolean("Intake running", Intake::isRunning).withSize(3, 1).withPosition(7, 1)
-//			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
-//			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1).withSize(2, 1)
-		}
-	}
-
-	private fun initSendables() {
-		when (Robot.telemetryLevel) {
-			Telemetry.Competition -> sendCompetitionInfo()
-			Telemetry.Testing -> sendSubsystemInfo()
-		}
-	}
+	
+	// --- Robot Operation ---
 
 	private fun configureButtonBindings() {
 		with(controllerA) {
 			// --- Swerve ---
+
+			// Zero gyro
 			options().onTrue((Swerve::zeroGyro).asInstantCommand)
-			cross().onTrue(Swerve.crossLockWheelsCommand() until controllerAJoysticksMoving)
+
+			// Lock wheels
+			cross().onTrue(Swerve.crossLockWheelsCommand() until areControllerAJoysticksMoving)
+
+			// Speed controls
+			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
+			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
+
+			// Rotate to speaker at podium
+			square().toggleOnTrue(
+				Swerve.getToOneAngleCommand {
+					(SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION.degrees + Swerve.robotHeading.degrees).degrees
+				} until areControllerAJoysticksMoving
+			)
+
+			// --- Notes ---
+
+			// Collect
+			L1().toggleOnTrue(Notes.collectCommand())
+
+			// Collect from human player
+			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
+
+			// Load
+			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
+
+			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
+
+			// Shoot to trap
 			circle().toggleOnTrue(
 				(Swerve.driveToTrapCommand() raceWith
 					Shooter.getToShooterStateCommand(ShooterState.TO_TRAP)) andThen
 					Notes.loadAndShootCommand(ShooterState.TO_TRAP)
 			)
-			square().toggleOnTrue(Swerve.getToOneAngleCommand {
-				(SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION.degrees +
-					Swerve.robotHeading.degrees).degrees
-			} until controllerAJoysticksMoving)
-			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
-			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
-
-			// --- Notes ---
-			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
-			L1().toggleOnTrue(Notes.collectCommand())
-			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
 		}
 
 		with(controllerB) {
-			square().toggleOnTrue(Shooter.getToShooterStateCommand { ShooterState.TO_TRAP })
-			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
+			// Speaker
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
 
+			// Other
+			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
+			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
+
+			// Climbing
 //			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBJoysticksMoving))
 //			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBJoysticksMoving))
 			// R2().toggleOnTrue(Shooter.dynamicShootingCommand())
@@ -179,31 +130,102 @@ object RobotContainer {
 //				{ simpleDeadband(controllerB.rightY, CLIMBING_DEADBAND) })
 	}
 
-	fun getAutonomousCommand(): Command {
-//		return autoChooser.selected
-		return Swerve.followAutoCommand("shoot_and_move_away")
+
+	// --- Choosers ---
+
+	private val autoChooser =
+		AutoBuilder.buildAutoChooser("shoot_one").apply {
+			onChange {
+				robotPrint(it.name)
+			}
+		}
+
+	private val allianceChooser =
+		SendableChooser<DriverStation.Alliance>().apply {
+			setDefaultOption("Blue", DriverStation.Alliance.Blue)
+			addOption("Red", DriverStation.Alliance.Red)
+
+			DriverStation.getAlliance().getOrNull()?.let {
+				Robot.alliance = it
+				setDefaultOption(it.name, it)
+			}
+
+			onChange {
+				Robot.alliance = it
+				robotPrint(it.name)
+			}
+		}
+
+
+	// --- Telemetry ---
+
+	private fun initSendables() {
+		when (Robot.telemetryLevel) {
+			Telemetry.Competition -> sendCompetitionInfo()
+			Telemetry.Testing -> sendSubsystemInfo()
+		}
 	}
 
+	private fun sendSubsystemInfo() {
+		SmartDashboard.putData(Swerve)
+		SmartDashboard.putData(Intake)
+		SmartDashboard.putData(Loader)
+		SmartDashboard.putData(Shooter)
+//		SmartDashboard.putData(Climbing)
+	}
+
+	private fun sendCompetitionInfo() {
+		with(Shuffleboard.getTab("Auto")) {
+			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
+			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
+		}
+
+		with(Shuffleboard.getTab("Driving")) {
+			addBoolean("Note detected", Loader::isNoteDetected).withSize(3, 1).withPosition(2, 1)
+			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withSize(3, 1).withPosition(2, 3)
+			addBoolean("Intake running", Intake::isRunning).withSize(3, 1).withPosition(7, 1)
+//			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
+//			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1).withSize(2, 1)
+		}
+	}
+
+
+	// --- Auto ---
+
+	fun getAutonomousCommand(): Command = autoChooser.selected
+
 	private fun registerAutoCommands() {
-		NamedCommands.registerCommand("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
-		NamedCommands.registerCommand("collect_command", Notes.autoCollectCommand())
-		NamedCommands.registerCommand(
-			"shoot_auto_line_1_3_command",
-			Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE)
-		)
-		NamedCommands.registerCommand(
-			"shoot_auto_line_2_command",
-			Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO)
-		)
-		NamedCommands.registerCommand("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
+		fun r(name: String, command: Command) = NamedCommands.registerCommand(name, command)
 
-		NamedCommands.registerCommand("shoot_trap_command", Notes.loadAndShootCommand(ShooterState.TO_TRAP))
-
-//		NamedCommands.registerCommand("raise_climbing_command", Climbing.getToOpenedLimitCommand())
-
-		NamedCommands.registerCommand(
+		r("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
+		r("collect_command", Notes.autoCollectCommand())
+		r("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
+		r("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
+		r("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
+		r("shoot_trap_command", Notes.loadAndShootCommand(ShooterState.TO_TRAP))
+		r(
 			"drive_to_speaker_command",
 			Swerve.driveToTrapCommand().andThen(Notes.loadAndShootCommand(ShooterState.TO_TRAP))
 		)
+//		r("raise_climbing_command", Climbing.getToOpenedLimitCommand())
+	}
+
+
+	// --- Joysticks ---
+
+	private const val JOYSTICK_MOVED_THRESHOLD = 0.1
+
+	private val areControllerAJoysticksMoving: () -> Boolean = {
+		(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
+	}
+
+	private val areControllerBJoysticksMoving: () -> Boolean = {
+		(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
 	}
 }
