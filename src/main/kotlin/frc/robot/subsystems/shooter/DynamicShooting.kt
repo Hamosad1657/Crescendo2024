@@ -1,12 +1,12 @@
 package frc.robot.subsystems.shooter
 
 import com.hamosad1657.lib.math.*
-import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import frc.robot.Robot
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.vision.Vision
 import java.awt.geom.Point2D
@@ -33,13 +33,13 @@ object DynamicShooting {
 	)
 
 	val speakerPosition
-		get() = when (robotAlliance) {
+		get() = when (Robot.alliance) {
 			Alliance.Red -> SPEAKER_RED_POSITION_METERS
 			Alliance.Blue -> SPEAKER_BLUE_POSITION_METERS
 		}
 
 	val speakerTagId
-		get() = when (robotAlliance) {
+		get() = when (Robot.alliance) {
 			Alliance.Red -> SPEAKER_RED_TAG_ID
 			Alliance.Blue -> SPEAKER_BLUE_TAG_ID
 		}

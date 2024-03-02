@@ -6,6 +6,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoo
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
@@ -14,9 +15,11 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
 import edu.wpi.first.util.sendable.*
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
+import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.Vision
@@ -63,7 +66,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	val robotVelocity: ChassisSpeeds get() = kinematics.toChassisSpeeds(*modulesStates)
 
 	/** Gets the current pose (position and rotation) of the robot, as reported by odometry. */
-	val robotPose: Pose2d get() = state.Pose
+	val robotPose: Pose2d get() = poseEstimator.estimatedPosition
 
 
 	// --- Drive & Module States Control
@@ -199,6 +202,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 //		setGyro(initialHolonomicPose.rotation)
 
 		poseEstimator.resetPosition(robotHeading, m_modulePositions, initialHolonomicPose)
+		robotPrintError("Reset odometry to:  $initialHolonomicPose")
+		robotPrintError("robot pose:  $robotPose")
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
@@ -232,7 +237,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 				// Boolean supplier that controls when the path will be mirrored for the red alliance
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-				false
+				Robot.alliance == DriverStation.Alliance.Red
 			},
 			this
 		)

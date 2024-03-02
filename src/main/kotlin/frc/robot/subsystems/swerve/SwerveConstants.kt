@@ -4,12 +4,12 @@ import com.ctre.phoenix6.configs.*
 import com.ctre.phoenix6.mechanisms.swerve.*
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType
-import com.hamosad1657.lib.robotAlliance
 import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.*
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.wpilibj.DriverStation
+import frc.robot.Robot
 import frc.robot.RobotMap.Swerve as SwerveMap
 
 object SwerveConstants {
@@ -118,7 +118,7 @@ object SwerveConstants {
 	)
 
 	/**offset from podium setpoint to speaker*/
-	val AT_PODIUM_ANGLE get() = if (robotAlliance == DriverStation.Alliance.Blue) (-25).degrees else 25.degrees
+	val AT_PODIUM_ANGLE get() = if (Robot.alliance == DriverStation.Alliance.Blue) (-25).degrees else 25.degrees
 
 	object Modules {
 		private val DISTANCE_TO_MODULE_X = 11.62.inches

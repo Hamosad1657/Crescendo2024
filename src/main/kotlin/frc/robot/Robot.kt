@@ -2,6 +2,8 @@ package frc.robot
 
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.andThen
+import com.hamosad1657.lib.robotPrint
+import com.hamosad1657.lib.units.degrees
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
 import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -49,6 +52,13 @@ object Robot : TimedRobot() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand()
 		autonomousCommand?.schedule()
+	}
+
+	override fun autonomousExit() {
+		if (alliance == Alliance.Red) {
+			robotPrint("CHANGED GYRO ANGLE")
+			SwerveSubsystem.setGyro((SwerveSubsystem.robotHeading.degrees - 180.0).degrees)
+		}
 	}
 
 	override fun teleopInit() {

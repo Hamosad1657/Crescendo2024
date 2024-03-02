@@ -14,12 +14,6 @@
         {
           "type": "named",
           "data": {
-            "name": "print_path_command"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "shoot_from_speaker_command"
           }
         },
