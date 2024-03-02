@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6483617853797659,
-      "y": 4.391185606105942
+      "x": 0.65,
+      "y": 4.39
     },
     "rotation": 120.0
   },
@@ -11,6 +11,12 @@
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "print_path_command"
+          }
+        },
         {
           "type": "named",
           "data": {
