@@ -40,7 +40,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		//addVisionMeasurement()
+		addVisionMeasurement()
 	}
 
 
@@ -212,6 +212,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 			if (!latestResult.hasTargets()) return
 		}
 
+		
 		Vision.estimatedGlobalPose?.let { estimatedPose ->
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 

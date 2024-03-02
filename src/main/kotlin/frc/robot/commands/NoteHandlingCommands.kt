@@ -55,6 +55,16 @@ fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and
 			loadIntoShooterCommand()))
 }
 
+/** - Requirements: Loader, Shooter. */
+fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = withName("load and shoot") {
+	(Shooter.getToShooterStateCommand(stateSupplier) raceWith
+		(WaitCommand(0.2) andThen
+			waitUntil { Shooter.isWithinTolerance }
+				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
+			WaitCommand(0.1) andThen
+			loadIntoShooterCommand()))
+}
+
 /**
  * - Command has no end condition.
  * - Requirements: Shooter.

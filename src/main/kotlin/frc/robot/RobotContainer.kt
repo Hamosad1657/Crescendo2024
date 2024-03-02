@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
+import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
@@ -140,10 +141,12 @@ object RobotContainer {
 				(SwerveConstants.AT_PODIUM_ANGLE.degrees +
 					Swerve.robotHeading.degrees).degrees
 			} until controllerAJoysticksMoving)
+
 			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
 			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
 
 			povRight().onTrue(InstantCommand({ Swerve.resetOdometry(Pose2d(1.0, 1.0, 120.degrees)) }))
+			R3().whileTrue(Shooter.dynamicShootingCommand())
 
 			// --- Notes ---
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
@@ -191,6 +194,15 @@ object RobotContainer {
 	private fun registerAutoCommands() {
 		NamedCommands.registerCommand("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
 		NamedCommands.registerCommand("collect_command", Notes.autoCollectCommand())
+		NamedCommands.registerCommand("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0)
+		NamedCommands.registerCommand(
+			"shoot_command", Notes.loadAndShootCommand {
+			DynamicShooting.calculateShooterState(
+				Swerve.robotPose.translation
+			)
+		}
+		)
+
 		NamedCommands.registerCommand(
 			"shoot_auto_line_1_3_command",
 			Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE)

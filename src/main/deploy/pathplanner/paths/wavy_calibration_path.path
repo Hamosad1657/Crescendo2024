@@ -3,59 +3,70 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.0,
-        "y": 1.4272981273235277
+        "x": 2.2285864242853157,
+        "y": 5.6466920858276
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2508056434294685,
-        "y": 1.455284365114185
+        "x": 3.4793920677147847,
+        "y": 5.674678323618258
       },
       "isLocked": false,
       "linkedName": "calibration_start"
     },
     {
       "anchor": {
-        "x": 1.5752490816962648,
-        "y": 2.629312020189877
+        "x": 4.233911652160462,
+        "y": 7.152177667487174
       },
       "prevControl": {
-        "x": 0.8269539263669365,
-        "y": 2.6415791538838005
+        "x": 3.4856164968311334,
+        "y": 7.164444801181098
       },
       "nextControl": {
-        "x": 2.14430258343963,
-        "y": 2.6199832742596576
+        "x": 4.802965153903826,
+        "y": 7.142848921556954
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 1.4272981273235277
+        "x": 6.131851479803673,
+        "y": 5.6466920858276
       },
       "prevControl": {
-        "x": 1.9831666936061145,
-        "y": 1.3806543976724328
+        "x": 4.945739612918017,
+        "y": 5.683697217963606
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "calibration_end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 90.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.0,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 700.0,
-    "maxAngularAcceleration": 1000.0
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,

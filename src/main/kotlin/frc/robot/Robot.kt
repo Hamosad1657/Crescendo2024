@@ -50,7 +50,8 @@ object Robot : TimedRobot() {
 
 	override fun autonomousInit() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
-		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand().asProxy()
+		autonomousCommand =
+			ShooterSubsystem.escapeAngleLockCommand() andThen RobotContainer.getAutonomousCommand().asProxy()
 		autonomousCommand?.schedule()
 	}
 
