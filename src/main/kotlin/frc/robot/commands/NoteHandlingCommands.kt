@@ -23,7 +23,7 @@ object Notes
 fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Command = withName("collect") {
 	(
 		(Shooter.getToShooterStateCommand(shooterState) alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
 			Intake.runIntakeCommand()
 			) until
 			Loader::isNoteDetected
@@ -37,7 +37,7 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
 	(
 		(Shooter.getToShooterStateCommand(shooterState) alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
 			Intake.runIntakeCommand()
 			) until
 			Loader::isNoteDetected
@@ -109,7 +109,7 @@ fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
  */
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
-		Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
 		ShooterConstants.SHOOT_TIME_SEC finallyDo
 		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 }
@@ -120,7 +120,7 @@ fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
  * - Requirements: Loader (until the command ends, then Shooter.)
  */
 fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
-	runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) withTimeout
+	runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
 		ShooterConstants.SHOOT_TIME_SEC finallyDo
 		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 }
@@ -166,7 +166,7 @@ fun Notes.waitForNoteToPassCommand() = withName("wait for note to pass") {
 fun Intake.runIntakeCommand(): Command = withName("run") {
 	run {
 		if ((Shooter.isWithinAngleTolerance || Loader.isRunning) && !Loader.isNoteDetected) {
-			setVoltage(IntakeConstants.BOTTOM_MOTOR_VOLTAGE, IntakeConstants.TOP_MOTOR_VOLTAGE)
+			setVoltage(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
 		} else {
 			stopMotors()
 		}
@@ -183,7 +183,7 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 	run {
 		setVoltage(voltage)
 	} finallyDo {
-		stopMotor()
+		stopMotors()
 	}
 }
 
@@ -191,19 +191,19 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
  * - Requirements: Loader.
  */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
-	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) withTimeout
+	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
 		ShooterConstants.SHOOT_TIME_SEC
 }
 
 fun Notes.collectAndEject(): Command = withName("collect and eject") {
 	Intake.runIntakeCommand() alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
 		Shooter.getToShooterStateCommand(ShooterState.EJECT)
 }
 
 fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
 	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_HP) alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE)) until
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
 		Loader::isNoteDetected
 }
 
@@ -220,7 +220,7 @@ fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from huma
  */
 fun Intake.ejectFromIntakeCommand(): Command =
 	run {
-		setVoltage(-IntakeConstants.BOTTOM_MOTOR_VOLTAGE, -IntakeConstants.TOP_MOTOR_VOLTAGE)
+		setVoltage(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
 	} withTimeout (IntakeConstants.EJECT_TIME_SEC) finallyDo {
 		stopMotors()
 	}

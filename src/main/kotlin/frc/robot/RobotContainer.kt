@@ -171,7 +171,7 @@ object RobotContainer {
 
 		// Shooter default commands are set in Robot.kt
 		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
-		Loader.defaultCommand = Loader.run { Loader.stopMotor() }
+		Loader.defaultCommand = Loader.run { Loader.stopMotors() }
 
 //		Climbing.defaultCommand =
 //			Climbing.brokenOpenLoopTeleopCommand(

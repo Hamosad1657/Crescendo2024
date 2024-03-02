@@ -1,6 +1,5 @@
 package frc.robot.subsystems.loader
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.VoltageOut
 import com.hamosad1657.lib.motors.HaTalonFX
 import com.hamosad1657.lib.units.Volts
@@ -14,12 +13,20 @@ import frc.robot.RobotMap.Loader as LoaderMap
 import frc.robot.subsystems.loader.LoaderConstants as Constants
 
 object LoaderSubsystem : SubsystemBase() {
+
+	// --- Motors & Sensors ---
+
 	private val motor = HaTalonFX(LoaderMap.MOTOR_ID).apply {
-		configurator.apply(TalonFXConfiguration())
+		restoreFactoryDefaults()
 		inverted = false
 		idleMode = IdleMode.kBrake
 		configurator.apply(Constants.MOTORS_CURRENT_LIMIT)
 	}
+
+	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)
+
+
+	// --- Motors Configuration ---
 
 	var idleMode = IdleMode.kBrake
 		set(value) {
@@ -27,10 +34,16 @@ object LoaderSubsystem : SubsystemBase() {
 			field = value
 		}
 
-	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)
+
+	// --- State Getters ---
 
 	/** Beam-break is positioned between loader and shooter. */
 	val isNoteDetected: Boolean get() = beamBreak.value <= ANALOG_READ_NOTE_DETECTED_THRESHOLD
+
+	val isRunning: Boolean get() = abs(motor.get()) > 0.0
+
+
+	// --- Motors Control ---
 
 	private val controlRequestVoltage = VoltageOut(0.0).apply { EnableFOC = false }
 
@@ -38,18 +51,18 @@ object LoaderSubsystem : SubsystemBase() {
 		motor.setControl(controlRequestVoltage.apply { Output = voltage })
 	}
 
-	fun stopMotor() {
+	fun stopMotors() {
 		motor.stopMotor()
 	}
 
-	val isRunning: Boolean
-		get() = abs(motor.get()) > 0.0
+
+	// --- Telemetry ---
 
 	override fun initSendable(builder: SendableBuilder) {
 		builder.setSmartDashboardType("Subsystem")
 		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
-		builder.addDoubleProperty("Analog channel 0 voltage", { beamBreak.value.toDouble() }, null)
-		builder.addBooleanProperty("Is note detected", { isNoteDetected }, null)
+		builder.addDoubleProperty("Beam-break channel voltage", { beamBreak.value.toDouble() }, null)
+		builder.addBooleanProperty("Note detected", { isNoteDetected }, null)
 		builder.addBooleanProperty("Running", { isRunning }, null)
 	}
 }

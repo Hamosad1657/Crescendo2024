@@ -66,8 +66,17 @@ object ClimbingSubsystem : SubsystemBase() {
 			follow(mainMotor, true)
 		}
 
+	var idleMode = IdleMode.kBrake
+		set(value) {
+			leftMainMotor.idleMode = value
+			leftSecondaryMotor.idleMode = value
+			rightMainMotor.idleMode = value
+			rightSecondaryMotor.idleMode = value
+			field = value
+		}
 
-	// --- Limit Switches ---
+
+	// --- State Getters ---
 
 	val isLeftAtClosedLimit get() = leftClosedLimitSwitch.get()
 	val isLeftAtOpenedLimit get() = leftOpenedLimitSwitch.get()
@@ -81,11 +90,11 @@ object ClimbingSubsystem : SubsystemBase() {
 	val isAtClosedLimit get() = isLeftAtClosedLimit && isRightAtClosedLimit
 	val isAtOpenedLimit get() = isLeftAtOpenedLimit && isRightAtOpenedLimit
 
-
-	// --- Motors Control ---
-
 	val currentPosition: Rotations
 		get() = leftMainMotor.encoder.position
+
+
+	// --- Motors Control ---
 
 	fun set(output: PercentOutput) {
 		setLeft(output)
@@ -104,17 +113,17 @@ object ClimbingSubsystem : SubsystemBase() {
 		else rightMainMotor.set(output)
 	}
 
+	fun stopMotors() {
+		stopLeft()
+		stopRight()
+	}
+
 	fun stopLeft() {
 		leftMainMotor.stopMotor()
 	}
 
 	fun stopRight() {
 		rightMainMotor.stopMotor()
-	}
-
-	fun stopMotors() {
-		stopLeft()
-		stopRight()
 	}
 
 

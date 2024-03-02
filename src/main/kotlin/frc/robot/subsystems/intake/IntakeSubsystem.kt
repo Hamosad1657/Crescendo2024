@@ -27,6 +27,7 @@ object IntakeSubsystem : SubsystemBase() {
 			configMotor(inverted = false)
 		}
 
+
 	// --- Motors Configuration ---
 
 	private fun HaTalonFX.configMotor(inverted: Boolean) {
@@ -34,6 +35,18 @@ object IntakeSubsystem : SubsystemBase() {
 		idleMode = IdleMode.kBrake
 		configurator.apply(Constants.CURRENT_LIMITS_CONFIGS)
 	}
+
+	var idleMode = IdleMode.kBrake
+		set(value) {
+			topMotor.idleMode = value
+			bottomMotor.idleMode = value
+			field = value
+		}
+
+
+	// --- State Getters ---
+
+	val isRunning: Boolean get() = abs(bottomMotor.get()) > 0.0
 
 
 	// --- Motors Control ---
@@ -50,16 +63,6 @@ object IntakeSubsystem : SubsystemBase() {
 		bottomMotor.stopMotor()
 		topMotor.stopMotor()
 	}
-
-	val isRunning: Boolean
-		get() = abs(bottomMotor.get()) > 0.0
-
-	private var idleMode = IdleMode.kBrake
-		set(value) {
-			topMotor.idleMode = value
-			bottomMotor.idleMode = value
-			field = value
-		}
 
 
 	// --- Telemetry ---

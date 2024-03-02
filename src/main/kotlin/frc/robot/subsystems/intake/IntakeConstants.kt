@@ -10,8 +10,8 @@ object IntakeConstants {
 			SupplyCurrentLimit = 40.0
 		}
 
-	const val BOTTOM_MOTOR_VOLTAGE: Volts = 12.0
-	const val TOP_MOTOR_VOLTAGE: Volts = 12.0
+	const val BOTTOM_MOTOR_OUTPUT: Volts = 12.0
+	const val TOP_MOTOR_OUTPUT: Volts = 12.0
 
 	const val EJECT_TIME_SEC = 3.0
 }
