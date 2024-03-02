@@ -184,8 +184,8 @@ object RobotContainer {
 	}
 
 	fun getAutonomousCommand(): Command {
-//		return autoChooser.selected
-		return Swerve.followAutoCommand("shoot_and_move_away")
+		return autoChooser.selected
+//		return Swerve.followAutoCommand("shoot_and_move_away")
 	}
 
 	private fun registerAutoCommands() {

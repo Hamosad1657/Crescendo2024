@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 8.65671414652387,
-      "y": 4.11050362756931
+      "x": 0.0,
+      "y": 1.4272981273235277
     },
-    "rotation": -179.99999999999994
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,13 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "middle_note_trap"
+            "pathName": "wavy_calibration_path"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "drive_to_speaker_command"
+            "pathName": "calibration_return_path"
           }
         }
       ]
