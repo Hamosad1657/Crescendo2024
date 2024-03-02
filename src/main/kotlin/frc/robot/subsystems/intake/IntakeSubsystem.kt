@@ -11,7 +11,6 @@ import frc.robot.RobotMap.Intake as IntakeMap
 import frc.robot.subsystems.intake.IntakeConstants as Constants
 
 object IntakeSubsystem : SubsystemBase() {
-
 	// --- Motors ---
 
 	private val bottomMotor =

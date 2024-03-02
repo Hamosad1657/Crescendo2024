@@ -12,7 +12,6 @@ import frc.robot.RobotMap.Climbing as ClimbingMap
 import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 
 object ClimbingSubsystem : SubsystemBase() {
-
 	// --- Motors & Sensors ---
 
 	private val leftMainMotor =

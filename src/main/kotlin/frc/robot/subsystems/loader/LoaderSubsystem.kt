@@ -13,7 +13,6 @@ import frc.robot.RobotMap.Loader as LoaderMap
 import frc.robot.subsystems.loader.LoaderConstants as Constants
 
 object LoaderSubsystem : SubsystemBase() {
-
 	// --- Motors & Sensors ---
 
 	private val motor = HaTalonFX(LoaderMap.MOTOR_ID).apply {
