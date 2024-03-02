@@ -7,7 +7,9 @@ import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.*
-import org.photonvision.*
+import org.photonvision.EstimatedRobotPose
+import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 import org.photonvision.PhotonPoseEstimator.PoseStrategy
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
@@ -57,15 +59,14 @@ object Vision {
 
 	/**
 	 * Gets the estimated robot position from the PhotonVision camera.
+	 *
 	 * Returns null if it doesn't detect any AprilTags.
 	 */
 	val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
-
 	val estimatedPose2d: Pose2d? get() = estimatedGlobalPose?.estimatedPose?.toPose2d()
 
 	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
 
 	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
-
 	fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
 }
