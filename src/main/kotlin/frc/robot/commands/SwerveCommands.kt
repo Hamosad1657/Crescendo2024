@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Robot
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.shooter.DynamicShooting
+import frc.robot.subsystems.vision.NoteVision
 import kotlin.math.pow
 import kotlin.math.sign
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
@@ -193,4 +194,20 @@ fun Swerve.driveToTrapCommand(): Command = withName("drive to trap") {
 			{ 0.0 },
 			{ 0.0 },
 			{ false }) withTimeout (0.15)) finallyDo InstantCommand({ stop() })
+}
+
+
+fun Swerve.driveToNoteCommand(): Command = withName("drive to note") {
+	val YAW_MULTIPLIER = 0.0
+
+	val rotationSupplier: () -> Double = {
+		val bestTarget = NoteVision.bestTarget
+
+		if (bestTarget == null) {
+			0.0
+		} else {
+			NoteVision.getRobotToTargetYaw(bestTarget).degrees * YAW_MULTIPLIER
+		}
+	}
+	teleopDriveCommand({ 0.3 }, { 0.0 }, rotationSupplier, { false })
 }
