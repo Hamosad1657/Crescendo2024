@@ -7,25 +7,37 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocit
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
 import com.hamosad1657.lib.robotPrintError
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.plus
+import com.hamosad1657.lib.units.toNeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-import edu.wpi.first.math.geometry.*
-import edu.wpi.first.math.kinematics.*
-import edu.wpi.first.util.sendable.*
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import edu.wpi.first.math.kinematics.SwerveModulePosition
+import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.util.sendable.SendableBuilder
+import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.*
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.CommandScheduler
+import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.AprilTagVision
 import frc.robot.subsystems.vision.NoteVision
-import java.util.*
+import java.util.Optional
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -228,8 +240,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	init {
 		PPHolonomicDriveController.setRotationTargetOverride {
-			val rotationTarget = NoteVision.bestTarget?.let {
-				Optional.of(robotHeading plus NoteVision.getDeltaRobotToTargetYaw(it))
+			val rotationTarget = NoteVision.getRobotToBestTargetYawDelta()?.let {
+				Optional.of(robotHeading plus it)
 			}
 			rotationTarget ?: Optional.empty()
 		}

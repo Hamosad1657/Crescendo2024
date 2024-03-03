@@ -7,7 +7,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.inches
+import com.hamosad1657.lib.units.meters
+import com.hamosad1657.lib.units.rps
 import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.PIDConstants
@@ -62,7 +65,7 @@ object SwerveConstants {
 
 	/** Feedback from gyro, setpoint from vision! */
 	val CHASSIS_VISION_ANGLE_PID_CONTROLLER =
-		PIDController(0.02, 0.1, 0.0).apply {
+		PIDController(0.12, 0.0, 0.0).apply {
 			enableContinuousInput(-180.0, 180.0)
 		}
 

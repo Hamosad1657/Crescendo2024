@@ -9,13 +9,16 @@ import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Robot
-import frc.robot.subsystems.climbing.ClimbingSubsystem
+import frc.robot.RobotContainer
 import frc.robot.subsystems.shooter.DynamicShooting
+import frc.robot.subsystems.swerve.SwerveConstants
+import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
 import frc.robot.subsystems.vision.NoteVision
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sign
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
@@ -70,14 +73,14 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	vySupplier: () -> Double,
 	angleSupplier: () -> Rotation2d,
 	isFieldRelative: () -> Boolean,
-	pidController: () -> PIDController = { Constants.CHASSIS_ANGLE_PID_CONTROLLER },
+	pidController: () -> PIDController = { CHASSIS_ANGLE_PID_CONTROLLER },
 ): Command = withName("teleop drive with auto angle") {
 	run {
 		pidController().setpoint = angleSupplier().degrees
 
 		val vx = -vxSupplier().pow(3.0) * Constants.MAX_SPEED_MPS
 		val vy = -vySupplier().pow(3.0) * Constants.MAX_SPEED_MPS
-		val omega = Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)
+		val omega = CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)
 
 		if (Robot.telemetryLevel == Telemetry.Testing) {
 			SmartDashboard.putNumber("vx", vx)
@@ -105,9 +108,9 @@ fun Swerve.getToOneAngleCommand(angle: () -> Rotation2d): Command = withName("ge
 		setpoint = angle()
 	} andThen
 		run {
-			Constants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = setpoint.degrees
+			CHASSIS_ANGLE_PID_CONTROLLER.setpoint = setpoint.degrees
 			setAngularVelocity(
-				(Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+				(CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
 			)
 		}
 }
@@ -118,9 +121,9 @@ fun Swerve.getToOneAngleCommand(angle: () -> Rotation2d): Command = withName("ge
  */
 fun Swerve.getToAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
 	run {
-		Constants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle().degrees
+		CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle().degrees
 		setAngularVelocity(
-			(Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+			(CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
 		)
 	}
 }
@@ -131,9 +134,9 @@ fun Swerve.getToAngleCommand(angle: () -> Rotation2d): Command = withName("get t
  */
 fun Swerve.getToAngleCommand(angle: Rotation2d): Command = withName("get to angle command") {
 	run {
-		Constants.CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle.degrees
+		CHASSIS_ANGLE_PID_CONTROLLER.setpoint = angle.degrees
 		setAngularVelocity(
-			(Constants.CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
+			(CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)).radPs
 		)
 	}
 }
@@ -181,34 +184,56 @@ fun Swerve.aimAtGoalWhileDrivingCommand(
  * - Command has no end condition.
  * - Requirements: Swerve.
  */
-fun Swerve.driveToTrapCommand(): Command = withName("drive to trap") {
-	val rotationSupplier: () -> Double = {
-		if (ClimbingSubsystem.areBothTrapSwitchesPressed) 0.0
-		else if (ClimbingSubsystem.isLeftTrapSwitchPressed) 0.3
-		else if (ClimbingSubsystem.isRightTrapSwitchPressed) -0.3
-		else 0.0
-	}
-	teleopDriveCommand({ 0.2 }, { 0.0 }, rotationSupplier, { false }) until
-		{ ClimbingSubsystem.areBothTrapSwitchesPressed } andThen
-		(teleopDriveCommand(
-			{ -0.2 },
-			{ 0.0 },
-			{ 0.0 },
-			{ false }) withTimeout (0.15)) finallyDo InstantCommand({ stop() })
-}
-
 fun Swerve.aimAtNoteWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
+	omegaSupplier: () -> Double,
+): Command = withName("aim at note while driving") {
+	val joystickMovedWaitTimeSec = 0.5
+	val joystickMoveTimer = Timer()
+	var shouldFollowNote = true
 
-	): Command = withName("drive to note") {
-	teleopDriveWithAutoAngleCommand(
-		vxSupplier,
-		vySupplier,
-		{
-			robotHeading plus
-				(NoteVision.bestTarget?.let { NoteVision.getDeltaRobotToTargetYaw(it) } ?: 0.degrees)
-		},
-		isFieldRelative = { true },
-	)
+	run {
+		SmartDashboard.putNumber("timer", joystickMoveTimer.get())
+		val joystickMoved = abs(omegaSupplier()) > RobotContainer.JOYSTICK_DEADBAND
+
+		val omega =
+			// The driver takes control of the rotation.
+			if (joystickMoved or !NoteVision.hasTargets) {
+				shouldFollowNote = false
+
+				joystickMoveTimer.reset()
+				joystickMoveTimer.start()
+
+				-omegaSupplier().pow(3) * Constants.MAX_ANGULAR_VELOCITY.asRadPs
+			}
+			// If enough time has passed since the driver controlled the rotation,
+			// go back to following the note using PID.
+			else if (shouldFollowNote || joystickMoveTimer.hasElapsed(joystickMovedWaitTimeSec)) {
+				shouldFollowNote = true
+				joystickMoveTimer.stop()
+
+				// The difference between the robot's angle and the detected Note.
+				val rotationDelta = NoteVision.getRobotToBestTargetYawDelta() ?: 0.degrees
+
+				// Calculate the required omega to rotate towards the Note using PID.
+				val setpoint = (robotHeading plus rotationDelta).degrees
+				SwerveConstants.CHASSIS_VISION_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees, setpoint)
+			}
+			// Stay at the same angle (do not rotate) for [joystickMovedWaitTimeSec] seconds.
+			else {
+				0.0
+			}
+
+		val vx = -vxSupplier().pow(3.0) * Constants.MAX_SPEED_MPS
+		val vy = -vySupplier().pow(3.0) * Constants.MAX_SPEED_MPS
+
+		// Drive using raw values.
+		drive(
+			Translation2d(vx, vy),
+			omega.radPs,
+			isFieldRelative = true,
+			useClosedLoopDrive = true,
+		)
+	}
 }

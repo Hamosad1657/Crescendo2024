@@ -84,6 +84,7 @@ object RobotContainer {
 					SwerveSubsystem.aimAtNoteWhileDrivingCommand(
 						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 						vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+						omegaSupplier = { controllerA.rightX }
 					)
 			)
 
