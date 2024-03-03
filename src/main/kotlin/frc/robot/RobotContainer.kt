@@ -1,6 +1,5 @@
 package frc.robot
 
-import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
@@ -164,9 +163,7 @@ object RobotContainer {
 
 	private fun initSendables() {
 		sendCompetitionInfo()
-		if (Robot.telemetryLevel == Telemetry.Testing) {
-			sendSubsystemInfo()
-		}
+		if (Robot.isTesting) sendSubsystemInfo()
 	}
 
 	private fun sendSubsystemInfo() {

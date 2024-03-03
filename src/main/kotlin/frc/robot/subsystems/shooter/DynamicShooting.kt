@@ -42,10 +42,10 @@ object DynamicShooting {
 	/** This function assumes the robot is directly facing the speaker. */
 	fun calculateShooterState(robotPosition: Translation2d): ShooterState {
 		val robotToSpeakerFlatDistance = robotPosition.getDistance(speakerPosition)
-			.also { SmartDashboard.putNumber("Robot to speaker distance", it) }
+			.also { if (Robot.isTesting) SmartDashboard.putNumber("Robot to speaker distance", it) }
 
 		val distanceToSpeaker01 = distanceToSpeaker01(robotToSpeakerFlatDistance)
-			.also { SmartDashboard.putNumber("Dynamic shooting factor", it) }
+			.also { if (Robot.isTesting) SmartDashboard.putNumber("Dynamic shooting factor", it) }
 
 		return ShooterState(
 			calculateAngleSetpoint(distanceToSpeaker01).degrees,
@@ -69,14 +69,14 @@ object DynamicShooting {
 	private fun calculateAngleSetpoint(distanceToSpeaker01: Double): Double {
 		val angle = ANGLE_INTERPOLATION_TABLE.getOutputFor(distanceToSpeaker01)
 		return clamp(angle, MIN_ANGLE, MAX_ANGLE)
-			.also { SmartDashboard.putNumber("Dynamic shooting angle", it) }
+			.also { if (Robot.isTesting) SmartDashboard.putNumber("Dynamic shooting angle", it) }
 	}
 
 	/** Calculate the required shooter setpoint from the 0.0->1.0 distance factor. */
 	private fun calculateVelocitySetpoint(distanceToSpeaker01: Double): Double {
 		val rpm = distanceToSpeaker01 * (MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY
 		return clamp(rpm, MIN_VELOCITY, MAX_VELOCITY)
-			.also { SmartDashboard.putNumber("Dynamic shooting velocity", it) }
+			.also { if (Robot.isTesting) SmartDashboard.putNumber("Dynamic shooting velocity", it) }
 	}
 
 

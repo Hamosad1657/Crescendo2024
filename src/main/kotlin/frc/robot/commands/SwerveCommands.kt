@@ -1,6 +1,5 @@
 package frc.robot.commands
 
-import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.units.degrees
@@ -48,7 +47,7 @@ fun Swerve.teleopDriveCommand(
 		val vy = vySupplier().let { it.pow(2.0) * Constants.MAX_SPEED_MPS * -it.sign }
 		val omega = omegaSupplier().let { it.pow(2.0) * Constants.MAX_ANGULAR_VELOCITY.asRadPs * -it.sign }
 
-		if (Robot.telemetryLevel == Telemetry.Testing) {
+		if (Robot.isTesting) {
 			SmartDashboard.putNumber("vx", vx)
 			SmartDashboard.putNumber("vy", vy)
 			SmartDashboard.putNumber("omega", omega)
@@ -82,7 +81,7 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 		val vy = -vySupplier().pow(3.0) * Constants.MAX_SPEED_MPS
 		val omega = CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)
 
-		if (Robot.telemetryLevel == Telemetry.Testing) {
+		if (Robot.isTesting) {
 			SmartDashboard.putNumber("vx", vx)
 			SmartDashboard.putNumber("vy", vy)
 			SmartDashboard.putNumber("omega", omega)
