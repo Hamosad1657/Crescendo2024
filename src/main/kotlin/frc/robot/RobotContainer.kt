@@ -3,19 +3,24 @@ package frc.robot
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.plus
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
+import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
+import frc.robot.vision.NoteVision
+import java.util.Optional
 import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.sign
@@ -202,8 +207,16 @@ object RobotContainer {
 		fun register(name: String, command: Command) = NamedCommands.registerCommand(name, command)
 
 		register("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
-		register("collect_command", Notes.autoCollectCommand())
-		register("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0)
+		register(
+			"collect_command", Notes.autoCollectCommand().beforeStarting(
+			InstantCommand()
+		)
+		)
+		register("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0
+			andThen InstantCommand({
+			PPHolonomicDriveController.setRotationTargetOverride { Optional.empty() }
+		}
+		))
 		register("shoot_command",
 			Notes.loadAndShootCommand {
 				DynamicShooting.calculateShooterState(Swerve.robotPose.translation)
@@ -212,6 +225,14 @@ object RobotContainer {
 		register("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
 		register("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
 		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
+		register("aim_at_note_command", InstantCommand({
+			PPHolonomicDriveController.setRotationTargetOverride {
+				val rotationTarget = NoteVision.getRobotToBestTargetYawDelta()?.let {
+					Optional.of(SwerveSubsystem.robotHeading plus it)
+				}
+				rotationTarget ?: Optional.empty()
+			}
+		}))
 	}
 
 
