@@ -15,7 +15,6 @@ import frc.robot.Robot
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants
-import frc.robot.subsystems.vision.Vision
 import kotlin.math.pow
 import kotlin.math.sign
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
@@ -112,25 +111,15 @@ fun Swerve.getToAngleCommand(angle: Rotation2d): Command = withName("get to angl
 fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
-	isFieldRelative: () -> Boolean,
 ): Command = teleopDriveWithAutoAngleCommand(
 	vxSupplier,
 	vySupplier,
-	angleSupplier@{
-		SmartDashboard.putBoolean("seesSpeakerTag", DynamicShooting.seesSpeakerTag)
-
-		Vision.getTag(DynamicShooting.speakerTagId)?.let { tag ->
-			return@angleSupplier (robotHeading.degrees - tag.yaw).degrees
-		}
-		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-		return@angleSupplier mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
-
-	},
-	isFieldRelative,
 	{
-		if (DynamicShooting.seesSpeakerTag) SwerveConstants.CHASSIS_VISION_ANGLE_PID_CONTROLLER
-		else SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
+		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+
 	},
+	{ true },
 )
 
 fun Swerve.aimAtGoalWhileDrivingCommand(

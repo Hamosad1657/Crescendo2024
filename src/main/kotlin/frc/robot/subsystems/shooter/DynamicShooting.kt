@@ -20,7 +20,7 @@ object DynamicShooting {
 	private const val MIN_DISTANCE_TO_SPEAKER = 2.5 // Meters
 	private const val MAX_DISTANCE_TO_SPEAKER = 5.8 // Meters
 
-	private const val MIN_ANGLE = 162.0 // Degrees
+	private const val MIN_ANGLE = 165.0 // Degrees
 	private const val MAX_ANGLE = 180.0 // Degrees
 
 	private const val MIN_VELOCITY = 3000.0 // RPM
@@ -28,7 +28,7 @@ object DynamicShooting {
 
 	private val ANGLE_INTERPOLATION_TABLE = LinearInterpolationTable(
 		Point2D.Double(0.0, MAX_ANGLE),
-		Point2D.Double(0.414600, 167.0),
+		Point2D.Double(0.414600, 169.0),
 		Point2D.Double(1.0, MIN_ANGLE)
 	)
 

@@ -146,7 +146,12 @@ object RobotContainer {
 			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
 
 			povRight().onTrue(InstantCommand({ Swerve.resetOdometry(Pose2d(1.0, 1.0, 120.degrees)) }))
-			R3().whileTrue(Shooter.dynamicShootingCommand())
+			R3().whileTrue(
+				Shooter.dynamicShootingCommand() alongWith Swerve.aimAtSpeakerWhileDrivingCommand(
+					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+					vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+				)
+			)
 
 			// --- Notes ---
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
