@@ -1,6 +1,9 @@
 package com.hamosad1657.lib.commands
 
-import edu.wpi.first.wpilibj2.command.*
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 
 fun waitUntil(until: () -> Boolean) = WaitUntilCommand(until)
 

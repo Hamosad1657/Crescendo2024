@@ -1,7 +1,7 @@
 package com.hamosad1657.lib.math.filters.movingwindowfilters
 
 import com.hamosad1657.lib.math.median
-import java.util.*
+import java.util.LinkedList
 
 /**
  * A class for a moving median filter, a type of low-pass filter with a finite memory.

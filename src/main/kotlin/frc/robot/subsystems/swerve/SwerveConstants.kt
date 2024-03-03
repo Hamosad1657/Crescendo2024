@@ -7,7 +7,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.inches
+import com.hamosad1657.lib.units.meters
+import com.hamosad1657.lib.units.rps
 import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.PIDConstants
