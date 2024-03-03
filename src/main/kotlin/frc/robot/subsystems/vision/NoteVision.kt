@@ -8,7 +8,7 @@ import org.photonvision.targeting.PhotonTrackedTarget
 
 object NoteVision {
 	/** The angle to the NOTE as reported by the vision, when the intake is perfectly centered at it.*/
-	val CAMERA_TO_INTAKE_CENTER_OFFSET = 0.0.degrees
+	val CAMERA_OFFSET = 0.0.degrees
 
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("NOTE-Cam")
@@ -23,6 +23,6 @@ object NoteVision {
 		// inverted because vision conventions are CW positive, and
 		// math conventions (which are  used in FRC) are CCW positive.
 		val cameraToTargetYaw = (-target.yaw)
-		return (cameraToTargetYaw - CAMERA_TO_INTAKE_CENTER_OFFSET.degrees).degrees
+		return (cameraToTargetYaw - CAMERA_OFFSET.degrees).degrees
 	}
 }
