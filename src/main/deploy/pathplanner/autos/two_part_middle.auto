@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 0.7212095847679248,
+      "y": 4.403610724184677
+    },
+    "rotation": 120.0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -8,13 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "one_meter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "one_meter_back"
+            "pathName": "far_right_collection"
           }
         }
       ]
