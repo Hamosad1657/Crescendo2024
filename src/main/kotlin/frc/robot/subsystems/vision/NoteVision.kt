@@ -21,6 +21,7 @@ object NoteVision {
 
 	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
 	val bestTarget: PhotonTrackedTarget? get() = latestResult?.bestTarget
+	val hasTarget: Boolean get() = latestResult?.hasTargets() ?: false
 
 	/** Get the yaw delta between the robot and the target note. */
 	fun getDeltaRobotToTargetYaw(target: PhotonTrackedTarget): Rotation2d {

@@ -9,6 +9,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
 import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
@@ -23,6 +24,8 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.vision.AprilTagVision
+import frc.robot.subsystems.vision.NoteVision
+import java.util.*
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -223,6 +226,14 @@ object SwerveSubsystem : SwerveDrivetrain(
 		}
 	}
 
+	init {
+		PPHolonomicDriveController.setRotationTargetOverride {
+			val rotationTarget = NoteVision.bestTarget?.let {
+				Optional.of(robotHeading plus NoteVision.getDeltaRobotToTargetYaw(it))
+			}
+			rotationTarget ?: Optional.empty()
+		}
+	}
 
 	// --- Auto & Paths ---
 
