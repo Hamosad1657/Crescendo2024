@@ -16,6 +16,7 @@ import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.Volts
 import com.hamosad1657.lib.units.absoluteValue
 import com.hamosad1657.lib.units.rotations
+import com.hamosad1657.lib.units.rpm
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
@@ -140,7 +141,8 @@ object ShooterSubsystem : SubsystemBase() {
 
 	val angleError get() = angleMotor.closedLoopError.value.rotations
 
-	val isWithinVelocityTolerance get() = (currentVelocitySetpoint - currentVelocity).abs() <= Constants.VELOCITY_TOLERANCE
+	val isWithinVelocityTolerance
+		get() = (currentVelocitySetpoint - currentVelocity).absoluteValue <= Constants.VELOCITY_TOLERANCE
 	val isWithinAngleTolerance get() = angleError.rotations.absoluteValue <= Constants.SHOOTING_ANGLE_TOLERANCE.rotations
 	val isWithinTolerance get() = isWithinVelocityTolerance && isWithinAngleTolerance
 
@@ -164,6 +166,11 @@ object ShooterSubsystem : SubsystemBase() {
 
 	fun setVelocity(velocitySetpoint: AngularVelocity) {
 		currentVelocitySetpoint = velocitySetpoint
+
+		val velocityDelta = (shooterEncoder.velocity.rpm - velocitySetpoint).absoluteValue
+		if (velocityDelta < Constants.VELOCITY_TOLERANCE) {
+			resetVelocityPIDController()
+		}
 
 		val ff: Volts = SHOOTER_PID_GAINS.kFF(velocitySetpoint.asRpm)
 		val pidOutput: Volts = shooterPIDController.calculate(currentVelocity.asRpm, velocitySetpoint.asRpm)
