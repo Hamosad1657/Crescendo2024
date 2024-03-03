@@ -31,9 +31,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
-
 	//	const val CLIMBING_DEADBAND = 0.08
-	private const val JOYSTICK_MOVED_THRESHOLD = 0.1
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -41,20 +39,6 @@ object RobotContainer {
 
 	private var swerveTeleopMultiplier = 1.0
 	private var swerveIsFieldRelative = true
-
-	private val areControllerAJoysticksMoving: () -> Boolean = {
-		(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
-	}
-
-	private val areControllerBJoysticksMoving: () -> Boolean = {
-		(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
-	}
 
 	init {
 		SwerveSubsystem
@@ -69,12 +53,11 @@ object RobotContainer {
 	private fun configureButtonBindings() {
 		with(controllerA) {
 			// --- Swerve ---
-
 			// Zero gyro
 			options().onTrue((Swerve::zeroGyro).asInstantCommand)
 
 			// Lock wheels
-			cross().onTrue(Swerve.crossLockWheelsCommand() until areControllerAJoysticksMoving)
+			cross().onTrue(Swerve.crossLockWheelsCommand() until ::areControllerAJoysticksMoving)
 
 			// Speed controls
 			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
@@ -84,12 +67,12 @@ object RobotContainer {
 			square().toggleOnTrue(
 				Swerve.getToOneAngleCommand {
 					(SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION.degrees + Swerve.robotHeading.degrees).degrees
-				} until areControllerAJoysticksMoving
+				} until ::areControllerAJoysticksMoving
 			)
 
 
 			// --- Notes ---
-
+			// Dynamic shooting
 			circle().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
 				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
@@ -100,7 +83,6 @@ object RobotContainer {
 
 			// Collect from human player
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
-
 
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
@@ -116,7 +98,7 @@ object RobotContainer {
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
 			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 
-			// Other
+			// Amp & Trap
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
 
@@ -166,6 +148,10 @@ object RobotContainer {
 			}
 		}
 
+	init {
+		initSendables()
+	}
+
 
 	// --- Telemetry ---
 
@@ -211,14 +197,32 @@ object RobotContainer {
 		register("collect_command", Notes.autoCollectCommand())
 		register("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0)
 		register("shoot_command",
-			Notes.loadAndShootCommand { DynamicShooting.calculateShooterState(Swerve.robotPose.translation) }
+			Notes.loadAndShootCommand {
+				DynamicShooting.calculateShooterState(Swerve.robotPose.translation)
+			}
 		)
 		register("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
 		register("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
 		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 	}
 
-	init {
-		initSendables()
-	}
+
+	// --- Joysticks ---
+
+	private const val JOYSTICK_MOVED_THRESHOLD = 0.1
+
+	private val areControllerAJoysticksMoving
+		get() =
+			(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+				(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+				(controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+				(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
+
+
+	private val areControllerBJoysticksMoving
+		get() =
+			(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+				(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+				(controllerB.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+				(controllerB.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
 }
