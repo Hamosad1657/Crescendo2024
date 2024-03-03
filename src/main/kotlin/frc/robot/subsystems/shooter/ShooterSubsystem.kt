@@ -1,6 +1,9 @@
 package frc.robot.subsystems.shooter
 
-import com.ctre.phoenix6.configs.*
+import com.ctre.phoenix6.configs.CANcoderConfiguration
+import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs
+import com.ctre.phoenix6.configs.FeedbackConfigs
+import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.controls.MotionMagicVoltage
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue
@@ -8,7 +11,11 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
 import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.motors.HaTalonFX
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Volts
+import com.hamosad1657.lib.units.absoluteValue
+import com.hamosad1657.lib.units.rotations
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder

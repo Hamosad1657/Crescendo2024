@@ -1,7 +1,9 @@
 package com.hamosad1657.lib.math
 
 import edu.wpi.first.math.MathUtil
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * If the absolute value is smaller than the deadband, the value becomes 0.

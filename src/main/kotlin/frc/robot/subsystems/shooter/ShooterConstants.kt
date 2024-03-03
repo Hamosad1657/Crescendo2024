@@ -3,7 +3,11 @@ package frc.robot.subsystems.shooter
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Volts
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
