@@ -4,6 +4,7 @@ import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.plus
 import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
@@ -199,10 +200,15 @@ fun Swerve.driveToTrapCommand(): Command = withName("drive to trap") {
 fun Swerve.aimAtNoteWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
-): Command = withName("drive to note") {
+
+	): Command = withName("drive to note") {
 	teleopDriveWithAutoAngleCommand(
 		vxSupplier,
 		vySupplier,
-		{ robotHeading + NoteVision.bestTarget?.let { NoteVision.getDeltaRobotToTargetYaw(it) } },
-		{ false })
+		{
+			robotHeading plus
+				(NoteVision.bestTarget?.let { NoteVision.getDeltaRobotToTargetYaw(it) } ?: 0.degrees)
+		},
+		isFieldRelative = { true },
+	)
 }

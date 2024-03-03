@@ -79,7 +79,13 @@ object RobotContainer {
 			) alongWith Shooter.dynamicShootingCommand())
 
 			// Collect
-			L1().toggleOnTrue(Notes.collectCommand())
+			L1().toggleOnTrue(
+				Notes.collectCommand() raceWith
+					SwerveSubsystem.aimAtNoteWhileDrivingCommand(
+						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+						vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+					)
+			)
 
 			// Collect from human player
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())

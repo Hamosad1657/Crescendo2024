@@ -2,11 +2,13 @@ package frc.robot.subsystems.vision
 
 import com.hamosad1657.lib.units.degrees
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.util.sendable.SendableBuilder
 import org.photonvision.PhotonCamera
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
-object NoteVision {
+object NoteVision : Sendable {
 	/**
 	 * The angle to the NOTE as reported by the vision,
 	 * when the intake is perfectly centered at it.
@@ -21,7 +23,7 @@ object NoteVision {
 
 	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
 	val bestTarget: PhotonTrackedTarget? get() = latestResult?.bestTarget
-	val hasTarget: Boolean get() = latestResult?.hasTargets() ?: false
+	val hasTargets: Boolean get() = latestResult?.hasTargets() ?: false
 
 	/** Get the yaw delta between the robot and the target note. */
 	fun getDeltaRobotToTargetYaw(target: PhotonTrackedTarget): Rotation2d {
@@ -31,5 +33,12 @@ object NoteVision {
 		return (cameraToTargetYaw - CAMERA_OFFSET.degrees).degrees
 	}
 
-
+	override fun initSendable(builder: SendableBuilder) {
+		builder.addBooleanProperty("Has targets", ::hasTargets, null)
+		builder.addDoubleProperty(
+			"Camera to target delta yaw",
+			{ bestTarget?.let { getDeltaRobotToTargetYaw(it).degrees } ?: -1.0 },
+			null
+		)
+	}
 }
