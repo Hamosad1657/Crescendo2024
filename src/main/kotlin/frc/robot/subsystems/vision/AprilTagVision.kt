@@ -12,7 +12,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
-object ApriltagVision {
+object AprilTagVision {
 	val MAX_VISION_TO_ODOMETRY_DELTA = 1.0.meters
 
 	private val camera: PhotonCamera? = try {

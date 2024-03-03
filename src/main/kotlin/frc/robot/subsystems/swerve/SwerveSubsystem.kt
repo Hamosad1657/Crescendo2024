@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.*
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
-import frc.robot.subsystems.vision.ApriltagVision
+import frc.robot.subsystems.vision.AprilTagVision
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -207,18 +207,18 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		ApriltagVision.latestResult?.let { latestResult ->
+		AprilTagVision.latestResult?.let { latestResult ->
 			if (!latestResult.hasTargets()) return
 		}
 
 
-		ApriltagVision.estimatedGlobalPose?.let { estimatedPose ->
+		AprilTagVision.estimatedGlobalPose?.let { estimatedPose ->
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 
 			super.addVisionMeasurement(
 				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
 				estimatedPose.timestampSeconds,
-				ApriltagVision.poseEstimationStdDevs,
+				AprilTagVision.poseEstimationStdDevs,
 			)
 		}
 	}

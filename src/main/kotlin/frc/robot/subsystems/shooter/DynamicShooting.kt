@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Robot
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.vision.ApriltagVision
+import frc.robot.subsystems.vision.AprilTagVision
 
 /**
  * - The position and distance units are meters.
@@ -80,7 +80,7 @@ object DynamicShooting {
 
 	// --- Speaker Info ---
 
-	val isSpeakerTagDetected get() = ApriltagVision.getTag(speakerTagId) != null
+	val isSpeakerTagDetected get() = AprilTagVision.getTag(speakerTagId) != null
 
 	/** The Translation2d of the blue speaker if you are in the blue alliance, according to WPILib's field coordinate system. */
 	private val SPEAKER_BLUE_POSITION_METERS = Translation2d(-0.04, 5.55) // Meters
