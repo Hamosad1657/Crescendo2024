@@ -1,11 +1,14 @@
 package frc.robot.subsystems.vision
 
 import com.hamosad1657.lib.units.degrees
+import edu.wpi.first.math.geometry.Rotation2d
 import org.photonvision.PhotonCamera
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
 object NoteVision {
+	/** The angle to the NOTE as reported by the vision, when the intake is perfectly centered at it.*/
+	val CAMERA_TO_INTAKE_CENTER_OFFSET = 0.0.degrees
 
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("NOTE-Cam")
@@ -16,6 +19,10 @@ object NoteVision {
 	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
 	val bestTarget: PhotonTrackedTarget? get() = latestResult?.bestTarget
 
-	/** The yaw is negated because computer vision conventions are CW, and WPILib conventions are CCW. */
-	fun getCameraToTargetYaw(target: PhotonTrackedTarget) = (-target.yaw).degrees
+	fun getRobotToTargetYaw(target: PhotonTrackedTarget): Rotation2d {
+		// inverted because vision conventions are CW positive, and
+		// math conventions (which are  used in FRC) are CCW positive.
+		val cameraToTargetYaw = (-target.yaw)
+		return (cameraToTargetYaw - CAMERA_TO_INTAKE_CENTER_OFFSET.degrees).degrees
+	}
 }
