@@ -17,7 +17,6 @@ import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
-import kotlin.jvm.optionals.getOrNull
 import kotlin.math.absoluteValue
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -150,11 +149,6 @@ object RobotContainer {
 			setDefaultOption("Blue", DriverStation.Alliance.Blue)
 			addOption("Red", DriverStation.Alliance.Red)
 
-			DriverStation.getAlliance().getOrNull()?.let {
-				Robot.alliance = it
-				setDefaultOption(it.name, it)
-			}
-
 			onChange {
 				Robot.alliance = it
 				robotPrint(it.name)
@@ -200,17 +194,17 @@ object RobotContainer {
 	fun getAutonomousCommand(): Command = autoChooser.selected
 
 	private fun registerAutoCommands() {
-		fun r(name: String, command: Command) = NamedCommands.registerCommand(name, command)
+		fun register(name: String, command: Command) = NamedCommands.registerCommand(name, command)
 
-		r("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
-		r("collect_command", Notes.autoCollectCommand())
-		r("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0)
-		r("shoot_command",
+		register("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
+		register("collect_command", Notes.autoCollectCommand())
+		register("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0)
+		register("shoot_command",
 			Notes.loadAndShootCommand { DynamicShooting.calculateShooterState(Swerve.robotPose.translation) }
 		)
-		r("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
-		r("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
-		r("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
+		register("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
+		register("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
+		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 	}
 
 
