@@ -20,6 +20,7 @@ import org.photonvision.targeting.PhotonTrackedTarget
 object AprilTagVision {
 	val MAX_VISION_TO_ODOMETRY_DELTA = 1.0.meters
 
+	val MAX_TAG_TRUSTING_DISTANCE = 6.0.meters
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("AprilTag-Cam")
 	} catch (_: Exception) {
@@ -50,7 +51,7 @@ object AprilTagVision {
 
 	val poseEstimationStdDevs
 		get() = Matrix(Nat.N3(), Nat.N1()).apply {
-			if (latestResult!!.targets.size == 1) {
+			if ((latestResult!!.targets.size == 1)) {
 				this[0, 0] = 0.9 // Translation X
 				this[1, 0] = 0.9 // Translation Y
 				this[2, 0] = 0.95 // Rotation

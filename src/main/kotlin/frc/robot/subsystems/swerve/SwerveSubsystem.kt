@@ -9,10 +9,8 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
 import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
-import com.hamosad1657.lib.units.plus
 import com.hamosad1657.lib.units.toNeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
-import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
@@ -36,8 +34,6 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.vision.AprilTagVision
-import frc.robot.vision.NoteVision
-import java.util.Optional
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -223,7 +219,11 @@ object SwerveSubsystem : SwerveDrivetrain(
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
 		AprilTagVision.latestResult?.let { latestResult ->
-			if (!latestResult.hasTargets()) return
+			if (!latestResult.hasTargets() or
+//				if best april tag distance larger the 5.2 meters don't add vision measurement
+				(AprilTagVision.bestTag?.bestCameraToTarget?.x?.let
+				{ it > AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters } == true)
+			) return
 		}
 
 
@@ -235,15 +235,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 				estimatedPose.timestampSeconds,
 				AprilTagVision.poseEstimationStdDevs,
 			)
-		}
-	}
-
-	init {
-		PPHolonomicDriveController.setRotationTargetOverride {
-			val rotationTarget = NoteVision.getRobotToBestTargetYawDelta()?.let {
-				Optional.of(robotHeading plus it)
-			}
-			rotationTarget ?: Optional.empty()
 		}
 	}
 
