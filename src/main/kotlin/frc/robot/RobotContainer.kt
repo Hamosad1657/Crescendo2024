@@ -81,8 +81,10 @@ object RobotContainer {
 			// Collect from human player
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
 
-			// Dynamic shooting
-			R3().whileTrue(Shooter.dynamicShootingCommand())
+			R3().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
+				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
+			))
 
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
