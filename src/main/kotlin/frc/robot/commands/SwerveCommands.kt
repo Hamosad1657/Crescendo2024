@@ -196,18 +196,13 @@ fun Swerve.driveToTrapCommand(): Command = withName("drive to trap") {
 			{ false }) withTimeout (0.15)) finallyDo InstantCommand({ stop() })
 }
 
-
-fun Swerve.driveToNoteCommand(): Command = withName("drive to note") {
-	val YAW_MULTIPLIER = 0.0
-
-	val rotationSupplier: () -> Double = {
-		val bestTarget = NoteVision.bestTarget
-
-		if (bestTarget == null) {
-			0.0
-		} else {
-			NoteVision.getRobotToTargetYaw(bestTarget).degrees * YAW_MULTIPLIER
-		}
-	}
-	teleopDriveCommand({ 0.3 }, { 0.0 }, rotationSupplier, { false })
+fun Swerve.aimAtNoteWhileDrivingCommand(
+	vxSupplier: () -> Double,
+	vySupplier: () -> Double,
+): Command = withName("drive to note") {
+	teleopDriveWithAutoAngleCommand(
+		vxSupplier,
+		vySupplier,
+		{ robotHeading + NoteVision.bestTarget?.let { NoteVision.getDeltaRobotToTargetYaw(it) } },
+		{ false })
 }
