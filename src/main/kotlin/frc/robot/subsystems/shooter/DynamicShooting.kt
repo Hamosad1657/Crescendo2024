@@ -21,18 +21,19 @@ object DynamicShooting {
 	// --- Constants ---
 
 	private const val MIN_DISTANCE_TO_SPEAKER = 2.5 // Meters
-	private const val MAX_DISTANCE_TO_SPEAKER = 5.8 // Meters
+	private const val MAX_DISTANCE_TO_SPEAKER = 6.0 // Meters
 
-	private const val MIN_ANGLE = 165.0 // Degrees
-	private const val MAX_ANGLE = 180.0 // Degrees
+	private const val MIN_ANGLE = 163.0 // Degrees
+	private const val MAX_ANGLE = 183.0 // Degrees
 
-	private const val MIN_VELOCITY = 3000.0 // RPM
+	private const val MIN_VELOCITY = 2500.0 // RPM
 	private const val MAX_VELOCITY = 4000.0 // RPM
 
 	private val ANGLE_INTERPOLATION_TABLE =
 		LinearInterpolationTable(
 			0.0 to MAX_ANGLE,
-			0.4146 to 169.0,
+			0.4 to 169.0,
+			0.85 to 164.0,
 			1.0 to MIN_ANGLE,
 		)
 
