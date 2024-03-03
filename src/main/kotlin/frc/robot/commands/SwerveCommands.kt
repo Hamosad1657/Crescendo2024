@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Robot
 import frc.robot.subsystems.climbing.ClimbingSubsystem
 import frc.robot.subsystems.shooter.DynamicShooting
-import frc.robot.subsystems.vision.Vision
 import kotlin.math.pow
 import kotlin.math.sign
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
@@ -144,29 +143,16 @@ fun Swerve.getToAngleCommand(angle: Rotation2d): Command = withName("get to angl
 fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
-	isFieldRelative: () -> Boolean,
-): Command = withName("aim at speaker while driving") {
-	teleopDriveWithAutoAngleCommand(
-		vxSupplier,
-		vySupplier,
-		{
-			SmartDashboard.putBoolean("Speaker tag detected", DynamicShooting.isSpeakerTagDetected)
+): Command = teleopDriveWithAutoAngleCommand(
+	vxSupplier,
+	vySupplier,
+	{
+		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
 
-			val tag = Vision.getTag(DynamicShooting.speakerTagId)
-			if (tag != null) {
-				(robotHeading.degrees - tag.yaw).degrees
-			} else {
-				val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-				mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
-			}
-		},
-		isFieldRelative,
-		{
-			if (DynamicShooting.isSpeakerTagDetected) Constants.CHASSIS_VISION_ANGLE_PID_CONTROLLER
-			else Constants.CHASSIS_ANGLE_PID_CONTROLLER
-		},
-	)
-}
+	},
+	{ true },
+)
 
 /**
  * - Command has no end condition.

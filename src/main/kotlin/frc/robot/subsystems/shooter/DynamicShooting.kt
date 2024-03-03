@@ -1,8 +1,5 @@
 package frc.robot.subsystems.shooter
 
-import com.hamosad1657.lib.math.LinearInterpolationTable
-import com.hamosad1657.lib.math.clamp
-import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.math.*
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.rpm
@@ -24,7 +21,7 @@ object DynamicShooting {
 	private const val MIN_DISTANCE_TO_SPEAKER = 2.5 // Meters
 	private const val MAX_DISTANCE_TO_SPEAKER = 5.8 // Meters
 
-	private const val MIN_ANGLE = 162.0 // Degrees
+	private const val MIN_ANGLE = 165.0 // Degrees
 	private const val MAX_ANGLE = 180.0 // Degrees
 
 	private const val MIN_VELOCITY = 3000.0 // RPM
@@ -33,10 +30,10 @@ object DynamicShooting {
 	private val ANGLE_INTERPOLATION_TABLE =
 		LinearInterpolationTable(
 			0.0 to MAX_ANGLE,
-			0.415 to 167.0,
+			0.4146 to 169.0,
 			1.0 to MIN_ANGLE,
 		)
-	
+
 
 	// --- Calculations ---
 
