@@ -31,7 +31,9 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
+
 	//	const val CLIMBING_DEADBAND = 0.08
+	private const val JOYSTICK_MOVED_THRESHOLD = 0.1
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -40,12 +42,25 @@ object RobotContainer {
 	private var swerveTeleopMultiplier = 1.0
 	private var swerveIsFieldRelative = true
 
+	private val areControllerAJoysticksMoving: () -> Boolean = {
+		(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
+	}
+
+	private val areControllerBJoysticksMoving: () -> Boolean = {
+		(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
+			(controllerB.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
+	}
+
 	init {
 		SwerveSubsystem
 		registerAutoCommands()
 		configureButtonBindings()
 		setDefaultCommands()
-		initSendables()
 	}
 
 
@@ -209,22 +224,7 @@ object RobotContainer {
 		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 	}
 
-
-	// --- Joysticks ---
-
-	private const val JOYSTICK_MOVED_THRESHOLD = 0.1
-
-	private val areControllerAJoysticksMoving: () -> Boolean = {
-		(controllerA.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerA.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
-	}
-
-	private val areControllerBJoysticksMoving: () -> Boolean = {
-		(controllerB.leftY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.leftX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.rightY.absoluteValue >= JOYSTICK_MOVED_THRESHOLD) or
-			(controllerB.rightX.absoluteValue >= JOYSTICK_MOVED_THRESHOLD)
+	init {
+		initSendables()
 	}
 }
