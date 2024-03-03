@@ -35,8 +35,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
-import frc.robot.subsystems.vision.AprilTagVision
-import frc.robot.subsystems.vision.NoteVision
+import frc.robot.vision.AprilTagVision
+import frc.robot.vision.NoteVision
 import java.util.Optional
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 

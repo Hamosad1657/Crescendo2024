@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Robot
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.vision.AprilTagVision
+import frc.robot.vision.AprilTagVision
 
 /**
  * - The position and distance units are meters.

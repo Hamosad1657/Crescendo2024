@@ -17,7 +17,7 @@ import frc.robot.RobotContainer
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
-import frc.robot.subsystems.vision.NoteVision
+import frc.robot.vision.NoteVision
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sign

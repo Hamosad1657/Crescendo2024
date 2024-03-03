@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision
+package frc.robot.vision
 
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.minus
