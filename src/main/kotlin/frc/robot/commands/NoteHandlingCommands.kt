@@ -117,7 +117,7 @@ fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC finallyDo
+		LoaderConstants.AMP_EJECT_TIME_SEC finallyDo
 		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
 }
 
