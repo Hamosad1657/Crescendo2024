@@ -3,6 +3,7 @@ package frc.robot.commands
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.math.mapRange
 import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.minus
 import com.hamosad1657.lib.units.plus
 import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.controller.PIDController
@@ -13,13 +14,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Robot
 import frc.robot.RobotContainer
+import frc.robot.joystickCurve
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
 import frc.robot.vision.NoteVision
 import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.sign
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
@@ -43,9 +43,10 @@ fun Swerve.teleopDriveCommand(
 	isClosedLoop: () -> Boolean = { true },
 ) = withName("teleop drive") {
 	run {
-		val vx = vxSupplier().let { it.pow(2.0) * Constants.MAX_SPEED_MPS * -it.sign }
-		val vy = vySupplier().let { it.pow(2.0) * Constants.MAX_SPEED_MPS * -it.sign }
-		val omega = omegaSupplier().let { it.pow(2.0) * Constants.MAX_ANGULAR_VELOCITY.asRadPs * -it.sign }
+		val vx = joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
+		val vy = joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
+		val omega = joystickCurve(omegaSupplier()) * Constants.MAX_ANGULAR_VELOCITY.asRadPs
+
 
 		if (Robot.isTesting) {
 			SmartDashboard.putNumber("vx", vx)
@@ -75,11 +76,9 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	pidController: () -> PIDController = { CHASSIS_ANGLE_PID_CONTROLLER },
 ): Command = withName("teleop drive with auto angle") {
 	run {
-		pidController().setpoint = angleSupplier().degrees
-
-		val vx = -vxSupplier().pow(3.0) * Constants.MAX_SPEED_MPS
-		val vy = -vySupplier().pow(3.0) * Constants.MAX_SPEED_MPS
-		val omega = CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees)
+		val vx = joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
+		val vy = joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
+		val omega = pidController().calculate(robotHeading.degrees, angleSupplier().degrees)
 
 		if (Robot.isTesting) {
 			SmartDashboard.putNumber("vx", vx)
@@ -152,7 +151,7 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vySupplier,
 	{
 		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees
+		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees minus 3.degrees
 
 	},
 	{ true },
@@ -204,7 +203,7 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 				joystickMoveTimer.reset()
 				joystickMoveTimer.start()
 
-				-omegaSupplier().pow(3) * Constants.MAX_ANGULAR_VELOCITY.asRadPs
+				joystickCurve(omegaSupplier()) * Constants.MAX_ANGULAR_VELOCITY.asRadPs
 			}
 			// If enough time has passed since the driver controlled the rotation,
 			// go back to following the note using PID.
@@ -224,8 +223,8 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 				0.0
 			}
 
-		val vx = -vxSupplier().pow(3.0) * Constants.MAX_SPEED_MPS
-		val vy = -vySupplier().pow(3.0) * Constants.MAX_SPEED_MPS
+		val vx = joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
+		val vy = joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
 
 		// Drive using raw values.
 		drive(

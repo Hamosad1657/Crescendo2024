@@ -17,10 +17,14 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import kotlin.math.absoluteValue
+import kotlin.math.pow
+import kotlin.math.sign
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
+
+fun joystickCurve(value: Double) = -value.pow(2) * value.sign
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
