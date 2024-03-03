@@ -7,30 +7,22 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocit
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
 import com.hamosad1657.lib.robotPrintError
-import com.hamosad1657.lib.units.AngularVelocity
-import com.hamosad1657.lib.units.degrees
-import com.hamosad1657.lib.units.toNeutralModeValue
+import com.hamosad1657.lib.units.*
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.*
-import edu.wpi.first.util.sendable.Sendable
-import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.util.sendable.SendableRegistry
+import edu.wpi.first.util.sendable.*
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.Subsystem
+import edu.wpi.first.wpilibj2.command.*
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
-import frc.robot.subsystems.vision.Vision
+import frc.robot.subsystems.vision.ApriltagVision
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -215,18 +207,18 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		Vision.latestResult?.let { latestResult ->
+		ApriltagVision.latestResult?.let { latestResult ->
 			if (!latestResult.hasTargets()) return
 		}
 
 
-		Vision.estimatedGlobalPose?.let { estimatedPose ->
+		ApriltagVision.estimatedGlobalPose?.let { estimatedPose ->
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 
 			super.addVisionMeasurement(
 				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
 				estimatedPose.timestampSeconds,
-				Vision.poseEstimationStdDevs,
+				ApriltagVision.poseEstimationStdDevs,
 			)
 		}
 	}

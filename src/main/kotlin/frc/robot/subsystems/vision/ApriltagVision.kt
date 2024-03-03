@@ -7,14 +7,12 @@ import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.*
-import org.photonvision.EstimatedRobotPose
-import org.photonvision.PhotonCamera
-import org.photonvision.PhotonPoseEstimator
+import org.photonvision.*
 import org.photonvision.PhotonPoseEstimator.PoseStrategy
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
-object Vision {
+object ApriltagVision {
 	val MAX_VISION_TO_ODOMETRY_DELTA = 1.0.meters
 
 	private val camera: PhotonCamera? = try {
