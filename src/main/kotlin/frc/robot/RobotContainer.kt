@@ -90,29 +90,23 @@ object RobotContainer {
 
 			// --- Notes ---
 
+			circle().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
+				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
+			) alongWith Shooter.dynamicShootingCommand())
+
 			// Collect
 			L1().toggleOnTrue(Notes.collectCommand())
 
 			// Collect from human player
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
 
-			R3().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
-				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
-				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
-			))
 
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
-
-			// Shoot to trap
-			circle().toggleOnTrue(
-				(Swerve.driveToTrapCommand() raceWith
-					Shooter.getToShooterStateCommand(ShooterState.TO_TRAP)) andThen
-					Notes.loadAndShootCommand(ShooterState.TO_TRAP)
-			)
 		}
 
 		with(controllerB) {
