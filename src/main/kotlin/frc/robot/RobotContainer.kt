@@ -1,6 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.plus
@@ -24,6 +25,7 @@ import java.util.Optional
 import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.sign
+import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -39,7 +41,7 @@ fun joystickCurve(value: Double) = -value.pow(2) * value.sign
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
-	//	const val CLIMBING_DEADBAND = 0.08
+	const val CLIMBING_DEADBAND = 0.08
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -116,10 +118,6 @@ object RobotContainer {
 			// Amp & Trap
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
-
-			// Climbing
-//			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBJoysticksMoving))
-//			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBJoysticksMoving))
 		}
 	}
 
@@ -136,10 +134,10 @@ object RobotContainer {
 		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
 		Loader.defaultCommand = Loader.run { Loader.stopMotors() }
 
-//		Climbing.defaultCommand =
-//			Climbing.brokenOpenLoopTeleopCommand(
-//				{ simpleDeadband(controllerB.leftY, CLIMBING_DEADBAND) },
-//				{ simpleDeadband(controllerB.rightY, CLIMBING_DEADBAND) })
+		Climbing.defaultCommand =
+			Climbing.openLoopTeleopCommand(
+				{ simpleDeadband(-controllerB.leftY, CLIMBING_DEADBAND) },
+				{ simpleDeadband(-controllerB.rightY, CLIMBING_DEADBAND) })
 	}
 
 
@@ -180,7 +178,7 @@ object RobotContainer {
 		SmartDashboard.putData(Intake)
 		SmartDashboard.putData(Loader)
 		SmartDashboard.putData(Shooter)
-//		SmartDashboard.putData(Climbing)
+		SmartDashboard.putData(Climbing)
 	}
 
 	private fun sendCompetitionInfo() {
