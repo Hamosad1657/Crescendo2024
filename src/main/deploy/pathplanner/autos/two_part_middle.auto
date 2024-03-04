@@ -1,12 +1,6 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 0.7212095847679248,
-      "y": 4.403610724184677
-    },
-    "rotation": 120.0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
@@ -14,7 +8,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "far_right_collection"
+            "pathName": "middle_to_middle_collect"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "collect_with_timeout_command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle_to_right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "collect_with_timeout_command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
           }
         }
       ]
