@@ -70,7 +70,7 @@ object ShooterConstants {
 
 	val VELOCITY_TOLERANCE = 50.0.rpm
 	val SHOOTING_ANGLE_TOLERANCE = 0.5.degrees
-	val AMP_ANGLE_TOLERANCE = 10.0.degrees
+	val AMP_ANGLE_TOLERANCE = 20.0.degrees
 
 
 	// --- PID Gains ---
