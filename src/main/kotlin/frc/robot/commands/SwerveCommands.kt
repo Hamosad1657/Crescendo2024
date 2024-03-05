@@ -39,7 +39,7 @@ fun Swerve.teleopDriveCommand(
 	vySupplier: () -> Double,
 	omegaSupplier: () -> Double,
 	isFieldRelative: () -> Boolean,
-	isClosedLoop: () -> Boolean = { true },
+	isClosedLoop: () -> Boolean = { false },
 ) = withName("teleop drive") {
 	run {
 		val vx = joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
@@ -75,8 +75,8 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	pidController: () -> PIDController = { CHASSIS_ANGLE_PID_CONTROLLER },
 ): Command = withName("teleop drive with auto angle") {
 	run {
-		val vx = joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
-		val vy = joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
+		val vx = -joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
+		val vy = -joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
 		val omega = pidController().calculate(robotHeading.degrees, angleSupplier().degrees)
 
 		if (Robot.isTesting) {
@@ -90,7 +90,7 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 			Translation2d(vx, vy),
 			omega.radPs,
 			isFieldRelative(),
-			true
+			false
 		)
 	}
 }
@@ -149,12 +149,12 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier,
 	vySupplier,
 	{
-		val offset = 0.degrees
+		val offset = 3.degrees
 
 		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
 		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees minus offset
 	},
-	{ true },
+	{ false },
 )
 
 /**
@@ -231,7 +231,7 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 			Translation2d(vx, vy),
 			omega.radPs,
 			isFieldRelative = true,
-			useClosedLoopDrive = true,
+			useClosedLoopDrive = false,
 		)
 	}
 }

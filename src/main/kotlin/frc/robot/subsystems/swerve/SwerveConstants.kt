@@ -81,7 +81,7 @@ object SwerveConstants {
 
 	/** Feedback from gyro, setpoint from anywhere. */
 	val CHASSIS_ANGLE_PID_CONTROLLER =
-		PIDController(0.12, 0.0, 0.0).apply {
+		PIDController(0.2, 0.0, 0.0).apply {
 			enableContinuousInput(-180.0, 180.0)
 		}
 
