@@ -1,6 +1,7 @@
 package frc.robot
 
 import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.plus
 import com.pathplanner.lib.auto.AutoBuilder
@@ -23,6 +24,7 @@ import java.util.Optional
 import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.sign
+import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -38,7 +40,7 @@ fun joystickCurve(value: Double) = -value.pow(2) * value.sign
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
-	//	const val CLIMBING_DEADBAND = 0.08
+	const val CLIMBING_DEADBAND = 0.08
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -71,7 +73,7 @@ object RobotContainer {
 			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
 
 			// Rotate to speaker at podium
-			square().toggleOnTrue(
+			circle().toggleOnTrue(
 				Swerve.getToOneAngleCommand {
 					SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION plus Swerve.robotHeading
 				} until ::areControllerAJoysticksMoving
@@ -87,7 +89,7 @@ object RobotContainer {
 
 			// --- Notes ---
 			// Dynamic shooting
-			circle().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
+			square().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
 				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
 			) alongWith Shooter.dynamicShootingCommand())
@@ -124,10 +126,6 @@ object RobotContainer {
 			// Amp & Trap
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
-
-			// Climbing
-//			povUp().toggleOnTrue(Climbing.getToOpenedLimitCommand().until(controllerBJoysticksMoving))
-//			povDown().toggleOnTrue(Climbing.getToClosedLimitCommand().until(controllerBJoysticksMoving))
 		}
 	}
 
@@ -144,10 +142,10 @@ object RobotContainer {
 		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
 		Loader.defaultCommand = Loader.run { Loader.stopMotors() }
 
-//		Climbing.defaultCommand =
-//			Climbing.brokenOpenLoopTeleopCommand(
-//				{ simpleDeadband(controllerB.leftY, CLIMBING_DEADBAND) },
-//				{ simpleDeadband(controllerB.rightY, CLIMBING_DEADBAND) })
+		Climbing.defaultCommand =
+			Climbing.openLoopTeleopCommand(
+				{ simpleDeadband(-controllerB.leftY, CLIMBING_DEADBAND) },
+				{ simpleDeadband(-controllerB.rightY, CLIMBING_DEADBAND) })
 	}
 
 
@@ -188,12 +186,18 @@ object RobotContainer {
 		SmartDashboard.putData(Intake)
 		SmartDashboard.putData(Loader)
 		SmartDashboard.putData(Shooter)
-//		SmartDashboard.putData(Climbing)
+		SmartDashboard.putData(Climbing)
 	}
 
 	private fun sendCompetitionInfo() {
 		with(Shuffleboard.getTab("Auto")) {
 			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
+			addString("Submitted Auto") {
+				Robot.submittedAuto?.name ?: "None submitted, will use currently selected in Auto Chooser"
+			}
+				.withSize(3, 1)
+				.withPosition(2, 3)
+			add("Submit Auto", InstantCommand(::submitAuto)).withSize(3, 1).withPosition(7, 3)
 			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
 		}
 
@@ -206,10 +210,14 @@ object RobotContainer {
 		}
 	}
 
-
 	// --- Auto ---
 
-	fun getAutonomousCommand(): Command = autoChooser.selected
+	private fun submitAuto() {
+		Robot.submittedAuto = autoChooser.selected
+		robotPrint("Submitted auto")
+	}
+
+	fun getAutonomousCommand(): Command = Robot.submittedAuto ?: autoChooser.selected
 
 	private fun registerAutoCommands() {
 		fun register(name: String, command: Command) = NamedCommands.registerCommand(name, command)

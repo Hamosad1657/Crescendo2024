@@ -28,7 +28,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
+	val telemetryLevel = Telemetry.Testing
+		.also { SmartDashboard.putString("Telemetry", it.name) }
 	val isTesting = telemetryLevel == Telemetry.Testing
 
 	private var autonomousCommand: Command? = null
@@ -38,6 +39,8 @@ object Robot : TimedRobot() {
 
 	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
+
+	var submittedAuto: Command? = null
 
 	override fun robotInit() {
 		// Report the use of the Kotlin Language for "FRC Usage Report" statistics

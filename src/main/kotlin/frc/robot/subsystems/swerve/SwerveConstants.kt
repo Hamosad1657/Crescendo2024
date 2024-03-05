@@ -43,8 +43,8 @@ object SwerveConstants {
 
 	val AT_STAGE_TO_SPEAKER_ROTATION
 		get() =
-			if (Robot.alliance == DriverStation.Alliance.Blue) 5.0.degrees
-			else -5.0.degrees
+			if (Robot.alliance == DriverStation.Alliance.Blue) 10.0.degrees
+			else -10.0.degrees
 
 
 	// --- PID ---
@@ -62,15 +62,32 @@ object SwerveConstants {
 		kS = 0.0; kV = 0.12; kA = 0.0
 	}
 
+	// Good for TPU wheels!
+
+//	/** Feedback from gyro, setpoint from anywhere. */
+//	val CHASSIS_ANGLE_PID_CONTROLLER =
+//		PIDController(0.12, 0.0, 0.0).apply {
+//			enableContinuousInput(-180.0, 180.0)
+//		}
+//
+//	/** Feedback from gyro, setpoint from vision! */
+//	val CHASSIS_VISION_ANGLE_PID_CONTROLLER =
+//		PIDController(0.12, 0.0, 0.0).apply {
+//			enableContinuousInput(-180.0, 180.0)
+//		}
+
+
+	// Good for regular wheels!
+
 	/** Feedback from gyro, setpoint from anywhere. */
 	val CHASSIS_ANGLE_PID_CONTROLLER =
-		PIDController(0.12, 0.0, 0.0).apply {
+		PIDController(0.2, 0.0, 0.0).apply {
 			enableContinuousInput(-180.0, 180.0)
 		}
 
 	/** Feedback from gyro, setpoint from vision! */
 	val CHASSIS_VISION_ANGLE_PID_CONTROLLER =
-		PIDController(0.12, 0.0, 0.0).apply {
+		PIDController(0.15, 0.0, 0.0).apply {
 			enableContinuousInput(-180.0, 180.0)
 		}
 
