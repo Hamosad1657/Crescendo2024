@@ -68,7 +68,7 @@ object DynamicShooting {
 
 	/** Calculate the required shooter angle from the 0.0->1.0 distance factor. */
 	private fun calculateAngleSetpoint(distanceToSpeaker01: Double): Double {
-		val angle = ANGLE_INTERPOLATION_TABLE.getOutputFor(distanceToSpeaker01)
+		val angle = ANGLE_INTERPOLATION_TABLE.getOutputFor(distanceToSpeaker01) + 1.0
 		return clamp(angle, MIN_ANGLE, MAX_ANGLE)
 			.also { if (Robot.isTesting) SmartDashboard.putNumber("Dynamic shooting angle", it) }
 	}
