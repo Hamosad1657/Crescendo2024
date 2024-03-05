@@ -194,6 +194,12 @@ object RobotContainer {
 	private fun sendCompetitionInfo() {
 		with(Shuffleboard.getTab("Auto")) {
 			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
+			addString("Submitted Auto") {
+				Robot.submittedAuto?.name ?: "None submitted, will use currently selected in Auto Chooser"
+			}
+				.withSize(3, 1)
+				.withPosition(2, 3)
+			add("Submit Auto", InstantCommand(::submitAuto)).withSize(3, 1).withPosition(7, 3)
 			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
 		}
 
@@ -206,10 +212,14 @@ object RobotContainer {
 		}
 	}
 
-
 	// --- Auto ---
 
-	fun getAutonomousCommand(): Command = autoChooser.selected
+	private fun submitAuto() {
+		Robot.submittedAuto = autoChooser.selected
+		robotPrint("Submitted auto")
+	}
+
+	fun getAutonomousCommand(): Command = Robot.submittedAuto ?: autoChooser.selected
 
 	private fun registerAutoCommands() {
 		fun register(name: String, command: Command) = NamedCommands.registerCommand(name, command)

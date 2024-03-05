@@ -39,6 +39,8 @@ object Robot : TimedRobot() {
 	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
 
+	var submittedAuto: Command? = null
+
 	override fun robotInit() {
 		// Report the use of the Kotlin Language for "FRC Usage Report" statistics
 		HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
