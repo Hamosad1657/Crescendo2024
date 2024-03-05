@@ -1,44 +1,14 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.32,
-      "y": 5.503960098829289
-    },
-    "rotation": -177.4487380813769
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shoot_from_speaker_command"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "middle_to_left_collection"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "collect_with_timeout_command"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot_command"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "left_to_middle"
+            "pathName": "middle_to_middle_collect"
           }
         },
         {

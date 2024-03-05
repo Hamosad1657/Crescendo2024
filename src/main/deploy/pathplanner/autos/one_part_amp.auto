@@ -2,15 +2,21 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3217246678821453,
-      "y": 5.472864279061892
+      "x": 0.7,
+      "y": 6.7
     },
-    "rotation": 180.0
+    "rotation": -120.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -24,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "middle_collection"
+                  "pathName": "left_to_left_collection"
                 }
               },
               {
@@ -39,32 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot_auto_line_2_command"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "middle_to_right"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "collect_command"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot_auto_line_1_3_command"
+            "name": "shoot_command"
           }
         }
       ]

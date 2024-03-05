@@ -3,7 +3,9 @@ package com.hamosad1657.lib.motors
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
-import com.hamosad1657.lib.math.*
+import com.hamosad1657.lib.math.PIDGains
+import com.hamosad1657.lib.math.clamp
+import com.hamosad1657.lib.math.wrapPositionSetpoint
 import com.hamosad1657.lib.units.toNeutralMode
 import com.revrobotics.CANSparkBase
 

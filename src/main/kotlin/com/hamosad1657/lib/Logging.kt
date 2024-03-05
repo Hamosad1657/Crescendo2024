@@ -11,14 +11,6 @@ fun robotPrint(message: Any?, printStackTrace: Boolean = false) =
 fun robotPrintError(message: Any?, printStackTrace: Boolean = false) =
 	DriverStation.reportError(message.toString(), printStackTrace)
 
-val robotAlliance: DriverStation.Alliance
-	get() {
-		if (DriverStation.getAlliance().isEmpty) {
-			throw NoSuchElementException("Alliance invalid or can't fetch alliance from Driver Station")
-		}
-		return DriverStation.getAlliance().get()
-	}
-
 val driverStationID: Int
 	get() {
 		if (DriverStation.getLocation().isEmpty) {

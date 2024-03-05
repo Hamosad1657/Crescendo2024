@@ -1,12 +1,6 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 8.65671414652387,
-      "y": 4.11050362756931
-    },
-    "rotation": -179.99999999999994
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
@@ -14,13 +8,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "middle_note_trap"
+            "pathName": "one_meter"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "drive_to_speaker_command"
+            "pathName": "one_meter_back"
           }
         }
       ]

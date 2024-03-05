@@ -10,7 +10,6 @@ import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.TIME_TO_ESCAPE_ANGLE_LOCK_SEC
 import frc.robot.subsystems.shooter.ShooterSubsystem
 
-
 /**
  * Maintains [ShooterConstants.ShooterState.AUTO_COLLECT].
  * - Requirements: Shooter.
@@ -31,7 +30,7 @@ fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("teleop get to s
  * Run the shooter angle motor at high speed for a short duration to get it out of the angle lock.
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.escapeAngleLock(): Command = withName("escape angle lock") {
+fun ShooterSubsystem.escapeAngleLockCommand(): Command = withName("escape angle lock") {
 	run {
 		setAngleMotorOutput(ESCAPE_ANGLE_LOCK_OUTPUT)
 	} withTimeout TIME_TO_ESCAPE_ANGLE_LOCK_SEC finallyDo {
@@ -48,7 +47,7 @@ fun ShooterSubsystem.escapeAngleLock(): Command = withName("escape angle lock") 
 
 /** - Requirements: Shooter. */
 fun ShooterSubsystem.openLoopTeleop_shooterAngle(
-	output: () -> PercentOutput
+	output: () -> PercentOutput,
 ): Command = withName("angle open loop teleop") {
 	run {
 		setAngleMotorOutput(output())
@@ -57,7 +56,6 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(
 	}
 }
 
-
 /**
  * [changeInAngle] is assumed -1 to 1, will come from joysticks.
  * To modify the rate of change, use [multiplier].
@@ -65,7 +63,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(
  * - Requirements: Shooter.
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterAngle(
-	changeInAngle: () -> Double, multiplier: Double
+	changeInAngle: () -> Double, multiplier: Double,
 ): Command = withName("angle closed loop teleop") {
 	run {
 		val delta = changeInAngle() * multiplier
@@ -75,7 +73,7 @@ fun ShooterSubsystem.closedLoopTeleop_shooterAngle(
 
 /** - Requirements: Shooter. */
 fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
-	output: () -> PercentOutput
+	output: () -> PercentOutput,
 ): Command = withName("velocity open loop teleop") {
 	run {
 		setShooterMotorsOutput(output())
@@ -84,7 +82,6 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
 	}
 }
 
-
 /**
  * [changeInVelocity] is assumed -1 to 1, will come from joysticks.
  * To modify the rate of change, use [multiplier].
@@ -92,13 +89,10 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
  * - Requirements: Shooter.
  */
 fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
-	changeInVelocity: () -> Double, multiplier: Double
+	changeInVelocity: () -> Double, multiplier: Double,
 ): Command = withName("velocity closed loop teleop") {
 	run {
 		val delta = changeInVelocity() * multiplier
 		increaseVelocitySetpointBy(AngularVelocity.fromRpm(delta))
 	}
 }
-
-
-

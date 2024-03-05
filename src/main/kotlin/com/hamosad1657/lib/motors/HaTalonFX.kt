@@ -23,8 +23,9 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 		isSafetyEnabled = true
 	}
 
-	val configuration = TalonFXConfiguration()
-	val closedLoopGeneralConfigs = ClosedLoopGeneralConfigs()
+	fun restoreFactoryDefaults() {
+		configurator.apply(TalonFXConfiguration())
+	}
 
 	/**
 	 * Sets the [NeutralModeValue] of the motor.
@@ -50,6 +51,7 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 
 	fun configPID(gains: PIDGains, slotIndex: Int = 0) {
 		require(slotIndex in 0..2)
+		val configuration = TalonFXConfiguration().apply(configurator::refresh)
 		when (slotIndex) {
 			0 -> configuration.Slot0.apply {
 				kP = gains.kP
@@ -73,11 +75,12 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 		}
 		configurator.apply(configuration)
 	}
-	
+
 	var positionWrapEnabled = false
 		set(value) {
-			closedLoopGeneralConfigs.ContinuousWrap = value
-			configurator.apply(closedLoopGeneralConfigs)
+			val configuration = ClosedLoopGeneralConfigs().apply(configurator::refresh)
+			configuration.ContinuousWrap = value
+			configurator.apply(configuration)
 			field = value
 		}
 

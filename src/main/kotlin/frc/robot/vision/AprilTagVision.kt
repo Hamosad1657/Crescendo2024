@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision
+package frc.robot.vision
 
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.meters
@@ -6,15 +6,21 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
-import edu.wpi.first.math.geometry.*
-import org.photonvision.*
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.geometry.Translation3d
+import org.photonvision.EstimatedRobotPose
+import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 import org.photonvision.PhotonPoseEstimator.PoseStrategy
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
-object Vision {
+object AprilTagVision {
 	val MAX_VISION_TO_ODOMETRY_DELTA = 1.0.meters
 
+	val MAX_TAG_TRUSTING_DISTANCE = 6.0.meters
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("AprilTag-Cam")
 	} catch (_: Exception) {
@@ -45,27 +51,26 @@ object Vision {
 
 	val poseEstimationStdDevs
 		get() = Matrix(Nat.N3(), Nat.N1()).apply {
-			if (latestResult!!.targets.size == 1) {
+			if ((latestResult!!.targets.size == 1)) {
 				this[0, 0] = 0.9 // Translation X
 				this[1, 0] = 0.9 // Translation Y
 				this[2, 0] = 0.95 // Rotation
 			}
-			this[0, 0] = 0.2 // Translation X
-			this[1, 0] = 0.2 // Translation Y
+			this[0, 0] = 0.3 // Translation X
+			this[1, 0] = 0.3 // Translation Y
 			this[2, 0] = 0.95 // Rotation
 		}
 
 	/**
 	 * Gets the estimated robot position from the PhotonVision camera.
+	 *
 	 * Returns null if it doesn't detect any AprilTags.
 	 */
 	val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
-
 	val estimatedPose2d: Pose2d? get() = estimatedGlobalPose?.estimatedPose?.toPose2d()
 
 	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
 
 	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
-
 	fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
 }

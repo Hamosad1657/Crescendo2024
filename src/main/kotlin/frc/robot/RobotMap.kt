@@ -1,8 +1,6 @@
 package frc.robot
 
-/**
- * This objects contains DIO channel numbers, CAN IDs, USB port numbers and the like.
- */
+/** This objects contains DIO channel numbers, CAN IDs, USB port numbers and the like. */
 object RobotMap {
 	const val DRIVER_A_CONTROLLER_PORT = 0
 	const val DRIVER_B_CONTROLLER_PORT = 1
@@ -18,7 +16,6 @@ object RobotMap {
 		const val RIGHT_CLOSED_LIMIT_CHANNEL = 4
 		const val RIGHT_OPENED_LIMIT_CHANNEL = 5
 
-		//TODO: Set the channels
 		const val LEFT_TRAP_SWITCH = 8
 		const val RIGHT_TRAP_SWITCH = 9
 	}
@@ -39,14 +36,6 @@ object RobotMap {
 			const val MIN_ANGLE_LIMIT_CHANNEL = 0
 			const val MAX_ANGLE_LIMIT_CHANNEL = 1
 		}
-	}
-
-	object Arm {
-		const val MOTOR_ID = 0
-		const val LEFT_FORWARD_LIMIT_CHANNEL = 0
-		const val LEFT_REVERSE_LIMIT_CHANNEL = 0
-		const val RIGHT_FORWARD_LIMIT_CHANNEL = 0
-		const val RIGHT_REVERSE_LIMIT_CHANNEL = 0
 	}
 
 	object Loader {

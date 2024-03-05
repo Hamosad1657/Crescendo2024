@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9471356546509068,
-      "y": 4.53799778299438
+      "x": 0.65,
+      "y": 4.39
     },
     "rotation": 120.0
   },
@@ -24,22 +24,10 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "right_collection"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "collect_command"
+                  "pathName": "right_to_centerline"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot_auto_line_1_3_command"
           }
         }
       ]

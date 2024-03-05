@@ -1,6 +1,6 @@
 package com.hamosad1657.lib.math.filters.movingwindowfilters
 
-import java.util.*
+import java.util.LinkedList
 
 /** A base class for a moving window filter. */
 abstract class MovingWindowFilter {
