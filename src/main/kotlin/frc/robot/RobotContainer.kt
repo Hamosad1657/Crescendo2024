@@ -71,7 +71,7 @@ object RobotContainer {
 			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
 
 			// Rotate to speaker at podium
-			square().toggleOnTrue(
+			circle().toggleOnTrue(
 				Swerve.getToOneAngleCommand {
 					SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION plus Swerve.robotHeading
 				} until ::areControllerAJoysticksMoving
@@ -87,7 +87,7 @@ object RobotContainer {
 
 			// --- Notes ---
 			// Dynamic shooting
-			circle().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
+			square().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
 				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
 			) alongWith Shooter.dynamicShootingCommand())
