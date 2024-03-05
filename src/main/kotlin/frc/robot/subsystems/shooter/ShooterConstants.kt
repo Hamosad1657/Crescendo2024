@@ -119,7 +119,7 @@ object ShooterConstants {
 
 		companion object {
 			// --- Collection ---
-			val COLLECT = ShooterState(168.degrees, 0.0.rpm)
+			val COLLECT = ShooterState(175.degrees, 0.0.rpm)
 			val AUTO_COLLECT = ShooterState(COLLECT.angle, 3000.rpm)
 			val COLLECT_FROM_FEEDER = ShooterState(43.degrees, 0.0.rpm)
 

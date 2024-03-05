@@ -9,6 +9,7 @@ import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.wpilibj.DriverStation.Alliance.Blue
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -16,7 +17,6 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.joystickCurve
 import frc.robot.subsystems.shooter.DynamicShooting
-import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
 import frc.robot.vision.NoteVision
 import kotlin.math.abs
@@ -150,9 +150,9 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier,
 	vySupplier,
 	{
+		val offset = if (Robot.alliance == Blue) 5.degrees else (-5).degrees
 		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees minus 3.degrees
-
+		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees minus offset
 	},
 	{ true },
 )
@@ -216,7 +216,7 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 
 				// Calculate the required omega to rotate towards the Note using PID.
 				val setpoint = (robotHeading plus rotationDelta).degrees
-				SwerveConstants.CHASSIS_VISION_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees, setpoint)
+				CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees, setpoint)
 			}
 			// Stay at the same angle (do not rotate) for [joystickMovedWaitTimeSec] seconds.
 			else {
