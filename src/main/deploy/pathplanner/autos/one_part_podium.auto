@@ -24,22 +24,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "right_collection"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "collect_command"
-                }
-              }
-            ]
+            "pathName": "right_collection"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "collect_with_timeout_command"
           }
         },
         {
