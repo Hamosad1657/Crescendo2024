@@ -7,6 +7,7 @@ import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.Volts
 import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.minus
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
@@ -39,8 +40,9 @@ object ShooterConstants {
 	val MAX_ANGLE = 293.degrees
 
 	/** To set offset, let the shooter fall to its resting position while its on coast, then subtract 90 degrees. */
-	private val RESTING_ANGLE = 221.15.degrees
-	private val FLOOR_RELATIVE_OFFSET: Rotation2d = RESTING_ANGLE - 90.degrees
+	private val RESTING_ANGLE = 223.5.degrees
+
+	private val FLOOR_RELATIVE_OFFSET: Rotation2d = RESTING_ANGLE minus 90.degrees
 
 
 	// --- Outputs ---
@@ -70,7 +72,7 @@ object ShooterConstants {
 
 	val VELOCITY_TOLERANCE = 50.0.rpm
 	val SHOOTING_ANGLE_TOLERANCE = 0.5.degrees
-	val AMP_ANGLE_TOLERANCE = 10.0.degrees
+	val AMP_ANGLE_TOLERANCE = 20.0.degrees
 
 
 	// --- PID Gains ---
@@ -82,7 +84,8 @@ object ShooterConstants {
 	)
 
 	val ANGLE_PID_GAINS = PIDGains(
-		42.5, 0.0, 0.0,
+		45.0, 0.0, 0.0,
+//		0.0, 0.0, 0.0,
 	)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
 		MotionMagicCruiseVelocity = 2.0
@@ -93,7 +96,7 @@ object ShooterConstants {
 	// --- Feedforward ---
 
 	fun calculateAngleFF(currentAngle: Rotation2d): Volts {
-		val floorRelativeAngle = currentAngle - FLOOR_RELATIVE_OFFSET
+		val floorRelativeAngle = currentAngle minus FLOOR_RELATIVE_OFFSET
 		val ff = cos(floorRelativeAngle.radians) * KEEP_PARALLEL_TO_FLOOR_OUTPUT * 12.0
 		return if (currentAngle.radians < RESTING_ANGLE.radians) ff * 1.125 - 0.1 else ff + 0.125
 	}
@@ -124,7 +127,7 @@ object ShooterConstants {
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
 			val NEAR_SPEAKER = ShooterState(180.degrees, 3000.rpm)
 			val AT_PODIUM = ShooterState(175.0.degrees, 3500.rpm)
-			var AT_STAGE = ShooterState(162.5.degrees, 4000.rpm)
+			var AT_STAGE = ShooterState(163.0.degrees, 3900.rpm)
 
 			// --- Teleop Misc. ---
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)

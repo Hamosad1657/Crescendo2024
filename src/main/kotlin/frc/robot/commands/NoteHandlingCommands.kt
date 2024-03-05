@@ -118,7 +118,7 @@ fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
 		LoaderConstants.AMP_EJECT_TIME_SEC finallyDo
-		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+		Shooter.runOnce {}
 }
 
 /**
@@ -129,7 +129,7 @@ fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
 		ShooterConstants.SHOOT_TIME_SEC finallyDo
-		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+		Shooter.runOnce {}
 }
 
 /**
