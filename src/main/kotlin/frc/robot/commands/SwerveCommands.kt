@@ -9,7 +9,6 @@ import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.wpilibj.DriverStation.Alliance.Blue
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -150,7 +149,8 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier,
 	vySupplier,
 	{
-		val offset = if (Robot.alliance == Blue) 5.degrees else (-5).degrees
+		val offset = 0.degrees
+
 		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
 		mapRange(robotToGoal.angle.degrees, 0.0, 360.0, -180.0, 180.0).degrees minus offset
 	},
