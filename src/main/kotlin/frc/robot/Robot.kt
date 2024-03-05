@@ -33,10 +33,14 @@ object Robot : TimedRobot() {
 	val isTesting = telemetryLevel == Telemetry.Testing
 
 	private var autonomousCommand: Command? = null
-	private var commandScheduler = CommandScheduler.getInstance()
+	private var commandScheduler = CommandScheduler.getInstance().also {
+		SmartDashboard.putData("commandScheduler", it)
+	}
 
 	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
+
+	var submittedAuto: Command? = null
 
 	override fun robotInit() {
 		// Report the use of the Kotlin Language for "FRC Usage Report" statistics

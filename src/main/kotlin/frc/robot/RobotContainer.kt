@@ -3,7 +3,6 @@ package frc.robot
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.robotPrint
-import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.plus
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
@@ -76,7 +75,14 @@ object RobotContainer {
 			// Rotate to speaker at podium
 			square().toggleOnTrue(
 				Swerve.getToOneAngleCommand {
-					(SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION.degrees + Swerve.robotHeading.degrees).degrees
+					SwerveConstants.AT_PODIUM_TO_SPEAKER_ROTATION plus Swerve.robotHeading
+				} until ::areControllerAJoysticksMoving
+			)
+
+			// Rotate to speaker at stage
+			triangle().toggleOnTrue(
+				Swerve.getToOneAngleCommand {
+					SwerveConstants.AT_STAGE_TO_SPEAKER_ROTATION plus Swerve.robotHeading
 				} until ::areControllerAJoysticksMoving
 			)
 
@@ -113,6 +119,8 @@ object RobotContainer {
 			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
+			create().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
+
 			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 
 			// Amp & Trap
@@ -184,6 +192,12 @@ object RobotContainer {
 	private fun sendCompetitionInfo() {
 		with(Shuffleboard.getTab("Auto")) {
 			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
+			addString("Submitted Auto") {
+				Robot.submittedAuto?.name ?: "None submitted, will use currently selected in Auto Chooser"
+			}
+				.withSize(3, 1)
+				.withPosition(2, 3)
+			add("Submit Auto", InstantCommand(::submitAuto)).withSize(3, 1).withPosition(7, 3)
 			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
 		}
 
@@ -196,10 +210,14 @@ object RobotContainer {
 		}
 	}
 
-
 	// --- Auto ---
 
-	fun getAutonomousCommand(): Command = autoChooser.selected
+	private fun submitAuto() {
+		Robot.submittedAuto = autoChooser.selected
+		robotPrint("Submitted auto")
+	}
+
+	fun getAutonomousCommand(): Command = Robot.submittedAuto ?: autoChooser.selected
 
 	private fun registerAutoCommands() {
 		fun register(name: String, command: Command) = NamedCommands.registerCommand(name, command)

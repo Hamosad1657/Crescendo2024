@@ -41,6 +41,11 @@ object SwerveConstants {
 			if (Robot.alliance == DriverStation.Alliance.Blue) (-25).degrees
 			else 25.degrees
 
+	val AT_STAGE_TO_SPEAKER_ROTATION
+		get() =
+			if (Robot.alliance == DriverStation.Alliance.Blue) 5.0.degrees
+			else -5.0.degrees
+
 
 	// --- PID ---
 

@@ -45,7 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot_auto_line_1_3_command"
+            "name": "shoot_command"
           }
         }
       ]
