@@ -40,13 +40,11 @@ object ShooterSubsystem : SubsystemBase() {
 
 	private val shooterMainMotor =
 		HaSparkFlex(ShooterMap.UPPER_MOTOR_ID).apply {
-			restoreFactoryDefaults()
 			configShooterMotor(inverted = true)
 		}
 
 	private val shooterSecondaryMotor =
 		HaSparkFlex(ShooterMap.LOWER_MOTOR_ID).apply {
-			restoreFactoryDefaults()
 			configShooterMotor(inverted = false)
 			follow(shooterMainMotor, true)
 		}
@@ -191,6 +189,10 @@ object ShooterSubsystem : SubsystemBase() {
 			Position = angleSetpoint.rotations
 			FeedForward = Constants.calculateAngleFF(currentAngle)
 		})
+	}
+
+	fun setShooterMotorsVoltage(voltage: Volts) {
+		shooterMainMotor.setVoltage(voltage)
 	}
 
 	fun stopShooterMotors() {

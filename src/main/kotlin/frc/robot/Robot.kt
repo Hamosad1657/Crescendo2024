@@ -29,7 +29,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
+	val telemetryLevel = Telemetry.Testing
+		.also { SmartDashboard.putString("Telemetry", it.name) }
 	val isTesting = telemetryLevel == Telemetry.Testing
 
 	private var autonomousCommand: Command? = null
