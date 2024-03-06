@@ -58,9 +58,13 @@ object Robot : TimedRobot() {
 	override fun autonomousInit() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand =
-			ShooterSubsystem.escapeAngleLockCommand() andThen RobotContainer.getAutonomousCommand().asProxy()
+			ShooterSubsystem.escapeAngleLockCommand() andThen
+				RobotContainer.getAutonomousCommand().also {
+					robotPrint("Auto command: ${it.name}")
+				}.asProxy()
 		autonomousCommand?.schedule()
 	}
+	
 
 	override fun autonomousExit() {
 		if (alliance == Alliance.Red) {
