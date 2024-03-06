@@ -17,5 +17,5 @@ object LoaderConstants {
 	const val MOTOR_EJECT_OUTPUT: Volts = -4.0
 
 	/** Time between when loading started to when the note is inside of the Amp. */
-	const val AMP_EJECT_TIME_SEC = 0.5
+	const val AMP_EJECT_TIME_SEC = 2.0
 }
