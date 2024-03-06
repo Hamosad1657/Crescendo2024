@@ -214,10 +214,10 @@ object RobotContainer {
 
 	private fun submitAuto() {
 		Robot.submittedAuto = autoChooser.selected
-		robotPrint("Submitted auto")
+		robotPrint("Submitted auto - ${Robot.submittedAuto?.name}")
 	}
 
-	fun getAutonomousCommand(): Command = Robot.submittedAuto ?: autoChooser.selected
+	fun getAutonomousCommand(): Command = autoChooser.selected
 
 	private fun registerAutoCommands() {
 		fun register(name: String, command: Command) = NamedCommands.registerCommand(name, command)
