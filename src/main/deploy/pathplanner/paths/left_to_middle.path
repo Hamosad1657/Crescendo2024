@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.064675768823697,
-        "y": 6.2708436313160165
+        "x": 1.6580237193689102,
+        "y": 7.040713298508448
       },
       "isLocked": false,
       "linkedName": "left_note_collection"
@@ -20,8 +20,8 @@
         "y": 5.589722591070332
       },
       "prevControl": {
-        "x": 0.9420626171095271,
-        "y": 5.086038793369036
+        "x": 0.9763502326530165,
+        "y": 5.278100425714492
       },
       "nextControl": null,
       "isLocked": false,

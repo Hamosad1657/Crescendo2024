@@ -211,9 +211,11 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 * @param initialHolonomicPose The pose to set the odometry to.
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
-		poseEstimator.resetPosition(robotHeading, m_modulePositions, initialHolonomicPose)
+		setGyro(initialHolonomicPose.rotation)
+		poseEstimator.resetPosition(robotHeading, modulesPositions, initialHolonomicPose)
 		robotPrintError("Reset odometry to:  $initialHolonomicPose")
 		robotPrintError("robot pose:  $robotPose")
+		robotPrintError("robot heading: $robotHeading")
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */

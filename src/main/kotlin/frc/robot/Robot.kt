@@ -28,7 +28,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel = Telemetry.Testing
+	val telemetryLevel = Telemetry.Competition
 		.also { SmartDashboard.putString("Telemetry", it.name) }
 	val isTesting = telemetryLevel == Telemetry.Testing
 
@@ -58,9 +58,13 @@ object Robot : TimedRobot() {
 	override fun autonomousInit() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand =
-			ShooterSubsystem.escapeAngleLockCommand() andThen RobotContainer.getAutonomousCommand().asProxy()
+			ShooterSubsystem.escapeAngleLockCommand() andThen
+				RobotContainer.getAutonomousCommand().also {
+					robotPrint("Auto command: ${it.name}")
+				}.asProxy()
 		autonomousCommand?.schedule()
 	}
+	
 
 	override fun autonomousExit() {
 		if (alliance == Alliance.Red) {

@@ -1,10 +1,22 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.3503784075630976,
+      "y": 5.537335193344034
+    },
+    "rotation": 180.0
+  },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_from_speaker_command"
+          }
+        },
         {
           "type": "path",
           "data": {
