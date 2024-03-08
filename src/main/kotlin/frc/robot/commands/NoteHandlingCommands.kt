@@ -31,7 +31,7 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 }
 
 /**
- * Like [collectCommand], but interruptable, and the shooter spins continuously.
+ * Like [collectCommand], but the shooter spins continuously.
  * - Requirements: Intake, Loader, Shooter.
  */
 fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
@@ -44,21 +44,21 @@ fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLL
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(state) raceWith
-		(WaitCommand(0.2) andThen
-			waitUntil { Shooter.isWithinTolerance }
-				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
-			WaitCommand(0.1) andThen
-			loadIntoShooterCommand()))
+			(WaitCommand(0.2) andThen
+					waitUntil { Shooter.isWithinTolerance }
+						.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
+					WaitCommand(0.1) andThen
+					loadIntoShooterCommand()))
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(stateSupplier) raceWith
-		(WaitCommand(0.2) andThen
-			waitUntil { Shooter.isWithinTolerance }
-				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
-			WaitCommand(0.1) andThen
-			loadIntoShooterCommand()))
+			(WaitCommand(0.2) andThen
+					waitUntil { Shooter.isWithinTolerance }
+						.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
+					WaitCommand(0.1) andThen
+					loadIntoShooterCommand()))
 }
 
 /**
@@ -116,9 +116,9 @@ fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
  */
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
-		LoaderConstants.AMP_EJECT_TIME_SEC finallyDo
-		Shooter.runOnce {}
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
+			LoaderConstants.AMP_EJECT_TIME_SEC finallyDo
+			Shooter.runOnce {}
 }
 
 /**
@@ -128,8 +128,8 @@ fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
  */
 fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC finallyDo
-		Shooter.runOnce {}
+			ShooterConstants.SHOOT_TIME_SEC finallyDo
+			Shooter.runOnce {}
 }
 
 /**
@@ -200,21 +200,21 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 /** - Requirements: Loader. */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC
+			ShooterConstants.SHOOT_TIME_SEC
 }
 
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectAndEject(): Command = withName("collect and eject") {
 	Intake.runIntakeCommand() alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
-		Shooter.getToShooterStateCommand(ShooterState.EJECT)
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
+			Shooter.getToShooterStateCommand(ShooterState.EJECT)
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
 	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_FEEDER) alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
-		Loader::isNoteDetected
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
+			Loader::isNoteDetected
 }
 
 /**
