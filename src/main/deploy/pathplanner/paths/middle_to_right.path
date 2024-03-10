@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.031108885468068,
-        "y": 5.589722591070332
+        "x": 2.6397966932059513,
+        "y": 5.916997244116653
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.7621099939708773,
-        "y": 5.710476180145718
+        "x": 1.586771759930954,
+        "y": 5.351085885417845
       },
       "isLocked": false,
       "linkedName": "middle_note_collection"
     },
     {
       "anchor": {
-        "x": 2.596816083684523,
-        "y": 4.262243777541657
+        "x": 2.6397966932059513,
+        "y": 4.226426602940466
       },
       "prevControl": {
-        "x": 2.1839167145880385,
-        "y": 4.305091825278084
+        "x": 1.4291761916857164,
+        "y": 4.3123878219833225
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 146.49621195980203,
+      "waypointRelativePos": 0.35,
+      "rotationDegrees": 137.6097063002226,
       "rotateFast": false
     }
   ],
@@ -53,6 +53,23 @@
           ]
         }
       }
+    },
+    {
+      "name": "aim",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "aim_at_note_command"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -63,7 +80,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 150.28361238932695,
+    "rotation": 147.8042660652868,
     "rotateFast": false
   },
   "reversed": false,

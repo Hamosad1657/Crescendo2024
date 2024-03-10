@@ -76,8 +76,8 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	pidController: () -> PIDController = { CHASSIS_ANGLE_PID_CONTROLLER },
 ): Command = withName("teleop drive with auto angle") {
 	run {
-		val vx = -joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
-		val vy = -joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
+		val vx = joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
+		val vy = joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
 		val omega = pidController().calculate(robotHeading.degrees, angleSupplier().degrees)
 
 		if (Robot.isTesting) {
@@ -159,8 +159,19 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 		}
 		mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
 	},
-	{ false },
+	{ true },
 )
+
+fun Swerve.aimAtSpeaker(flipGoal: Boolean) = getToAngleCommand {
+	val offset = 3.degrees
+
+	val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+	val angleSetpoint = robotToGoal.angle.degrees
+
+	SmartDashboard.putNumber("is chassis at angle setpoint", DynamicShooting.CHASSIS_ANGLE_TOLERANCE)
+
+	mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
+}
 
 /**
  * - Command has no end condition.

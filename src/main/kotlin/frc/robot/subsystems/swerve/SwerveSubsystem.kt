@@ -11,6 +11,7 @@ import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.toNeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
@@ -34,6 +35,7 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.vision.AprilTagVision
+import java.util.Optional
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -257,6 +259,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 			},
 			this
 		)
+
+		PPHolonomicDriveController.setRotationTargetOverride { Optional.empty() }
 	}
 
 	fun pathFindToPathCommand(pathname: String): Command {

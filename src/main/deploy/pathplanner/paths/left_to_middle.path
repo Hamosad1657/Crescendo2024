@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6580237193689102,
-        "y": 7.040713298508448
+        "x": 2.725757912248808,
+        "y": 6.525889212336889
       },
       "isLocked": false,
       "linkedName": "left_note_collection"
     },
     {
       "anchor": {
-        "x": 3.031108885468068,
-        "y": 5.589722591070332
+        "x": 2.6397966932059513,
+        "y": 5.916997244116653
       },
       "prevControl": {
-        "x": 0.9763502326530165,
-        "y": 5.278100425714492
+        "x": 1.9091263313416673,
+        "y": 6.590360126619032
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,6 +47,23 @@
           ]
         }
       }
+    },
+    {
+      "name": "aim",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "aim_at_note_command"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -57,11 +74,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 179.8375053150947,
+    "rotation": 117.3238913013465,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "basic_auto",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": -149.64840301778455,
+    "velocity": 0
+  },
   "useDefaultConstraints": true
 }

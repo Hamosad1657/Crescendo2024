@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Robot
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
+import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
 import frc.robot.vision.AprilTagVision
+import kotlin.math.absoluteValue
+import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
 /**
  * - The position and distance units are meters.
@@ -36,7 +39,13 @@ object DynamicShooting {
 			0.85 to 164.0,
 			1.0 to MIN_ANGLE,
 		)
+	val CHASSIS_ANGLE_TOLERANCE = 1.5
 
+	val inChassisAngleTolerance
+		get() =
+			(CHASSIS_ANGLE_PID_CONTROLLER.setpoint -
+				Swerve.robotHeading.degrees).absoluteValue <
+				CHASSIS_ANGLE_TOLERANCE
 
 	// --- Calculations ---
 

@@ -112,6 +112,7 @@ object RobotContainer {
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
+
 		}
 
 		with(controllerB) {
@@ -238,6 +239,11 @@ object RobotContainer {
 				DynamicShooting.calculateShooterState(Swerve.robotPose.translation)
 			}
 		)
+
+		register(
+			"aim_at_speaker",
+			Swerve.aimAtSpeaker(flipGoal = false) until { DynamicShooting.inChassisAngleTolerance } finallyDo { Swerve.stop() })
+
 		register("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
 		register("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
 		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))

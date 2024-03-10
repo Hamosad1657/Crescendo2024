@@ -56,8 +56,8 @@ object AprilTagVision {
 				this[1, 0] = 0.9 // Translation Y
 				this[2, 0] = 0.95 // Rotation
 			}
-			this[0, 0] = 0.3 // Translation X
-			this[1, 0] = 0.3 // Translation Y
+			this[0, 0] = 0.5 // Translation X
+			this[1, 0] = 0.5 // Translation Y
 			this[2, 0] = 0.95 // Rotation
 		}
 

@@ -24,9 +24,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "collect_with_timeout_command"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "collect_with_timeout_command"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim_at_speaker"
+                }
+              }
+            ]
           }
         },
         {
@@ -42,9 +55,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "collect_with_timeout_command"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "collect_with_timeout_command"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim_at_speaker"
+                }
+              }
+            ]
           }
         },
         {
@@ -60,9 +86,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "collect_with_timeout_command"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim_at_speaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "collect_with_timeout_command"
+                }
+              }
+            ]
           }
         },
         {
