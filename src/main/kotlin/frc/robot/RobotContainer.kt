@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
 import frc.robot.subsystems.shooter.DynamicShooting
@@ -20,7 +19,7 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.vision.NoteVision
-import java.util.Optional
+import java.util.*
 import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.sign
@@ -40,7 +39,7 @@ fun joystickCurve(value: Double) = -value.pow(2) * value.sign
  */
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
-	const val CLIMBING_DEADBAND = 0.08
+	private const val CLIMBING_DEADBAND = 0.08
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -112,7 +111,6 @@ object RobotContainer {
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
-
 		}
 
 		with(controllerB) {
@@ -121,7 +119,6 @@ object RobotContainer {
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
 			create().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
-
 			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 
 			// Amp & Trap
@@ -140,13 +137,15 @@ object RobotContainer {
 		)
 
 		// Shooter default commands are set in Robot.kt
-		Intake.defaultCommand = Intake.run { Intake.stopMotors() }
-		Loader.defaultCommand = Loader.run { Loader.stopMotors() }
+		with(Intake) { defaultCommand = run { stopMotors() } }
+		with(Loader) { defaultCommand = run { stopMotors() } }
 
-		Climbing.defaultCommand =
-			Climbing.openLoopTeleopCommand(
+		with(Climbing) {
+			defaultCommand = openLoopTeleopCommand(
 				{ simpleDeadband(-controllerB.leftY, CLIMBING_DEADBAND) },
-				{ simpleDeadband(-controllerB.rightY, CLIMBING_DEADBAND) })
+				{ simpleDeadband(-controllerB.rightY, CLIMBING_DEADBAND) },
+			)
+		}
 	}
 
 
@@ -178,8 +177,8 @@ object RobotContainer {
 	// --- Telemetry ---
 
 	private fun initSendables() {
-		sendCompetitionInfo()
 		if (Robot.isTesting) sendSubsystemInfo()
+		sendCompetitionInfo()
 	}
 
 	private fun sendSubsystemInfo() {
@@ -193,12 +192,6 @@ object RobotContainer {
 	private fun sendCompetitionInfo() {
 		with(Shuffleboard.getTab("Auto")) {
 			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
-			addString("Submitted Auto") {
-				Robot.submittedAuto?.name ?: "None submitted, will use currently selected in Auto Chooser"
-			}
-				.withSize(3, 1)
-				.withPosition(2, 3)
-			add("Submit Auto", InstantCommand(::submitAuto)).withSize(3, 1).withPosition(7, 3)
 			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
 		}
 
@@ -206,17 +199,10 @@ object RobotContainer {
 			addBoolean("Note detected", Loader::isNoteDetected).withSize(3, 1).withPosition(2, 1)
 			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withSize(3, 1).withPosition(2, 3)
 			addBoolean("Intake running", Intake::isRunning).withSize(3, 1).withPosition(7, 1)
-//			addBoolean("Left TRAP switch pressed", Climbing::isLeftTrapSwitchPressed).withPosition(6, 1).withSize(2, 1)
-//			addBoolean("Right TRAP switch pressed", Climbing::isRightTrapSwitchPressed).withPosition(8, 1).withSize(2, 1)
 		}
 	}
 
 	// --- Auto ---
-
-	private fun submitAuto() {
-		Robot.submittedAuto = autoChooser.selected
-		robotPrint("Submitted auto - ${Robot.submittedAuto?.name}")
-	}
 
 	fun getAutonomousCommand(): Command = autoChooser.selected
 
@@ -224,37 +210,46 @@ object RobotContainer {
 		fun register(name: String, command: Command) = NamedCommands.registerCommand(name, command)
 
 		register("eject_command", Notes.loadAndShootCommand(ShooterState.EJECT))
+		register("collect_command", Notes.autoCollectCommand())
 		register(
-			"collect_command", Notes.autoCollectCommand().beforeStarting(
-			InstantCommand()
+			"collect_with_timeout_command",
+			Notes.autoCollectCommand() withTimeout 2.0 andThen
+				instantCommand {
+					PPHolonomicDriveController.setRotationTargetOverride { Optional.empty() }
+				},
 		)
-		)
-		register("collect_with_timeout_command", Notes.autoCollectCommand() withTimeout 2.0
-			andThen InstantCommand({
-			PPHolonomicDriveController.setRotationTargetOverride { Optional.empty() }
-		}
-		))
-		register("shoot_command",
-			Notes.loadAndShootCommand {
-				DynamicShooting.calculateShooterState(Swerve.robotPose.translation)
-			}
+		register(
+			"aim_at_note_command",
+			instantCommand {
+				PPHolonomicDriveController.setRotationTargetOverride {
+					val rotationTarget =
+						NoteVision.getRobotToBestTargetYawDelta()?.let {
+							Optional.of(Swerve.robotHeading plus it)
+						}
+					rotationTarget ?: Optional.empty()
+				}
+			},
 		)
 
 		register(
 			"aim_at_speaker",
-			Swerve.aimAtSpeaker(flipGoal = false) until { DynamicShooting.inChassisAngleTolerance } finallyDo { Swerve.stop() })
+			Swerve.aimAtSpeaker(flipGoal = false) until {
+				DynamicShooting.inChassisAngleTolerance
+			} finallyDo {
+				Swerve.stop()
+			},
+		)
+
+		register(
+			"shoot_command",
+			Notes.loadAndShootCommand {
+				DynamicShooting.calculateShooterState(Swerve.robotPose.translation)
+			},
+		)
 
 		register("shoot_auto_line_1_3_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_ONE_THREE))
 		register("shoot_auto_line_2_command", Notes.loadAndShootCommand(ShooterState.AUTO_LINE_TWO))
 		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
-		register("aim_at_note_command", InstantCommand({
-			PPHolonomicDriveController.setRotationTargetOverride {
-				val rotationTarget = NoteVision.getRobotToBestTargetYawDelta()?.let {
-					Optional.of(SwerveSubsystem.robotHeading plus it)
-				}
-				rotationTarget ?: Optional.empty()
-			}
-		}))
 	}
 
 

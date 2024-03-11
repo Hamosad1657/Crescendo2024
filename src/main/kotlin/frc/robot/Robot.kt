@@ -4,6 +4,7 @@ import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.robotPrint
 import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.minus
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
@@ -69,7 +70,7 @@ object Robot : TimedRobot() {
 	override fun autonomousExit() {
 		if (alliance == Alliance.Red) {
 			robotPrint("CHANGED GYRO ANGLE")
-			SwerveSubsystem.setGyro((SwerveSubsystem.robotHeading.degrees - 180.0).degrees)
+			SwerveSubsystem.setGyro(SwerveSubsystem.robotHeading minus 180.degrees)
 		}
 	}
 
