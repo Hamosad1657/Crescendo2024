@@ -44,21 +44,21 @@ fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLL
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(state) raceWith
-			(WaitCommand(0.2) andThen
-					waitUntil { Shooter.isWithinTolerance }
-						.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
-					WaitCommand(0.1) andThen
-					loadIntoShooterCommand()))
+		(WaitCommand(0.2) andThen
+			waitUntil { Shooter.isWithinTolerance }
+				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
+			WaitCommand(0.1) andThen
+			loadIntoShooterCommand()))
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(stateSupplier) raceWith
-			(WaitCommand(0.2) andThen
-					waitUntil { Shooter.isWithinTolerance }
-						.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
-					WaitCommand(0.1) andThen
-					loadIntoShooterCommand()))
+		(WaitCommand(0.2) andThen
+			waitUntil { Shooter.isWithinTolerance }
+				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
+			WaitCommand(0.1) andThen
+			loadIntoShooterCommand()))
 }
 
 /**
@@ -110,26 +110,26 @@ fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
 
 /**
  * Waits until shooter is within angle tolerance to AMP,
- * then ejects the note through the loader for [ShooterConstants.SHOOT_TIME_SEC] seconds.
+ * then ejects the note through the loader for [ShooterConstants.SHOOT_DURATION] seconds.
  * Finally, interrupts shooter subsystem so it goes back to it's default command.
  * - Requirements: Loader (until the command ends, then Shooter).
  */
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
-			LoaderConstants.AMP_EJECT_TIME_SEC finallyDo
-			Shooter.runOnce {}
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
+		LoaderConstants.AMP_EJECT_DURATION finallyDo
+		Shooter.runOnce {}
 }
 
 /**
- * Runs the loader motor for [ShooterConstants.SHOOT_TIME_SEC] seconds.
+ * Runs the loader motor for [ShooterConstants.SHOOT_DURATION] seconds.
  * Finally, interrupts shooter subsystem so it goes back to it's default command.
  * - Requirements: Loader (until the command ends, then Shooter.)
  */
 fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
-			ShooterConstants.SHOOT_TIME_SEC finallyDo
-			Shooter.runOnce {}
+		ShooterConstants.SHOOT_DURATION finallyDo
+		Shooter.runOnce {}
 }
 
 /**
@@ -200,21 +200,21 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 /** - Requirements: Loader. */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
-			ShooterConstants.SHOOT_TIME_SEC
+		ShooterConstants.SHOOT_DURATION
 }
 
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectAndEject(): Command = withName("collect and eject") {
 	Intake.runIntakeCommand() alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
-			Shooter.getToShooterStateCommand(ShooterState.EJECT)
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
+		Shooter.getToShooterStateCommand(ShooterState.EJECT)
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
 	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_FEEDER) alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
-			Loader::isNoteDetected
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
+		Loader::isNoteDetected
 }
 
 /**
@@ -224,7 +224,7 @@ fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from huma
 fun Intake.ejectFromIntakeCommand(): Command = withName("eject from intake") {
 	run {
 		setVoltage(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
-	} withTimeout IntakeConstants.EJECT_TIME_SEC finallyDo {
+	} withTimeout IntakeConstants.EJECT_DURATION finallyDo {
 		stopMotors()
 	}
 }

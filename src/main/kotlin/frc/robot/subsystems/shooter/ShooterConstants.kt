@@ -6,6 +6,7 @@ import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Seconds
 import com.hamosad1657.lib.units.Volts
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.minus
@@ -51,7 +52,7 @@ object ShooterConstants {
 	const val KEEP_AT_MIN_ANGLE_OUTPUT: PercentOutput = 0.0
 
 	const val ESCAPE_ANGLE_LOCK_OUTPUT: PercentOutput = -0.2
-	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.1
+	const val ESCAPE_ANGLE_LOCK_DURATION: Seconds = 0.1
 
 	private const val KEEP_PARALLEL_TO_FLOOR_OUTPUT = -0.0185
 
@@ -59,13 +60,13 @@ object ShooterConstants {
 	 * Time between when loading started to when the note is shot.
 	 * It might be a little different in different speeds, so put here it's maximum value.
 	 */
-	const val SHOOT_TIME_SEC = 1.0
+	const val SHOOT_DURATION: Seconds = 1.0
 
 	/**
 	 * Time after which we load the note into the shooter no matter the velocity and angle error.
 	 * It might be a little different in different speeds, so put here it's maximum value.
 	 */
-	const val SHOOT_TIMEOUT_SEC = 1.75
+	const val SHOOT_TIMEOUT = 1.75
 
 
 	// --- Tolerances ---

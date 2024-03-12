@@ -1,6 +1,7 @@
 package frc.robot.subsystems.loader
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs
+import com.hamosad1657.lib.units.Seconds
 import com.hamosad1657.lib.units.Volts
 
 object LoaderConstants {
@@ -17,5 +18,5 @@ object LoaderConstants {
 	const val MOTOR_EJECT_OUTPUT: Volts = -4.0
 
 	/** Time between when loading started to when the note is inside of the Amp. */
-	const val AMP_EJECT_TIME_SEC = 2.0
+	const val AMP_EJECT_DURATION: Seconds = 2.0
 }

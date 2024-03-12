@@ -1,7 +1,6 @@
 package frc.robot.subsystems.stabilizers
 
 import com.hamosad1657.lib.motors.HaSparkFlex
-import com.hamosad1657.lib.units.Amps
 import com.hamosad1657.lib.units.Volts
 import com.revrobotics.CANSparkBase.IdleMode
 import com.revrobotics.CANSparkFlex
@@ -16,7 +15,7 @@ object StabilizersSubsystem : SubsystemBase() {
 	private val leftMotor =
 		HaSparkFlex(StabilizersMap.LEFT_MOTOR_ID).apply {
 			restoreFactoryDefaults()
-			configMotor(inverted = false)
+			configMotor(inverted = true)
 		}
 
 	private val rightMotor =
@@ -29,6 +28,7 @@ object StabilizersSubsystem : SubsystemBase() {
 	// --- Motors Configuration ---
 
 	private fun CANSparkFlex.configMotor(inverted: Boolean) {
+		this.inverted = inverted
 		idleMode = IdleMode.kBrake
 		setSmartCurrentLimit(Constants.SMART_CURRENT_LIMIT)
 	}
@@ -41,16 +41,12 @@ object StabilizersSubsystem : SubsystemBase() {
 		}
 
 
-	// --- State Getters ---
-
-	val leftMotorCurrent: Amps get() = leftMotor.outputCurrent.toInt()
-	val rightMotorCurrent: Amps get() = leftMotor.outputCurrent.toInt()
-
-	val leftAtLimit get() = leftMotorCurrent > Constants.MOTOR_STALL_CURRENT
-	val rightAtLimit get() = rightMotorCurrent > Constants.MOTOR_STALL_CURRENT
-
-
 	// --- Motors Control ---
+
+	fun set(output: Volts) {
+		setLeft(output)
+		setRight(output)
+	}
 
 	fun setLeft(output: Volts) {
 		leftMotor.setVoltage(output)
@@ -79,7 +75,5 @@ object StabilizersSubsystem : SubsystemBase() {
 	override fun initSendable(builder: SendableBuilder) {
 		builder.setSmartDashboardType("Subsystem")
 		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
-		builder.addIntegerProperty("Left current", { leftMotorCurrent.toLong() }, null)
-		builder.addIntegerProperty("Right current", { rightMotorCurrent.toLong() }, null)
 	}
 }

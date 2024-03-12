@@ -8,7 +8,6 @@ import com.hamosad1657.lib.units.plus
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
@@ -133,6 +132,9 @@ object RobotContainer {
 			// Amp & Trap
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
 			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
+
+			povUp().toggleOnTrue(Stabilizers.openCommand())
+			povDown().toggleOnTrue(Stabilizers.closeCommand())
 		}
 	}
 
@@ -197,6 +199,7 @@ object RobotContainer {
 		SmartDashboard.putData(Loader)
 		SmartDashboard.putData(Shooter)
 		SmartDashboard.putData(Climbing)
+		SmartDashboard.putData(Stabilizers)
 	}
 
 	private fun sendCompetitionInfo() {

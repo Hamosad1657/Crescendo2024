@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs
+import com.hamosad1657.lib.units.Seconds
 import com.hamosad1657.lib.units.Volts
 
 object IntakeConstants {
@@ -13,5 +14,5 @@ object IntakeConstants {
 	const val BOTTOM_MOTOR_OUTPUT: Volts = 12.0
 	const val TOP_MOTOR_OUTPUT: Volts = 12.0
 
-	const val EJECT_TIME_SEC = 3.0
+	const val EJECT_DURATION: Seconds = 3.0
 }

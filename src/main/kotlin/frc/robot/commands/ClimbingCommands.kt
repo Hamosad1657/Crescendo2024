@@ -40,25 +40,13 @@ fun Climbing.openLoopTeleopCommand(
 fun Stabilizers.openCommand(): Command =
 	withName("open stabilizers") {
 		run {
-			if (leftAtLimit) stopLeft()
-			else setLeft(StabilizersConstants.OPEN_STABILIZERS_OUTPUT)
-
-			if (rightAtLimit) stopRight()
-			else setRight(StabilizersConstants.OPEN_STABILIZERS_OUTPUT)
-		} until {
-			leftAtLimit && rightAtLimit
-		}
+			set(StabilizersConstants.OPEN_STABILIZERS_OUTPUT)
+		} withTimeout StabilizersConstants.OPEN_CLOSE_DURATION
 	}
 
 fun Stabilizers.closeCommand(): Command =
 	withName("close stabilizers") {
 		run {
-			if (leftAtLimit) stopLeft()
-			else setLeft(StabilizersConstants.CLOSE_STABILIZERS_OUTPUT)
-
-			if (rightAtLimit) stopRight()
-			else setRight(StabilizersConstants.CLOSE_STABILIZERS_OUTPUT)
-		} until {
-			leftAtLimit && rightAtLimit
-		}
+			set(StabilizersConstants.CLOSE_STABILIZERS_OUTPUT)
+		} withTimeout StabilizersConstants.OPEN_CLOSE_DURATION
 	}

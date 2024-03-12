@@ -6,8 +6,8 @@ import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.shooter.ShooterConstants
+import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_DURATION
 import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_OUTPUT
-import frc.robot.subsystems.shooter.ShooterConstants.TIME_TO_ESCAPE_ANGLE_LOCK_SEC
 import frc.robot.subsystems.shooter.ShooterSubsystem
 
 /**
@@ -33,7 +33,7 @@ fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("teleop get to s
 fun ShooterSubsystem.escapeAngleLockCommand(): Command = withName("escape angle lock") {
 	run {
 		setAngleMotorOutput(ESCAPE_ANGLE_LOCK_OUTPUT)
-	} withTimeout TIME_TO_ESCAPE_ANGLE_LOCK_SEC finallyDo {
+	} withTimeout ESCAPE_ANGLE_LOCK_DURATION finallyDo {
 		stopAngleMotor()
 	}
 }

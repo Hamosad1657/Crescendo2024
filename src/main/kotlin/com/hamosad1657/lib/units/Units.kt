@@ -15,3 +15,6 @@ typealias Volts = Double
 
 /** Current in Amps (Ampere). */
 typealias Amps = Int
+
+/** Time in seconds. */
+typealias Seconds = Double
