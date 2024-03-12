@@ -131,7 +131,7 @@ object RobotContainer {
 
 			// Amp & Trap
 			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
-			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_TRAP))
+			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.BEFORE_CLIMB))
 
 			povUp().toggleOnTrue(Stabilizers.openCommand())
 			povDown().toggleOnTrue(Stabilizers.closeCommand())
