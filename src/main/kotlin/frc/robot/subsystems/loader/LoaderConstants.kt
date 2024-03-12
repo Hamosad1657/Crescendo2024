@@ -4,14 +4,18 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.hamosad1657.lib.units.Volts
 
 object LoaderConstants {
-	const val MOTOR_INTAKE_VOLTAGE: Volts = 1.0
-	const val MOTOR_LOADING_VOLTAGE: Volts = 5.0
-	const val EJECT_INTO_AMP: Volts = -16.0
+	val MOTORS_CURRENT_LIMIT =
+		CurrentLimitsConfigs().apply {
+			SupplyCurrentLimitEnable = true
+			SupplyCurrentLimit = 15.0
+		}
 
 	const val ANALOG_READ_NOTE_DETECTED_THRESHOLD = 3550.0
 
-	val MOTORS_CURRENT_LIMIT = CurrentLimitsConfigs().apply {
-		SupplyCurrentLimitEnable = true
-		SupplyCurrentLimit = 15.0
-	}
+	const val MOTOR_INTAKE_OUTPUT: Volts = 1.2
+	const val MOTOR_LOADING_OUTPUT: Volts = 5.0
+	const val MOTOR_EJECT_OUTPUT: Volts = -4.0
+
+	/** Time between when loading started to when the note is inside of the Amp. */
+	const val AMP_EJECT_TIME_SEC = 2.0
 }

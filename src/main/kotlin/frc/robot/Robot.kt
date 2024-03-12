@@ -1,7 +1,8 @@
 package frc.robot
 
 import com.hamosad1657.lib.Telemetry
-import com.hamosad1657.lib.commands.andThen
+import com.hamosad1657.lib.commands.*
+import com.hamosad1657.lib.robotPrint
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
@@ -25,12 +26,19 @@ import frc.robot.subsystems.shooter.ShooterSubsystem
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel: Telemetry = Telemetry.Testing.also { SmartDashboard.putString("Telemetry", it.name) }
+	val telemetryLevel = Telemetry.Testing
+		.also { SmartDashboard.putString("Telemetry", it.name) }
+	val isTesting = telemetryLevel == Telemetry.Testing
 
 	private var autonomousCommand: Command? = null
-	private var commandScheduler = CommandScheduler.getInstance()
+	private var commandScheduler = CommandScheduler.getInstance().also {
+		SmartDashboard.putData("commandScheduler", it)
+	}
 
+	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
+
+	var submittedAuto: Command? = null
 
 	override fun robotInit() {
 		// Report the use of the Kotlin Language for "FRC Usage Report" statistics
@@ -47,8 +55,20 @@ object Robot : TimedRobot() {
 
 	override fun autonomousInit() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
-		autonomousCommand = ShooterSubsystem.escapeAngleLock() andThen RobotContainer.getAutonomousCommand()
+		autonomousCommand =
+			ShooterSubsystem.escapeAngleLockCommand() andThen
+				RobotContainer.getAutonomousCommand().also {
+					robotPrint("Auto command: ${it.name}")
+				}.asProxy()
 		autonomousCommand?.schedule()
+	}
+
+
+	override fun autonomousExit() {
+//		if (alliance == Alliance.Red) {
+//			robotPrint("CHANGED GYRO ANGLE")
+//			SwerveSubsystem.setGyro(SwerveSubsystem.robotHeading minus 180.degrees)
+//		}
 	}
 
 	override fun teleopInit() {

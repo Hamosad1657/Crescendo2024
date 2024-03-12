@@ -8,29 +8,70 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8235729947094523,
-        "y": 0.7985317987176087
+        "x": 8.387114852525139,
+        "y": -0.584291560042194
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.575811016390715,
-        "y": 0.8180081840590729
+        "x": 8.250780155178342,
+        "y": 2.4345481668424793
       },
       "prevControl": {
-        "x": 4.180215620217718,
-        "y": 1.2075358907538694
+        "x": 4.64655105414579,
+        "y": 2.8233694750785854
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": -167.06205587188327,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "aim",
+      "waypointRelativePos": 0.7,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "aim_at_note_command"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "collect",
+      "waypointRelativePos": 0.9,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "collect_command"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 4.0,

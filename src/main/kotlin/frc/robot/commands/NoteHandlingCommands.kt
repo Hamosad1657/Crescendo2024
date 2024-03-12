@@ -5,8 +5,11 @@ package frc.robot.commands
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.Volts
 import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.wpilibj2.command.*
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior
+import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.ConditionalCommand
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.shooter.DynamicShooting
@@ -21,38 +24,41 @@ object Notes
 
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Command = withName("collect") {
-	(
-		(Shooter.getToShooterStateCommand(shooterState) alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
-			Intake.runIntakeCommand()
-			) until
-			Loader::isNoteDetected
+	((Shooter.getToShooterStateCommand(shooterState) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
+		Intake.runIntakeCommand()) until Loader::isNoteDetected
 		).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
 }
 
 /**
- * Like [collectCommand], but interruptable, and the shooter spins continuously.
+ * Like [collectCommand], but the shooter spins continuously.
  * - Requirements: Intake, Loader, Shooter.
  */
 fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
-	(
-		(Shooter.getToShooterStateCommand(shooterState) alongWith
-			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE) alongWith
-			Intake.runIntakeCommand()
-			) until
-			Loader::isNoteDetected
-		)
-		.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+	((Shooter.getToShooterStateCommand(shooterState) alongWith
+		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
+		Intake.runIntakeCommand()) until Loader::isNoteDetected
+		).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(state) raceWith
-		(WaitCommand(0.2) andThen
-			waitUntil { Shooter.isWithinTolerance }
-				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
-			WaitCommand(0.1) andThen
-			loadIntoShooterCommand()))
+			(WaitCommand(0.2) andThen
+					waitUntil { Shooter.isWithinTolerance }
+						.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
+					WaitCommand(0.1) andThen
+					loadIntoShooterCommand()))
+}
+
+/** - Requirements: Loader, Shooter. */
+fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = withName("load and shoot") {
+	(Shooter.getToShooterStateCommand(stateSupplier) raceWith
+			(WaitCommand(0.2) andThen
+					waitUntil { Shooter.isWithinTolerance }
+						.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
+					WaitCommand(0.1) andThen
+					loadIntoShooterCommand()))
 }
 
 /**
@@ -95,6 +101,7 @@ fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to sho
 	}
 }
 
+/** - Requirements: Shooter. */
 fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
 	SwerveSubsystem.robotPose.let { estimatedPose ->
 		DynamicShooting.calculateShooterState(estimatedPose.translation)
@@ -109,9 +116,9 @@ fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
  */
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
-		Loader.runLoaderCommand(LoaderConstants.EJECT_INTO_AMP) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC finallyDo
-		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
+			LoaderConstants.AMP_EJECT_TIME_SEC finallyDo
+			Shooter.runOnce {}
 }
 
 /**
@@ -120,9 +127,9 @@ fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
  * - Requirements: Loader (until the command ends, then Shooter.)
  */
 fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
-	runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC finallyDo
-		Shooter.getToShooterStateCommand(ShooterState.COLLECT)
+	runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
+			ShooterConstants.SHOOT_TIME_SEC finallyDo
+			Shooter.runOnce {}
 }
 
 /**
@@ -130,10 +137,12 @@ fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
  * Interrupts shooter subsystem when the scheduled command ends.
  * - Requirements: Loader (until the scheduled command ends, then Shooter).
  */
-fun Loader.loadToShooterOrAmpCommand(): Command = ConditionalCommand(
-	ejectIntoAmpCommand(), // Command on true
-	loadIntoShooterCommand() // Command on false
-) { Shooter.isWithinAngleToleranceToAmp() }
+fun Loader.loadToShooterOrAmpCommand(): Command =
+	ConditionalCommand(
+		ejectIntoAmpCommand(), // Command on true
+		loadIntoShooterCommand(), // Command on false
+		Shooter::isWithinAngleToleranceToAmp,
+	)
 
 
 // ---
@@ -161,12 +170,13 @@ fun Notes.waitForNoteToPassCommand() = withName("wait for note to pass") {
  * Apart from testing, should only be used in [collectCommand] or in a manual override.
  *
  * Runs intake only if shooter angle is within tolerance, and loader is running.
+ * - Command has no end condition.
  * - Requirements: Intake.
  */
 fun Intake.runIntakeCommand(): Command = withName("run") {
 	run {
 		if ((Shooter.isWithinAngleTolerance || Loader.isRunning) && !Loader.isNoteDetected) {
-			setVoltage(IntakeConstants.BOTTOM_MOTOR_VOLTAGE, IntakeConstants.TOP_MOTOR_VOLTAGE)
+			setVoltage(IntakeConstants.BOTTOM_MOTOR_OUTPUT, IntakeConstants.TOP_MOTOR_OUTPUT)
 		} else {
 			stopMotors()
 		}
@@ -175,52 +185,46 @@ fun Intake.runIntakeCommand(): Command = withName("run") {
 	}
 }
 
-
 /**
+ * - Command has no end condition.
  * - Requirements: Loader.
  */
 fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 	run {
 		setVoltage(voltage)
 	} finallyDo {
-		stopMotor()
+		stopMotors()
 	}
 }
 
-/**
- * - Requirements: Loader.
- */
+/** - Requirements: Loader. */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
-	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC
+	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
+			ShooterConstants.SHOOT_TIME_SEC
 }
 
+/** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectAndEject(): Command = withName("collect and eject") {
 	Intake.runIntakeCommand() alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_VOLTAGE) alongWith
-		Shooter.getToShooterStateCommand(ShooterState.EJECT)
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
+			Shooter.getToShooterStateCommand(ShooterState.EJECT)
 }
 
+/** - Requirements: Loader, Shooter. */
 fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
-	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_HP) alongWith
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_VOLTAGE)) until
-		Loader::isNoteDetected
+	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_FEEDER) alongWith
+			Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
+			Loader::isNoteDetected
 }
-
-
-// ---
-//
-// Manual overrides
-//
-// ---
 
 /**
  * Runs the intake in reverse, regardless of shooter angle.
  * - Requirements: Intake.
  */
-fun Intake.ejectFromIntakeCommand(): Command =
+fun Intake.ejectFromIntakeCommand(): Command = withName("eject from intake") {
 	run {
-		setVoltage(-IntakeConstants.BOTTOM_MOTOR_VOLTAGE, -IntakeConstants.TOP_MOTOR_VOLTAGE)
-	} withTimeout (IntakeConstants.EJECT_TIME_SEC) finallyDo {
+		setVoltage(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
+	} withTimeout IntakeConstants.EJECT_TIME_SEC finallyDo {
 		stopMotors()
 	}
+}

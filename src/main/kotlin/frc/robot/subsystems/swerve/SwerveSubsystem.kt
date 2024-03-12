@@ -6,20 +6,37 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoo
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.robotPrintError
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.toNeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-import edu.wpi.first.math.geometry.*
-import edu.wpi.first.math.kinematics.*
-import edu.wpi.first.util.sendable.*
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import edu.wpi.first.math.kinematics.SwerveModulePosition
+import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.util.sendable.SendableBuilder
+import edu.wpi.first.util.sendable.SendableRegistry
+import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.*
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.CommandScheduler
+import edu.wpi.first.wpilibj2.command.Subsystem
+import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
-import frc.robot.subsystems.vision.Vision
+import frc.robot.vision.AprilTagVision
+import java.util.Optional
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -37,7 +54,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		//addVisionMeasurement()
+		addVisionMeasurement()
 	}
 
 
@@ -63,7 +80,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	val robotVelocity: ChassisSpeeds get() = kinematics.toChassisSpeeds(*modulesStates)
 
 	/** Gets the current pose (position and rotation) of the robot, as reported by odometry. */
-	val robotPose: Pose2d get() = state.Pose
+	val robotPose: Pose2d get() = poseEstimator.estimatedPosition
 
 
 	// --- Drive & Module States Control
@@ -100,8 +117,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	) {
 		if (isFieldRelative) {
 			super.setControl(controlRequestFieldRelative.apply {
-				VelocityX = translation.x
-				VelocityY = translation.y
+				VelocityX = translation.x * if (Robot.alliance == Alliance.Red) -1 else 1
+				VelocityY = translation.y * if (Robot.alliance == Alliance.Red) -1 else 1
 				RotationalRate = omega.asRadPs
 				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
 				SteerRequestType = MotionMagic
@@ -119,22 +136,11 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	private val controlRequestChassisSpeeds = SwerveRequest.ApplyChassisSpeeds()
 
-	fun configMotors() {
-		idleMode = IdleMode.kBrake
-		for (module in super.Modules) {
-			module.driveMotor.configurator.apply {
-				apply(Constants.DRIVE_MOTOR_CONFIG.ClosedLoopRamps)
-				apply(Constants.DRIVE_MOTOR_CONFIG.CurrentLimits)
-			}
-			module.steerMotor.configurator.apply {
-				apply(Constants.STEER_MOTOR_CONFIG.CurrentLimits)
-			}
-		}
-	}
-
+	/** Stop the chassis from moving (set the module speeds to 0). */
 	fun stop() {
-		super.setControl(SwerveRequest.ApplyChassisSpeeds())
-
+		super.setControl(controlRequestChassisSpeeds.apply {
+			Speeds = ChassisSpeeds(0.0, 0.0, 0.0)
+		})
 	}
 
 	/**
@@ -156,13 +162,26 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	private val controlRequestCrossLockWheels = SwerveRequest.SwerveDriveBrake()
 
-	/** Lock the swerve drive to prevent it from moving. */
+	/** Lock the swerve drive (put the modules in a cross-like shape) to prevent it from moving. */
 	fun crossLockWheels() {
 		super.setControl(controlRequestCrossLockWheels)
 	}
 
 
 	// --- Motors Properties & Configuration
+
+	private fun configMotors() {
+		idleMode = IdleMode.kBrake
+		for (module in super.Modules) {
+			module.driveMotor.configurator.apply {
+				apply(Constants.DRIVE_MOTOR_CONFIG.ClosedLoopRamps)
+				apply(Constants.DRIVE_MOTOR_CONFIG.CurrentLimits)
+			}
+			module.steerMotor.configurator.apply {
+				apply(Constants.STEER_MOTOR_CONFIG.CurrentLimits)
+			}
+		}
+	}
 
 	var idleMode: IdleMode = IdleMode.kBrake
 		set(value) {
@@ -195,29 +214,34 @@ object SwerveSubsystem : SwerveDrivetrain(
 	 * @param initialHolonomicPose The pose to set the odometry to.
 	 */
 	fun resetOdometry(initialHolonomicPose: Pose2d) {
-//		poseEstimator.resetPosition(initialHolonomicPose.rotation, modulesPositions, initialHolonomicPose)
-//		setGyro(initialHolonomicPose.rotation)
-
-		poseEstimator.resetPosition(robotHeading, m_modulePositions, initialHolonomicPose)
+		setGyro(initialHolonomicPose.rotation)
+		poseEstimator.resetPosition(robotHeading, modulesPositions, initialHolonomicPose)
+		robotPrintError("Reset odometry to:  $initialHolonomicPose")
+		robotPrintError("robot pose:  $robotPose")
+		robotPrintError("robot heading: $robotHeading")
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		Vision.latestResult?.let { latestResult ->
-			if (!latestResult.hasTargets()) return
+		AprilTagVision.latestResult?.let { latestResult ->
+			if (!latestResult.hasTargets() or
+//				if best april tag distance larger the 5.2 meters don't add vision measurement
+				(AprilTagVision.bestTag?.bestCameraToTarget?.x?.let
+				{ it > AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters } == true)
+			) return
 		}
 
-		Vision.estimatedGlobalPose?.let { estimatedPose ->
+
+		AprilTagVision.estimatedGlobalPose?.let { estimatedPose ->
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 
 			super.addVisionMeasurement(
 				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
 				estimatedPose.timestampSeconds,
-				Vision.poseEstimationStdDevs,
+				AprilTagVision.poseEstimationStdDevs,
 			)
 		}
 	}
-
 
 	// --- Auto & Paths ---
 
@@ -232,10 +256,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 				// Boolean supplier that controls when the path will be mirrored for the red alliance
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-				false
+				Robot.alliance == DriverStation.Alliance.Red
 			},
 			this
 		)
+
+		PPHolonomicDriveController.setRotationTargetOverride { Optional.empty() }
 	}
 
 	fun pathFindToPathCommand(pathname: String): Command {
@@ -245,7 +271,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 		)
 	}
 
-	fun pathFindToPoseCommand(pose: Pose2d): Command =
+	fun pathfindToPoseCommand(pose: Pose2d): Command =
 		AutoBuilder.pathfindToPose(pose, SwerveConstants.PATH_CONSTRAINTS)
 
 	fun followAutoCommand(autoName: String): Command =

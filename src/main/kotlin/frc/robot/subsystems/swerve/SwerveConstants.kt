@@ -1,28 +1,53 @@
 package frc.robot.subsystems.swerve
 
-import com.ctre.phoenix6.configs.*
-import com.ctre.phoenix6.mechanisms.swerve.*
+import com.ctre.phoenix6.configs.Slot0Configs
+import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType
-import com.hamosad1657.lib.robotAlliance
-import com.hamosad1657.lib.units.*
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.inches
+import com.hamosad1657.lib.units.meters
+import com.hamosad1657.lib.units.rps
 import com.pathplanner.lib.path.PathConstraints
-import com.pathplanner.lib.util.*
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig
+import com.pathplanner.lib.util.PIDConstants
+import com.pathplanner.lib.util.ReplanningConfig
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.wpilibj.DriverStation
+import frc.robot.Robot
 import frc.robot.RobotMap.Swerve as SwerveMap
 
 object SwerveConstants {
-	val DRIVETRAIN_CONSTANTS = SwerveDrivetrainConstants().apply {
-		Pigeon2Id = SwerveMap.PIGEON_ID
-		CANbusName = SwerveMap.CANBUS_NAME
-	}
+	// --- Constants ---
 
 	/** Theoretical free speed (m/s) at 12v applied output. */
 	const val MAX_SPEED_MPS = 9.0 // 9.46 according to CTRE ?
 
 	/** Theoretical free rotation speed (rotations/s) at 12v applied output. */
 	val MAX_ANGULAR_VELOCITY = 2.0.rps
+
+	/** The distance from the center of the chassis to a center of a module. */
+	private val DRIVEBASE_RADIUS = 0.417405.meters
+
+	/**
+	 * When the robot is adjacent and parallel to the PODIUM's HDPE plate,
+	 *  rotate the chassis by this amount to score to the speaker.
+	 */
+	val AT_PODIUM_TO_SPEAKER_ROTATION
+		get() =
+			if (Robot.alliance == DriverStation.Alliance.Blue) (-25).degrees
+			else 25.degrees
+
+	val AT_STAGE_TO_SPEAKER_ROTATION
+		get() =
+			if (Robot.alliance == DriverStation.Alliance.Blue) 7.0.degrees
+			else (-7.0).degrees
+
+
+	// --- PID ---
 
 	/** When using closed-loop control, the steer motor uses [ClosedLoopOutputType.Voltage]. */
 	// TODO: Tune.
@@ -37,42 +62,40 @@ object SwerveConstants {
 		kS = 0.0; kV = 0.12; kA = 0.0
 	}
 
-	val DRIVE_MOTOR_CONFIG =
-		TalonFXConfiguration().apply {
-			CurrentLimits = CurrentLimits.apply {
-				SupplyCurrentLimit = 40.0
-				SupplyCurrentLimitEnable = true
-			}
-			ClosedLoopRamps = ClosedLoopRampsConfigs().apply {
-				VoltageClosedLoopRampPeriod = 0.25
-			}
+	// Good for TPU wheels!
+
+//	/** Feedback from gyro, setpoint from anywhere. */
+//	val CHASSIS_ANGLE_PID_CONTROLLER =
+//		PIDController(0.12, 0.0, 0.0).apply {
+//			enableContinuousInput(-180.0, 180.0)
+//		}
+//
+//	/** Feedback from gyro, setpoint from vision! */
+//	val CHASSIS_VISION_ANGLE_PID_CONTROLLER =
+//		PIDController(0.12, 0.0, 0.0).apply {
+//			enableContinuousInput(-180.0, 180.0)
+//		}
+
+
+	// Good for regular wheels!
+
+	/** Feedback from gyro, setpoint from anywhere. */
+	val CHASSIS_ANGLE_PID_CONTROLLER =
+		PIDController(0.3, 0.0, 0.5).apply {
+			enableContinuousInput(-180.0, 180.0)
 		}
 
-	val STEER_MOTOR_CONFIG =
-		TalonFXConfiguration().apply {
-			CurrentLimits = CurrentLimits.apply {
-				SupplyCurrentLimit = 20.0
-				SupplyCurrentLimitEnable = true
-			}
+	/** Feedback from gyro, setpoint from vision! */
+	val CHASSIS_VISION_ANGLE_PID_CONTROLLER =
+		PIDController(0.2, 0.1, 0.0).apply {
+			enableContinuousInput(-180.0, 180.0)
 		}
 
-	/** How many rotations the drive motor does when the module rotates 1 rotation. */
-	private const val COUPLING_GEAR_RATIO = 3.5714285714285716
 
-	private val CONSTANT_CREATOR = SwerveModuleConstantsFactory().apply {
-		DriveMotorGearRatio = 6.746031746031747
-		SteerMotorGearRatio = 12.8
-		WheelRadius = 2.0 // In inches.
-		SlipCurrent = 300.0 // TODO: Tune.
-		SteerMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
-		DriveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
-		FeedbackSource = SteerFeedbackType.RemoteCANcoder
-		SteerMotorInverted = false
-		SpeedAt12VoltsMps = MAX_SPEED_MPS
-		SteerMotorGains = STEER_PID_GAINS
-		DriveMotorGains = DRIVE_PID_GAINS
-		CouplingGearRatio = COUPLING_GEAR_RATIO
-	}
+	// --- PathPlanner ---
+
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(35.0, 0.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(12.0, 0.0, 0.00)
 
 	// TODO: Tune.
 	val PATH_CONSTRAINTS = PathConstraints(
@@ -82,33 +105,6 @@ object SwerveConstants {
 		MAX_ANGULAR_VELOCITY.asRadPs * 2, // Max angular acceleration - 1 second to max velocity
 	)
 
-	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(
-		52.0, 0.1, 0.004,
-	)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(
-		15.0, 0.9, 0.001
-	)
-
-	/**
-	 * Feedback from gyro, setpoint from whatever
-	 */
-	val CHASSIS_ANGLE_PID_CONTROLLER = PIDController(
-		0.12, 0.0, 0.0
-	).apply {
-		enableContinuousInput(-180.0, 180.0)
-	}
-
-	/**
-	 * Feedback from gyro, setpoint from vision!
-	 */
-	val CHASSIS_VISION_ANGLE_PID_CONTROLLER = PIDController(
-		0.02, 0.1, 0.0
-	).apply {
-		enableContinuousInput(-180.0, 180.0)
-	}
-
-	private val DRIVEBASE_RADIUS = 0.417405.meters
-
 	val PATH_PLANNER_CONFIG = HolonomicPathFollowerConfig(
 		PATH_TRANSLATION_CONSTANTS,
 		PATH_ROTATION_CONSTANTS,
@@ -117,8 +113,50 @@ object SwerveConstants {
 		ReplanningConfig(),
 	)
 
-	/**offset from podium setpoint to speaker*/
-	val AT_PODIUM_ANGLE get() = if (robotAlliance == DriverStation.Alliance.Blue) (-25).degrees else 25.degrees
+
+	// --- Configs ---
+
+	val DRIVETRAIN_CONSTANTS = SwerveDrivetrainConstants().apply {
+		Pigeon2Id = SwerveMap.PIGEON_ID
+		CANbusName = SwerveMap.CANBUS_NAME
+	}
+
+	val STEER_MOTOR_CONFIG =
+		TalonFXConfiguration().apply {
+			CurrentLimits.apply {
+				SupplyCurrentLimit = 20.0
+				SupplyCurrentLimitEnable = true
+			}
+		}
+
+	val DRIVE_MOTOR_CONFIG =
+		TalonFXConfiguration().apply {
+			CurrentLimits.apply {
+				SupplyCurrentLimit = 40.0
+				SupplyCurrentLimitEnable = true
+			}
+			ClosedLoopRamps.apply {
+				VoltageClosedLoopRampPeriod = 0.25
+			}
+		}
+
+	/** How many rotations the drive motor does when the module rotates 1 rotation. */
+	private const val COUPLING_GEAR_RATIO = 3.5714285714285716
+
+	private val CONSTANT_CREATOR = SwerveModuleConstantsFactory().apply {
+		WheelRadius = 2.0 // In inches.
+		SlipCurrent = 300.0 // TODO: Tune.
+		SteerMotorGearRatio = 12.8
+		DriveMotorGearRatio = 6.746031746031747
+		SteerMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
+		DriveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage
+		FeedbackSource = SteerFeedbackType.RemoteCANcoder
+		SteerMotorInverted = false
+		SpeedAt12VoltsMps = MAX_SPEED_MPS
+		SteerMotorGains = STEER_PID_GAINS
+		DriveMotorGains = DRIVE_PID_GAINS
+		CouplingGearRatio = COUPLING_GEAR_RATIO
+	}
 
 	object Modules {
 		private val DISTANCE_TO_MODULE_X = 11.62.inches

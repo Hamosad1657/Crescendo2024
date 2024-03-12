@@ -2,7 +2,6 @@ package com.hamosad1657.lib.units
 
 import com.hamosad1657.lib.robotPrintError
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 
 const val INCHES_IN_METER = 39.3700787402
@@ -215,8 +214,8 @@ fun falconTicksPer100msToRpm(ticksPer100ms: Number, gearRatio: Number = 1.0) =
  */
 fun matchPoseToAlliance(position: Pose2d, alliance: Alliance): Pose2d {
 	return when (alliance) {
-		DriverStation.Alliance.Blue -> position
-		DriverStation.Alliance.Red ->
+		Alliance.Blue -> position
+		Alliance.Red ->
 			Pose2d(
 				CRESCENDO_FIELD_LENGTH.asMeters - position.x,
 				position.y,

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9471356546509068,
-      "y": 4.53799778299438
+      "x": 1.3503784075630976,
+      "y": 5.537335193344034
     },
-    "rotation": 120.0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right_collection"
+            "pathName": "middle_to_middle_collect"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "collect_with_timeout_command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle_to_right"
           }
         },
         {

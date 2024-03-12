@@ -12,12 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot_from_speaker_command"
@@ -45,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot_auto_line_1_3_command"
+            "name": "shoot_command"
           }
         }
       ]
