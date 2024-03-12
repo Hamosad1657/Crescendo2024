@@ -8,7 +8,7 @@ import com.hamosad1657.lib.math.clamp
 import com.hamosad1657.lib.math.wrapPositionSetpoint
 import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.toNeutralMode
-import com.revrobotics.CANSparkBase
+import com.revrobotics.CANSparkBase.IdleMode
 
 class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	init {
@@ -43,13 +43,16 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	 *
 	 * Use only as setter.
 	 * */
-	var idleMode: CANSparkBase.IdleMode
-		get() = throw UnsupportedOperationException("use this field only as a setter")
+	var idleMode: IdleMode
+		get() {
+			robotPrintError("Use [idleMode] field only as a setter", true)
+			return IdleMode.kCoast
+		}
 		set(value) = setNeutralMode(idleMode.toNeutralMode())
 
 	/** USE [idleMode] SETTER INSTEAD. */
 	override fun setNeutralMode(neutralMode: NeutralMode?) {
-		throw UnsupportedOperationException("use [idleMode] setter instead")
+		robotPrintError("Use [idleMode] setter instead of [setNeutralMode]", true)
 	}
 
 	private var minPositionSetpoint: Double = 0.0
@@ -58,11 +61,13 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	private var speed = 0.0
 
 	fun configPIDGains(gains: PIDGains, slotIndex: Int = 0) {
-		require(slotIndex in 0..2)
+		if (slotIndex !in 0..3) {
+			return robotPrintError("Illegal PID Slot: $slotIndex")
+		}
 		config_kP(slotIndex, gains.kP)
 		config_kI(slotIndex, gains.kI)
 		config_kD(slotIndex, gains.kD)
-		config_IntegralZone(0, gains.kIZone)
+		config_IntegralZone(slotIndex, gains.kIZone)
 	}
 
 	/**
@@ -98,12 +103,12 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 			speed = 0.0
 			super.set(ControlMode.PercentOutput, 0.0)
 		} else {
-			if (maxPercentOutput >= minPercentOutput) {
+			if (maxPercentOutput > minPercentOutput) {
 				speed = clamp(percentOutput, minPercentOutput, maxPercentOutput)
+				super.set(ControlMode.PercentOutput, speed)
 			} else {
 				robotPrintError("maxPercentOutput is smaller then minPercentOutput", true)
 			}
-			super.set(ControlMode.PercentOutput, speed)
 		}
 	}
 
