@@ -4,7 +4,6 @@ import com.hamosad1657.lib.motors.HaSparkFlex
 import com.hamosad1657.lib.units.Volts
 import com.revrobotics.CANSparkBase.IdleMode
 import com.revrobotics.CANSparkFlex
-import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap.Climbing.Stabilizers as StabilizersMap
 import frc.robot.subsystems.stabilizers.StabilizersConstants as Constants
@@ -57,23 +56,7 @@ object StabilizersSubsystem : SubsystemBase() {
 	}
 
 	fun stopMotors() {
-		stopLeft()
-		stopRight()
-	}
-
-	fun stopLeft() {
 		leftMotor.stopMotor()
-	}
-
-	fun stopRight() {
 		rightMotor.stopMotor()
-	}
-
-
-	// --- Periodic & Telemetry ---
-
-	override fun initSendable(builder: SendableBuilder) {
-		builder.setSmartDashboardType("Subsystem")
-		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
 	}
 }

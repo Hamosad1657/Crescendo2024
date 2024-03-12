@@ -199,7 +199,6 @@ object RobotContainer {
 		SmartDashboard.putData(Loader)
 		SmartDashboard.putData(Shooter)
 		SmartDashboard.putData(Climbing)
-		SmartDashboard.putData(Stabilizers)
 	}
 
 	private fun sendCompetitionInfo() {
