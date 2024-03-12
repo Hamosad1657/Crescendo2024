@@ -11,13 +11,11 @@ object RobotMap {
 		const val LEFT_BACK_MOTOR_ID = 26
 		const val RIGHT_FRONT_MOTOR_ID = 27
 		const val RIGHT_BACK_MOTOR_ID = 28
-		const val LEFT_CLOSED_LIMIT_CHANNEL = 3
-		const val LEFT_OPENED_LIMIT_CHANNEL = 2
-		const val RIGHT_CLOSED_LIMIT_CHANNEL = 4
-		const val RIGHT_OPENED_LIMIT_CHANNEL = 5
 
-		const val LEFT_TRAP_SWITCH = 8
-		const val RIGHT_TRAP_SWITCH = 9
+		object Stabilizers {
+			const val LEFT_MOTOR_ID = 29
+			const val RIGHT_MOTOR_ID = 30
+		}
 	}
 
 	object Intake {

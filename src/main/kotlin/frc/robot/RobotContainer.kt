@@ -29,6 +29,7 @@ import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
+import frc.robot.subsystems.stabilizers.StabilizersSubsystem as Stabilizers
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
 fun joystickCurve(value: Double) = -value.pow(2) * value.sign
@@ -147,6 +148,7 @@ object RobotContainer {
 		// Shooter default commands are set in Robot.kt
 		with(Intake) { defaultCommand = run { stopMotors() } }
 		with(Loader) { defaultCommand = run { stopMotors() } }
+		with(Stabilizers) { defaultCommand = run { stopMotors() } }
 
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
@@ -167,9 +169,9 @@ object RobotContainer {
 		}
 
 	private val allianceChooser =
-		SendableChooser<DriverStation.Alliance>().apply {
-			setDefaultOption("Blue", DriverStation.Alliance.Blue)
-			addOption("Red", DriverStation.Alliance.Red)
+		SendableChooser<Alliance>().apply {
+			setDefaultOption("Blue", Alliance.Blue)
+			addOption("Red", Alliance.Red)
 
 			onChange {
 				Robot.alliance = it

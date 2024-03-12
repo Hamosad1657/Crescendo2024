@@ -37,6 +37,7 @@ object ClimbingSubsystem : SubsystemBase() {
 	private val leftEncoder = leftMainMotor.encoder
 	private val rightEncoder = rightMainMotor.encoder
 
+
 	// --- Motors Configuration ---
 
 	private fun CANSparkFlex.configMainMotor(inverted: Boolean) =
@@ -62,6 +63,7 @@ object ClimbingSubsystem : SubsystemBase() {
 			rightSecondaryMotor.idleMode = value
 			field = value
 		}
+
 
 	// --- Motors Control ---
 
