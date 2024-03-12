@@ -3,11 +3,13 @@ package frc.robot
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.math.simpleDeadband
 import com.hamosad1657.lib.robotPrint
+import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.plus
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -19,7 +21,7 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.vision.NoteVision
-import java.util.*
+import java.util.Optional
 import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.sign
@@ -62,7 +64,13 @@ object RobotContainer {
 		with(controllerA) {
 			// --- Swerve ---
 			// Zero gyro
-			options().onTrue((Swerve::zeroGyro).asInstantCommand)
+			options().onTrue(
+				{
+					if (Robot.alliance == Alliance.Blue) Swerve.zeroGyro()
+					else Swerve.setGyro(180.degrees)
+
+				}.asInstantCommand
+			)
 
 			// Lock wheels
 			cross().onTrue(Swerve.crossLockWheelsCommand() until ::areControllerAJoysticksMoving)
@@ -233,12 +241,16 @@ object RobotContainer {
 
 		register(
 			"aim_at_speaker",
-			Swerve.aimAtSpeaker(flipGoal = false) until {
+			(Swerve.aimAtSpeaker(flipGoal = false) until {
 				DynamicShooting.inChassisAngleTolerance
 			} finallyDo {
 				Swerve.stop()
-			},
+			}),
 		)
+
+		register("get_to_shoot_command", Shooter.getToShooterStateCommand {
+			DynamicShooting.calculateShooterState(Swerve.robotPose.translation)
+		})
 
 		register(
 			"shoot_command",

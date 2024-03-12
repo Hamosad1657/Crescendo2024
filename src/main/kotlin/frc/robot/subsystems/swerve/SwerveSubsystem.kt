@@ -26,6 +26,7 @@ import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -116,8 +117,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	) {
 		if (isFieldRelative) {
 			super.setControl(controlRequestFieldRelative.apply {
-				VelocityX = translation.x
-				VelocityY = translation.y
+				VelocityX = translation.x * if (Robot.alliance == Alliance.Red) -1 else 1
+				VelocityY = translation.y * if (Robot.alliance == Alliance.Red) -1 else 1
 				RotationalRate = omega.asRadPs
 				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
 				SteerRequestType = MotionMagic
