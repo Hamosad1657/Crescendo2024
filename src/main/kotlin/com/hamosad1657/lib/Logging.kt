@@ -11,14 +11,6 @@ fun robotPrint(message: Any?, printStackTrace: Boolean = false) =
 fun robotPrintError(message: Any?, printStackTrace: Boolean = false) =
 	DriverStation.reportError(message.toString(), printStackTrace)
 
-val driverStationID: Int
-	get() {
-		if (DriverStation.getLocation().isEmpty) {
-			throw NoSuchElementException("Station ID invalid or can't fetch from Driver Station")
-		}
-		return DriverStation.getLocation().asInt
-	}
-
 enum class Telemetry {
 	Testing, Competition;
 }

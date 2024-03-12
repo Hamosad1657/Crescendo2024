@@ -1,6 +1,7 @@
 package com.hamosad1657.lib.math.filters.movingwindowfilters
 
-import java.util.*
+import com.hamosad1657.lib.robotPrintError
+import java.util.LinkedList
 
 /**
  * A class for a moving average filter, a type of low-pass filter with a finite memory.
@@ -16,8 +17,12 @@ import java.util.*
 open class MovingAverageFilter(window: Int) : MovingWindowFilter() {
 	override var window: Int = window
 		set(value) {
-			require(value > 0) { "window must be positive" }
-			field = value
+			field =
+				if (value > 0) value
+				else {
+					robotPrintError("window must be positive", true)
+					0
+				}
 		}
 	override val calculation = { values: LinkedList<Double> -> values.average() }
 }

@@ -1,5 +1,6 @@
 package com.hamosad1657.lib.units
 
+import com.hamosad1657.lib.robotPrintError
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
@@ -63,8 +64,13 @@ fun degPsToRadPs(degPs: Number) = Math.toRadians(degPs.toDouble())
 /** Rotations per minute to meters per second.
  *
  * Wheel radius should be greater than 0. */
-fun rpmToMps(rpm: Number, wheelRadius: Length) =
-	require(wheelRadius.asMeters > 0.0).run { rpm.toDouble() / 60.0 * (wheelRadius.asMeters * 2.0 * Math.PI) }
+fun rpmToMps(rpm: Number, wheelRadius: Length): Double {
+	if (wheelRadius.asMeters <= 0.0) {
+		robotPrintError("wheelRadius is negative", true)
+		return 0.0
+	}
+	return rpm.toDouble() / 60.0 * (wheelRadius.asMeters * 2.0 * Math.PI)
+}
 
 /** Radians per second to meters per second.
  *
@@ -79,8 +85,13 @@ fun degPsToMps(degPs: Number, wheelRadius: Length) = rpmToMps(degPsToRpm(degPs),
 /** Meters per second to rotations per minute.
  *
  * Wheel radius should be greater than 0. */
-fun mpsToRpm(mps: Number, wheelRadius: Length) =
-	require(wheelRadius.asMeters > 0.0).run { mps.toDouble() * 60.0 / (wheelRadius.asMeters * 2.0 * Math.PI) }
+fun mpsToRpm(mps: Number, wheelRadius: Length): Double {
+	if (wheelRadius.asMeters <= 0.0) {
+		robotPrintError("wheelRadius is negative", true)
+		return 0.0
+	}
+	return mps.toDouble() * 60.0 / (wheelRadius.asMeters * 2.0 * Math.PI)
+}
 
 /** Meters per second to radians per second.
  *

@@ -5,7 +5,12 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.math.clamp
 import com.hamosad1657.lib.robotPrint
-import com.hamosad1657.lib.units.*
+import com.hamosad1657.lib.robotPrintError
+import com.hamosad1657.lib.units.AngularVelocity
+import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Volts
+import com.hamosad1657.lib.units.degrees
+import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
 
@@ -91,13 +96,24 @@ object ShooterConstants {
 	// ShooterState is a data class and not an enum, because we might want to make
 	// a continuous shooting function if we have the time. In the meantime, we will
 	// shoot from a few constant positions. Keep instances of ShooterState as constants.
-	data class ShooterState(
-		val angle: Rotation2d,
-		val velocity: AngularVelocity,
-	) {
+	class ShooterState(angle: Rotation2d, velocity: AngularVelocity) {
+		val angle: Rotation2d
+		val velocity: AngularVelocity
+
 		init {
-			require(angle.degrees in 0.0..MAX_ANGLE.degrees) { "angle ${angle.degrees}: have a nice day :D" }
-			require(velocity.asRpm in 0.0..5000.0) { "velocity ${velocity.asRpm}: have a nice day :D" }
+			this.angle =
+				if (angle.degrees in 0.0..MAX_ANGLE.degrees) angle
+				else {
+					robotPrintError("Shooter angle out of bounds: ${angle.degrees}", true)
+					0.degrees
+				}
+			
+			this.velocity =
+				if (velocity.asRpm in 0.0..5000.0) velocity
+				else {
+					robotPrintError("Shooter velocity out of bounds: ${angle.degrees}", true)
+					0.rpm
+				}
 		}
 
 		companion object {

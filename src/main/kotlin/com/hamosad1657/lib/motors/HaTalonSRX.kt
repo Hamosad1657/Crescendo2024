@@ -3,7 +3,10 @@ package com.hamosad1657.lib.motors
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
-import com.hamosad1657.lib.math.*
+import com.hamosad1657.lib.math.PIDGains
+import com.hamosad1657.lib.math.clamp
+import com.hamosad1657.lib.math.wrapPositionSetpoint
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.toNeutralMode
 import com.revrobotics.CANSparkBase
 
@@ -91,12 +94,15 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	 * [percentOutput] is clamped between [minPercentOutput] and [maxPercentOutput].
 	 */
 	override fun set(percentOutput: Double) {
-		require(maxPercentOutput >= minPercentOutput)
 		if ((forwardLimit() && percentOutput > 0.0) || (reverseLimit() && percentOutput < 0.0)) {
 			speed = 0.0
 			super.set(ControlMode.PercentOutput, 0.0)
 		} else {
-			speed = clamp(percentOutput, minPercentOutput, maxPercentOutput)
+			if (maxPercentOutput >= minPercentOutput) {
+				speed = clamp(percentOutput, minPercentOutput, maxPercentOutput)
+			} else {
+				robotPrintError("maxPercentOutput is smaller then minPercentOutput", true)
+			}
 			super.set(ControlMode.PercentOutput, speed)
 		}
 	}
@@ -113,7 +119,9 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	 * @param maxPossibleSetpoint The largest setpoint.
 	 */
 	fun enablePositionWrap(minPossibleSetpoint: Double, maxPossibleSetpoint: Double) {
-		require(minPossibleSetpoint < maxPossibleSetpoint)
+		if (!(minPossibleSetpoint < maxPossibleSetpoint)) {
+			robotPrintError("minPossibleSetpoint is bigger than maxPossibleSetpoint", true)
+		}
 		this.minPositionSetpoint = minPossibleSetpoint
 		this.maxPositionSetpoint = maxPossibleSetpoint
 		isPositionWrapEnabled = true

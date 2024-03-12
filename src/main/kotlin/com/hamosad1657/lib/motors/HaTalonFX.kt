@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.math.clamp
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.toNeutralModeValue
 import com.revrobotics.CANSparkBase.IdleMode
@@ -73,7 +74,7 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 		}
 		configurator.apply(configuration)
 	}
-	
+
 	var positionWrapEnabled = false
 		set(value) {
 			closedLoopGeneralConfigs.ContinuousWrap = value
@@ -101,8 +102,11 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 		get() = deviceTemp.value < FalconSafeTempC
 
 	override fun set(output: PercentOutput) {
-		require(maxPercentOutput >= minPercentOutput)
-		speed = clamp(output, minPercentOutput, maxPercentOutput)
+		if (maxPercentOutput >= minPercentOutput) {
+			speed = clamp(output, minPercentOutput, maxPercentOutput)
+		} else {
+			robotPrintError("maxPercentOutput is smaller than minPercentOutput")
+		}
 		super.set(speed)
 	}
 

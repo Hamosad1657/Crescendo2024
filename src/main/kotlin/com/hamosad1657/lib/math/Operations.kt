@@ -1,7 +1,10 @@
 package com.hamosad1657.lib.math
 
+import com.hamosad1657.lib.robotPrintError
 import edu.wpi.first.math.MathUtil
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * If the absolute value is smaller than the deadband, the value becomes 0.
@@ -10,12 +13,11 @@ import kotlin.math.*
  * - [deadband] must be positive. [value] can be anything.
  */
 fun simpleDeadband(value: Double, deadband: Double): Double {
-	require(deadband >= 0.0)
-	return if (abs(value) >= deadband) {
-		value
-	} else {
-		0.0
+	if (deadband < 0.0) {
+		robotPrintError("deadband is negative", true)
+		return value
 	}
+	return if (abs(value) >= deadband) value else 0.0
 }
 
 /**
@@ -33,8 +35,14 @@ fun simpleDeadband(value: Double, deadband: Double): Double {
  * - continuousDeadband(1, 0.1) will return 1.0.
  */
 fun continuousDeadband(value: Double, deadband: Double): Double {
-	require(deadband in 0.0..1.0)
-	require(value in -1.0..1.0)
+	if (deadband !in 0.0..1.0) {
+		robotPrintError("deadband is out of bounds: $deadband", true)
+		return value
+	}
+	if (value !in -1.0..1.0) {
+		robotPrintError("value is out of bounds: $value", true)
+		return value
+	}
 
 	return if (value > deadband) {
 		mapRange(value, deadband, 1.0, 0.0, 1.0)
@@ -56,8 +64,14 @@ fun clamp(value: Double, min: Double, max: Double): Double {
  * @return The value relative to the end range.
  */
 fun mapRange(value: Double, startMin: Double, startMax: Double, endMin: Double, endMax: Double): Double {
-	require(startMin < startMax)
-	require(endMin < endMax)
+	if (startMin >= startMax) {
+		robotPrintError("startMin is equal/bigger than starMax", true)
+		return value
+	}
+	if (endMin >= endMax) {
+		robotPrintError("endMin is equal/bigger than endMax", true)
+		return value
+	}
 	return endMin + (endMax - endMin) / (startMax - startMin) * (value - startMin)
 }
 
@@ -144,8 +158,14 @@ fun wrapPositionSetpoint(
 	minPossibleSetpoint: Double,
 	maxPossibleSetpoint: Double,
 ): Double {
-	require(minPossibleSetpoint < maxPossibleSetpoint)
-	require(realSetpoint in minPossibleSetpoint..maxPossibleSetpoint)
+	if (!(minPossibleSetpoint < maxPossibleSetpoint)) {
+		robotPrintError("minPossibleSetpoint is equal/bigger than maxPossibleSetpoint")
+		return realSetpoint
+	}
+	if (realSetpoint !in minPossibleSetpoint..maxPossibleSetpoint) {
+		robotPrintError("realSetpoint is out of bounds: $realSetpoint", true)
+		return realSetpoint
+	}
 
 	val countsInRotation = maxPossibleSetpoint - minPossibleSetpoint
 

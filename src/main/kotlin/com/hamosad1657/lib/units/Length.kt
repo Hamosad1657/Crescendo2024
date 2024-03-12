@@ -1,5 +1,7 @@
 package com.hamosad1657.lib.units
 
+import com.hamosad1657.lib.robotPrintError
+
 /** Represents a length.
  *
  * Can be created from or converted to any of the following units:
@@ -12,10 +14,16 @@ package com.hamosad1657.lib.units
 class Length private constructor(length: Number, lengthUnit: Unit) : Comparable<Length> {
 	private var meters = 0.0
 		set(value) {
-			require(!value.isNaN()) { "Length cannot be NaN." }
-			require(value.isFinite()) { "Length cannot be infinite." }
-			require(value >= 0.0) { "Length cannot be negative." }
-			field = value
+			field = if (value.isNaN()) {
+				robotPrintError("Length is NaN.", true)
+				0.0
+			} else if (value.isInfinite()) {
+				robotPrintError("Length is infinite.", true)
+				0.0
+			} else if (value < 0.0) {
+				robotPrintError("Length cannot be negative.", true)
+				0.0
+			} else value
 		}
 
 	val asMeters get() = meters
