@@ -30,13 +30,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "collect_with_timeout_command"
+                  "name": "aim_at_speaker"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "aim_at_speaker"
+                  "name": "collect_with_timeout_command"
                 }
               }
             ]
@@ -61,13 +61,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "collect_with_timeout_command"
+                  "name": "aim_at_speaker"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "aim_at_speaker"
+                  "name": "collect_with_timeout_command"
                 }
               }
             ]
