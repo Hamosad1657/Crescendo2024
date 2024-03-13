@@ -127,6 +127,7 @@ object RobotContainer {
 			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
 			create().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
+			R1().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.REVERSE_AT_SPEAKER))
 			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
 
 			// Amp & Trap
