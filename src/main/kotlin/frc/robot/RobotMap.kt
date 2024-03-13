@@ -69,4 +69,8 @@ object RobotMap {
 			const val CANCODER_ID = 12
 		}
 	}
+
+	object Leds {
+		const val PWM_PORT = 0
+	}
 }
