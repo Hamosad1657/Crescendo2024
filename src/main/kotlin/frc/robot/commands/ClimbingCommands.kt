@@ -42,6 +42,8 @@ fun Stabilizers.openCommand(): Command =
 		run {
 			set(StabilizersConstants.OPEN_STABILIZERS_OUTPUT)
 		} withTimeout StabilizersConstants.OPEN_CLOSE_DURATION
+	} finallyDo {
+		set(0.0)
 	}
 
 fun Stabilizers.closeCommand(): Command =
@@ -49,4 +51,6 @@ fun Stabilizers.closeCommand(): Command =
 		run {
 			set(StabilizersConstants.CLOSE_STABILIZERS_OUTPUT)
 		} withTimeout StabilizersConstants.OPEN_CLOSE_DURATION
+	} finallyDo {
+		set(0.0)
 	}
