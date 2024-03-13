@@ -16,6 +16,7 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.joystickCurve
 import frc.robot.subsystems.shooter.DynamicShooting
+import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_AIM_AT_NOTE_PID_CONTROLLER
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
 import frc.robot.vision.NoteVision
 import kotlin.math.abs
@@ -231,7 +232,7 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 
 				// Calculate the required omega to rotate towards the Note using PID.
 				val setpoint = (robotHeading plus rotationDelta).degrees
-				CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees, setpoint)
+				CHASSIS_AIM_AT_NOTE_PID_CONTROLLER.calculate(robotHeading.degrees, setpoint)
 			}
 			// Stay at the same angle (do not rotate) for [joystickMovedWaitTimeSec] seconds.
 			else {
