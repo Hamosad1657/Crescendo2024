@@ -148,9 +148,9 @@ object RobotContainer {
 		)
 
 		// Shooter default commands are set in Robot.kt
-		with(Intake) { defaultCommand = run { stopMotors() } }
-		with(Loader) { defaultCommand = run { stopMotors() } }
-		with(Stabilizers) { defaultCommand = run { stopMotors() } }
+		with(Intake) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
+		with(Loader) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
+		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
