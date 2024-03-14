@@ -26,6 +26,7 @@ import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.DriverStation.Alliance
+import edu.wpi.first.wpilibj.DriverStation.Alliance.Blue
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -285,7 +286,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 	fun followPathCommand(pathName: String): Command =
 		AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
 
-	val isFacingSpeaker get() = state.Pose.rotation.degrees in -90.0..90.0
+	var isFacingSpeaker = true
+		get() {
+			val isFacingBlueSpeaker = state.Pose.rotation.degrees !in -90.0..90.0
+			field = if (Robot.alliance == Blue) isFacingBlueSpeaker else !isFacingBlueSpeaker
+			return field
+		}
 
 	// --- Telemetry ---
 
