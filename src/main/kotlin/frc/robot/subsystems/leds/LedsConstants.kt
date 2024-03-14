@@ -16,9 +16,10 @@ object LedsConstants {
 	}
 
 	enum class LEDsMode {
-		COLLECT, SHOOT, BLINK_READY, DEFAULT,
+		COLLECT, SHOOT, BLINK_DONE, DEFAULT,
 	}
 
 	const val LENGTH = 0
-	const val READY_BLINK_TIME = 0.2
+	const val BLINK_DONE_TIME = 0.2
+	const val EXIT_BLINK_DONE_MODE_TIMEOUT = 2.0
 }

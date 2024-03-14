@@ -7,14 +7,24 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 import frc.robot.subsystems.intake.IntakeSubsystem
+import frc.robot.subsystems.leds.LedsConstants.EXIT_BLINK_DONE_MODE_TIMEOUT
+import frc.robot.subsystems.leds.LedsConstants.LEDsMode
+import frc.robot.subsystems.leds.LedsConstants.LEDsMode.*
 import frc.robot.subsystems.leds.LedsConstants.RGBColor
 import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.leds.LedsConstants as Constants
 
 object LedsSubsystem : SubsystemBase() {
+	var currentMode: LEDsMode = DEFAULT
+		private set
+
+	fun setMode(mode: LEDsMode) {
+		currentMode = mode
+	}
 
 	private val blinkTimer = Timer()
+	private val exitBlinkDoneModeTimer = Timer()
 
 	private val ledsBuffer = AddressableLEDBuffer(Constants.LENGTH)
 	private val ledStrip = AddressableLED(RobotMap.Leds.PWM_PORT).apply {
@@ -60,7 +70,7 @@ object LedsSubsystem : SubsystemBase() {
 		}
 	}
 
-	private fun shooterMode() {
+	private fun shootMode() {
 		if (ShooterSubsystem.isWithinTolerance) {
 			setColor(RGBColor.MAGENTA)
 		} else {
@@ -76,7 +86,32 @@ object LedsSubsystem : SubsystemBase() {
 		}
 	}
 
-	private fun blinkReadyMode() {
-		blink(RGBColor.PURE_GREEN, Constants.READY_BLINK_TIME)
+	private fun blinkDoneMode() {
+		blink(RGBColor.PURE_GREEN, Constants.BLINK_DONE_TIME)
+	}
+
+	override fun periodic() {
+		when (currentMode) {
+			COLLECT -> {
+				collectMode()
+			}
+
+			SHOOT -> {
+				shootMode()
+			}
+
+			DEFAULT -> {
+				defaultMode()
+			}
+
+			BLINK_DONE -> {
+				exitBlinkDoneModeTimer.start()
+				blinkDoneMode()
+				if (exitBlinkDoneModeTimer.hasElapsed(EXIT_BLINK_DONE_MODE_TIMEOUT)) {
+					currentMode = DEFAULT
+					exitBlinkDoneModeTimer.stop()
+				}
+			}
+		}
 	}
 }
