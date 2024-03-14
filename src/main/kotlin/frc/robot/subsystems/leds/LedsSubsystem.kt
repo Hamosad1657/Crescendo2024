@@ -38,7 +38,7 @@ object LedsSubsystem : SubsystemBase() {
 				(ledsBuffer.getBlue(0) != 0)
 
 	private fun setColor(color: RGBColor) {
-		for (i in 0..(Constants.LENGTH - 1)) {
+		for (i in 0..<Constants.LENGTH) {
 			ledsBuffer.setRGB(i, color.red, color.green, color.blue)
 		}
 		ledStrip.setData(ledsBuffer)
