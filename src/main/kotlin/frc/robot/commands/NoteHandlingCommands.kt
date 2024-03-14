@@ -4,7 +4,6 @@ package frc.robot.commands
 
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.Volts
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior
 import edu.wpi.first.wpilibj2.command.Commands
@@ -12,10 +11,8 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
-import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -61,52 +58,6 @@ fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = with
 			loadIntoShooterCommand()))
 }
 
-/**
- * - Command has no end condition.
- * - Requirements: Shooter.
- */
-fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
-	runOnce {
-		resetVelocityPIDController()
-	} andThen run {
-		setShooterState(state)
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-/**
- * - Command has no end condition.
- * - Requirements: Shooter.
- */
-fun Shooter.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
-	runOnce {
-		resetVelocityPIDController()
-	} andThen run {
-		setShooterState(state())
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-/**
- * - Command has no end condition.
- * - Requirements: Shooter.
- */
-fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to shooter state") {
-	run {
-		setAngle(angle)
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-/** - Requirements: Shooter. */
-fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
-	SwerveSubsystem.robotPose.let { estimatedPose ->
-		DynamicShooting.calculateShooterState(estimatedPose.translation)
-	}
-}
 
 /**
  * Waits until shooter is within angle tolerance to AMP,

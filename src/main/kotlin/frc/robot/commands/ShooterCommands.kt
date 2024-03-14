@@ -5,17 +5,67 @@ import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
+import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_DURATION
 import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_OUTPUT
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.subsystems.swerve.SwerveSubsystem
+
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter.
+ */
+fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
+	runOnce {
+		resetVelocityPIDController()
+	} andThen run {
+		setShooterState(state)
+	} finallyDo {
+		stopShooterMotors()
+	}
+}
+
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter.
+ */
+fun ShooterSubsystem.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
+	runOnce {
+		resetVelocityPIDController()
+	} andThen run {
+		setShooterState(state())
+	} finallyDo {
+		stopShooterMotors()
+	}
+}
+
+/** - Requirements: Shooter. */
+fun ShooterSubsystem.dynamicShootingCommand() = ShooterSubsystem.getToShooterStateCommand {
+	SwerveSubsystem.robotPose.let { estimatedPose ->
+		DynamicShooting.calculateShooterState(estimatedPose.translation)
+	}
+}
+
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter.
+ */
+fun ShooterSubsystem.getToAngleCommand(angle: Rotation2d): Command = withName("get to shooter state") {
+	run {
+		setAngle(angle)
+	} finallyDo {
+		stopShooterMotors()
+	}
+}
 
 /**
  * Maintains [ShooterConstants.ShooterState.AUTO_COLLECT].
  * - Requirements: Shooter.
  */
 fun ShooterSubsystem.autoDefaultCommand(): Command = withName("auto get to state collect") {
-	getToShooterStateCommand(ShooterConstants.ShooterState.AUTO_COLLECT)
+	getToShooterStateCommand(ShooterState.AUTO_COLLECT)
 }
 
 /**
@@ -23,7 +73,7 @@ fun ShooterSubsystem.autoDefaultCommand(): Command = withName("auto get to state
  * - Requirements: Shooter.
  */
 fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("teleop get to state collect") {
-	getToShooterStateCommand(ShooterConstants.ShooterState.COLLECT)
+	getToShooterStateCommand(ShooterState.COLLECT)
 }
 
 /**
