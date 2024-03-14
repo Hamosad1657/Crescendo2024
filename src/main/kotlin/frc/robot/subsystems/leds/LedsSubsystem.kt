@@ -9,13 +9,15 @@ import frc.robot.subsystems.leds.LedsConstants as Constants
 
 object LedsSubsystem : SubsystemBase() {
 	data class RGBColor(val red: Int, val green: Int, val blue: Int) {
-		val TEAM_GREEN = RGBColor(22, 87, 0)
-		val RED = RGBColor(255, 0, 0)
-		val BLUE = RGBColor(0, 0, 255)
-		val YELLOW = RGBColor(255, 255, 0)
-		val CYAN = RGBColor(0, 255, 255)
-		val MAGENTA = RGBColor(255, 0, 255)
-		val DARK = RGBColor(0, 0, 0)
+		companion object {
+			val TEAM_GREEN = RGBColor(22, 87, 0)
+			val RED = RGBColor(255, 0, 0)
+			val BLUE = RGBColor(0, 0, 255)
+			val YELLOW = RGBColor(255, 255, 0)
+			val CYAN = RGBColor(0, 255, 255)
+			val MAGENTA = RGBColor(255, 0, 255)
+			val DARK = RGBColor(0, 0, 0)
+		}
 	}
 
 	val ledsBuffer = AddressableLEDBuffer(Constants.LENGTH)
