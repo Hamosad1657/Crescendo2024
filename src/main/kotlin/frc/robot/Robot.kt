@@ -60,9 +60,9 @@ object Robot : TimedRobot() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand =
 			ShooterSubsystem.escapeAngleLockCommand() andThen
-				RobotContainer.getAutonomousCommand().also {
-					robotPrint("Auto command: ${it.name}")
-				}.asProxy()
+					RobotContainer.getAutonomousCommand().also {
+						robotPrint("Auto command: ${it.name}")
+					}.asProxy()
 		autonomousCommand?.schedule()
 	}
 
@@ -78,7 +78,7 @@ object Robot : TimedRobot() {
 		autonomousCommand?.cancel()
 
 		ShooterSubsystem.defaultCommand =
-			LEDsSubsystem.setModeCommand(DEFAULT) andThen ShooterSubsystem.teleopDefaultCommand()
+			LEDsSubsystem::setToDefaultMode.asInstantCommand andThen ShooterSubsystem.teleopDefaultCommand()
 	}
 
 	override fun testInit() {
