@@ -213,7 +213,7 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 
 		val omega =
 			// The driver takes control of the rotation.
-			if (joystickMoved or !NoteVision.hasTargets) {
+			if (joystickMoved || !NoteVision.hasTargets) {
 				shouldFollowNote = false
 
 				joystickMoveTimer.reset()

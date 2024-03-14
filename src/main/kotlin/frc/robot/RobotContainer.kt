@@ -28,7 +28,7 @@ import kotlin.math.pow
 import kotlin.math.sign
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
-import frc.robot.subsystems.leds.LedsSubsystem as Leds
+import frc.robot.subsystems.leds.LEDsSubsystem as LEDs
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
 import frc.robot.subsystems.stabilizers.StabilizersSubsystem as Stabilizers
@@ -99,21 +99,25 @@ object RobotContainer {
 
 			// --- Notes ---
 			// Dynamic shooting
-			square().whileTrue((Swerve.aimAtSpeakerWhileDrivingCommand(
-				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
-				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
-			) alongWith Shooter.dynamicShootingCommand() alongWith
-				Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+			square().whileTrue((
+				Shooter.dynamicShootingCommand() alongWith
+					Swerve.aimAtSpeakerWhileDrivingCommand(
+						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+						vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
+					) alongWith LEDs.setModeCommand(SHOOT)
+				) finallyDo LEDs::actionFinished
+			)
 
 			// Collect
-			L1().toggleOnTrue((
-				(Notes.collectCommand() raceWith
+			L1().toggleOnTrue(((
+				Notes.collectCommand() raceWith
 					SwerveSubsystem.aimAtNoteWhileDrivingCommand(
 						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 						vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
 						omegaSupplier = { controllerA.rightX }
-					))
-					alongWith Leds.setModeCommand(COLLECT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+					)) alongWith LEDs.setModeCommand(COLLECT)
+				) finallyDo LEDs::actionFinished
+			)
 
 			// Collect from human player
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
@@ -126,36 +130,23 @@ object RobotContainer {
 		}
 
 		with(controllerB) {
+			fun setShooterState(shooterState: ShooterState) =
+				Shooter.getToShooterStateCommand(shooterState) alongWith
+					LEDs.setModeCommand(SHOOT) finallyDo
+					LEDs::actionFinished
+
 			// Speaker
-			circle().toggleOnTrue(
-				(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER) alongWith
-					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
-
-			cross().toggleOnTrue(
-				(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER) alongWith
-					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
-
-			options().toggleOnTrue(
-				(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM) alongWith
-					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
-
-			create().toggleOnTrue(
-				(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE) alongWith
-					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
-
-			R1().toggleOnTrue(
-				(Shooter.getToShooterStateCommand(ShooterState.REVERSE_AT_SPEAKER) alongWith
-					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+			circle().toggleOnTrue(setShooterState(ShooterState.AT_SPEAKER))
+			cross().toggleOnTrue(setShooterState(ShooterState.NEAR_SPEAKER))
+			options().toggleOnTrue(setShooterState(ShooterState.AT_PODIUM))
+			create().toggleOnTrue(setShooterState(ShooterState.AT_STAGE))
+			R1().toggleOnTrue(setShooterState(ShooterState.REVERSE_AT_SPEAKER))
 
 			// Amp & Trap
-			triangle().toggleOnTrue(
-				(Shooter.getToShooterStateCommand(ShooterState.TO_AMP) alongWith
-					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP))
+			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
 
-			square().toggleOnTrue(
-				(Shooter.getToShooterStateCommand(ShooterState.BEFORE_CLIMB) alongWith
-					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
-
+			// Climbing Stabilizers
 			povUp().toggleOnTrue(Stabilizers.openCommand())
 			povDown().toggleOnTrue(Stabilizers.closeCommand())
 		}
