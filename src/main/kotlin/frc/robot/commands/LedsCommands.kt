@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.leds.LedsSubsystem
 import frc.robot.subsystems.leds.LedsSubsystem.RGBColor
-import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
 
 fun LedsSubsystem.setColorCommand(color: RGBColor): Command = withName("set color") {
@@ -42,14 +41,4 @@ fun LedsSubsystem.shootingModeCommand(): Command = withName("shooting mode") {
 
 fun LedsSubsystem.blinkReadyCommand(): Command = withName("blink ready") {
 	blinkCommand(RGBColor.PURE_GREEN, 0.2)
-}
-
-fun LedsSubsystem.ledsDefaultCommand(): Command = withName("default") {
-	RunCommand({
-		if (LoaderSubsystem.isNoteDetected) {
-			setColorCommand(RGBColor.TEAM_GREEN).schedule()
-		} else {
-			setColorCommand(RGBColor.DARK).schedule()
-		}
-	})
 }
