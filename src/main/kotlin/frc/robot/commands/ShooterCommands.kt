@@ -13,6 +13,34 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.shooter.ShooterSubsystem
 import frc.robot.subsystems.swerve.SwerveSubsystem
 
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter.
+ */
+fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
+	runOnce {
+		resetVelocityPIDController()
+	} andThen run {
+		setShooterState(state)
+	} finallyDo {
+		stopShooterMotors()
+	}
+}
+
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter.
+ */
+fun ShooterSubsystem.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
+	runOnce {
+		resetVelocityPIDController()
+	} andThen run {
+		setShooterState(state())
+	} finallyDo {
+		stopShooterMotors()
+	}
+}
+
 /** - Requirements: Shooter. */
 fun ShooterSubsystem.dynamicShootingCommand() = ShooterSubsystem.getToShooterStateCommand {
 	SwerveSubsystem.robotPose.let { estimatedPose ->
