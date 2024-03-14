@@ -4,6 +4,8 @@ import com.hamosad1657.lib.units.Seconds
 import edu.wpi.first.wpilibj.AddressableLED
 import edu.wpi.first.wpilibj.AddressableLEDBuffer
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 import frc.robot.subsystems.intake.IntakeSubsystem
@@ -18,10 +20,6 @@ import frc.robot.subsystems.leds.LedsConstants as Constants
 object LedsSubsystem : SubsystemBase() {
 	var currentMode: LEDsMode = DEFAULT
 		private set
-
-	fun setMode(mode: LEDsMode) {
-		currentMode = mode
-	}
 
 	private val blinkTimer = Timer()
 	private val exitBlinkDoneModeTimer = Timer()
@@ -88,6 +86,18 @@ object LedsSubsystem : SubsystemBase() {
 
 	private fun blinkDoneMode() {
 		blink(RGBColor.PURE_GREEN, Constants.BLINK_DONE_TIME)
+	}
+
+	fun setModeCommand(mode: LEDsMode): Command = InstantCommand({
+		currentMode = mode
+	})
+
+	fun exitAMode(interrupted: Boolean) {
+		if (interrupted) {
+			currentMode = DEFAULT
+		} else {
+			currentMode = BLINK_DONE
+		}
 	}
 
 	override fun periodic() {

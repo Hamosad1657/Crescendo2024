@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
-import frc.robot.subsystems.leds.LedsSubsystem.RGBColor
+import frc.robot.subsystems.leds.LedsConstants.LEDsMode.COLLECT
+import frc.robot.subsystems.leds.LedsConstants.LEDsMode.SHOOT
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
@@ -98,20 +99,21 @@ object RobotContainer {
 
 			// --- Notes ---
 			// Dynamic shooting
-			square().whileTrue(Swerve.aimAtSpeakerWhileDrivingCommand(
+			square().whileTrue((Swerve.aimAtSpeakerWhileDrivingCommand(
 				vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 				vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
-			) alongWith Shooter.dynamicShootingCommand())
+			) alongWith Shooter.dynamicShootingCommand() alongWith
+				Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
 
 			// Collect
-			L1().toggleOnTrue(
-				Notes.collectCommand() raceWith
+			L1().toggleOnTrue((
+				(Notes.collectCommand() raceWith
 					SwerveSubsystem.aimAtNoteWhileDrivingCommand(
 						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 						vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
 						omegaSupplier = { controllerA.rightX }
-					)
-			)
+					))
+					alongWith Leds.setModeCommand(COLLECT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
 
 			// Collect from human player
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
@@ -125,16 +127,34 @@ object RobotContainer {
 
 		with(controllerB) {
 			// Speaker
-			circle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER))
-			cross().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER))
-			options().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM))
-			create().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE))
-			R1().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.REVERSE_AT_SPEAKER))
-			R2().toggleOnTrue(Shooter.dynamicShootingCommand())
+			circle().toggleOnTrue(
+				(Shooter.getToShooterStateCommand(ShooterState.AT_SPEAKER) alongWith
+					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+
+			cross().toggleOnTrue(
+				(Shooter.getToShooterStateCommand(ShooterState.NEAR_SPEAKER) alongWith
+					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+
+			options().toggleOnTrue(
+				(Shooter.getToShooterStateCommand(ShooterState.AT_PODIUM) alongWith
+					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+
+			create().toggleOnTrue(
+				(Shooter.getToShooterStateCommand(ShooterState.AT_STAGE) alongWith
+					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+
+			R1().toggleOnTrue(
+				(Shooter.getToShooterStateCommand(ShooterState.REVERSE_AT_SPEAKER) alongWith
+					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
 
 			// Amp & Trap
-			triangle().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.TO_AMP))
-			square().toggleOnTrue(Shooter.getToShooterStateCommand(ShooterState.BEFORE_CLIMB))
+			triangle().toggleOnTrue(
+				(Shooter.getToShooterStateCommand(ShooterState.TO_AMP) alongWith
+					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
+
+			square().toggleOnTrue(
+				(Shooter.getToShooterStateCommand(ShooterState.BEFORE_CLIMB) alongWith
+					Leds.setModeCommand(SHOOT)) finallyDo { interrupted -> Leds.exitAMode(interrupted) })
 
 			povUp().toggleOnTrue(Stabilizers.openCommand())
 			povDown().toggleOnTrue(Stabilizers.closeCommand())
@@ -154,7 +174,6 @@ object RobotContainer {
 		with(Intake) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Loader) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
-		with(Leds) { defaultCommand = setColorCommand(RGBColor.DARK) }
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
 				{ simpleDeadband(-controllerB.leftY, CLIMBING_DEADBAND) },
