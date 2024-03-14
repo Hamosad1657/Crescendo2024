@@ -26,6 +26,7 @@ object LedsSubsystem : SubsystemBase() {
 
 	private val ledsBuffer = AddressableLEDBuffer(Constants.LENGTH)
 	private val ledStrip = AddressableLED(RobotMap.Leds.PWM_PORT).apply {
+		setLength(Constants.LENGTH)
 		setData(ledsBuffer)
 		start()
 	}
@@ -37,7 +38,7 @@ object LedsSubsystem : SubsystemBase() {
 				(ledsBuffer.getBlue(0) != 0)
 
 	private fun setColor(color: RGBColor) {
-		for (i in 0..Constants.LENGTH) {
+		for (i in 0..(Constants.LENGTH - 1)) {
 			ledsBuffer.setRGB(i, color.red, color.green, color.blue)
 		}
 		ledStrip.setData(ledsBuffer)
