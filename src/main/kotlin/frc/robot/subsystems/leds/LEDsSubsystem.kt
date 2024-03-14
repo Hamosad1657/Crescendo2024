@@ -4,27 +4,26 @@ import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.Seconds
 import edu.wpi.first.wpilibj.AddressableLED
 import edu.wpi.first.wpilibj.AddressableLEDBuffer
-import edu.wpi.first.wpilibj.DriverStation.Alliance.Blue
-import edu.wpi.first.wpilibj.DriverStation.Alliance.Red
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Robot
 import frc.robot.RobotMap
 import frc.robot.subsystems.intake.IntakeSubsystem
-import frc.robot.subsystems.leds.LedsConstants.ACTION_FINISHED_MODE_TIMEOUT
-import frc.robot.subsystems.leds.LedsConstants.LEDsMode
-import frc.robot.subsystems.leds.LedsConstants.LEDsMode.*
-import frc.robot.subsystems.leds.LedsConstants.RGBColor
-import frc.robot.subsystems.loader.LoaderSubsystem
+import frc.robot.subsystems.leds.LEDsConstants.ACTION_FINISHED_MODE_TIMEOUT
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
+import frc.robot.subsystems.leds.LEDsConstants.RGBColor
 import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.leds.LedsConstants as Constants
+import frc.robot.subsystems.leds.LEDsConstants as Constants
 
 object LEDsSubsystem : SubsystemBase() {
 	// --- LEDs ---
 
 	private val blinkTimer = Timer()
-	private val exitActionFinishedModeTimer = Timer()
+	private val actionFinishedModeExitTimer = Timer()
+	private val collectWithNoteTimer = Timer()
 
 	private val ledsBuffer = AddressableLEDBuffer(Constants.LENGTH)
 	private val ledStrip = AddressableLED(RobotMap.Leds.PWM_PORT).apply {
@@ -36,8 +35,7 @@ object LEDsSubsystem : SubsystemBase() {
 
 	// --- LEDs State ---
 
-	var currentMode: LEDsMode = DEFAULT
-		private set
+	var currentMode: LEDsMode = ROBOT_DISABLED
 
 	private var currentColor = RGBColor.LEDS_OFF
 
@@ -70,8 +68,7 @@ object LEDsSubsystem : SubsystemBase() {
 	}
 
 	/** Should be called periodically. */
-	private fun blink(color: RGBColor, blinkTime: Seconds) {
-		setColor(color)
+	private fun blink(blinkTime: Seconds) {
 		blinkTimer.start()
 		if (blinkTimer.hasElapsed(blinkTime)) {
 			toggleLeds()
@@ -83,49 +80,60 @@ object LEDsSubsystem : SubsystemBase() {
 	// --- Modes Periodic Functions ---
 
 	private fun actionFinishedMode() {
-		blink(RGBColor.PURE_GREEN, Constants.ACTION_FINISHED_MODE_BLINK_TIME)
+		blink(Constants.ACTION_FINISHED_MODE_BLINK_TIME)
 	}
 
 	private fun collectMode() {
 		setColor(
-			if (IntakeSubsystem.isBottomMotorUnderLoad) RGBColor.MAGENTA
-			else RGBColor.WHITE
+			if (
+				IntakeSubsystem.isCollectingNote &&
+				collectWithNoteTimer.hasElapsed(Constants.WAIT_WITH_NOTE_DELAY)
+			)
+				RGBColor.MAGENTA
+			else RGBColor.YELLOW
 		)
 	}
 
 	private fun shootMode() {
 		setColor(
 			if (ShooterSubsystem.isWithinTolerance) RGBColor.MAGENTA
-			else RGBColor.WHITE
+			else RGBColor.YELLOW
 		)
 	}
 
 	private fun defaultMode() {
-		setColor(
-			if (LoaderSubsystem.isNoteDetected) RGBColor.TEAM_GREEN
-			else RGBColor.LEDS_OFF
-		)
+		setColor(RGBColor.LEDS_OFF)
 	}
 
 	private fun robotDisabledMode() {
-		when (Robot.alliance) {
-			Blue -> RGBColor.BLUE
-			Red -> RGBColor.RED
-		}
+		setColor(
+			if (Robot.alliance == Alliance.Blue) RGBColor.BLUE
+			else RGBColor.RED
+		)
 	}
 
 
 	// --- LEDs Commands Control ---
 
 	fun actionFinished(interrupted: Boolean) {
+		actionFinishedModeExitTimer.restart()
 		currentMode =
-			if (interrupted) DEFAULT
-			else ACTION_FINISHED
+			if (interrupted) {
+				DEFAULT
+			} else {
+				setColor(RGBColor.GREEN)
+				ACTION_FINISHED
+			}
+	}
+
+	fun setToDefaultMode() {
+		if (currentMode != ACTION_FINISHED) currentMode = DEFAULT
 	}
 
 	fun setModeCommand(mode: LEDsMode): Command =
 		instantCommand {
 			currentMode = mode
+			if (mode == COLLECT) collectWithNoteTimer.restart()
 		}
 
 
@@ -134,11 +142,10 @@ object LEDsSubsystem : SubsystemBase() {
 	override fun periodic() {
 		when (currentMode) {
 			ACTION_FINISHED -> {
-				exitActionFinishedModeTimer.start()
 				actionFinishedMode()
-				if (exitActionFinishedModeTimer.hasElapsed(ACTION_FINISHED_MODE_TIMEOUT)) {
+				if (actionFinishedModeExitTimer.hasElapsed(ACTION_FINISHED_MODE_TIMEOUT)) {
 					currentMode = DEFAULT
-					exitActionFinishedModeTimer.stop()
+					actionFinishedModeExitTimer.stop()
 				}
 			}
 

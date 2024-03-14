@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
+import frc.robot.subsystems.leds.LEDsSubsystem
 import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
 
@@ -83,9 +85,11 @@ object Robot : TimedRobot() {
 
 	override fun disabledInit() {
 		LoaderSubsystem.idleMode = IdleMode.kCoast
+		LEDsSubsystem.currentMode = LEDsMode.ROBOT_DISABLED
 	}
 
 	override fun disabledExit() {
 		LoaderSubsystem.idleMode = IdleMode.kBrake
+		LEDsSubsystem.currentMode = LEDsMode.DEFAULT
 	}
 }

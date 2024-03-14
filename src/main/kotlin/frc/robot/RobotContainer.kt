@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
-import frc.robot.subsystems.leds.LedsConstants.LEDsMode.COLLECT
-import frc.robot.subsystems.leds.LedsConstants.LEDsMode.SHOOT
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.COLLECT
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.SHOOT
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
@@ -105,7 +105,7 @@ object RobotContainer {
 						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 						vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
 					) alongWith LEDs.setModeCommand(SHOOT)
-				) finallyDo LEDs::actionFinished
+				)
 			)
 
 			// Collect
@@ -123,7 +123,7 @@ object RobotContainer {
 			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
 
 			// Load
-			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand())
+			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand() finallyDo LEDs::actionFinished)
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
@@ -132,8 +132,9 @@ object RobotContainer {
 		with(controllerB) {
 			fun setShooterState(shooterState: ShooterState) =
 				Shooter.getToShooterStateCommand(shooterState) alongWith
-					LEDs.setModeCommand(SHOOT) finallyDo
-					LEDs::actionFinished
+					LEDs.setModeCommand(SHOOT) finallyDo {
+					LEDs.setToDefaultMode()
+				}
 
 			// Speaker
 			circle().toggleOnTrue(setShooterState(ShooterState.AT_SPEAKER))
