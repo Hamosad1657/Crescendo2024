@@ -85,8 +85,7 @@ object ShooterConstants {
 	)
 
 	val ANGLE_PID_GAINS = PIDGains(
-		45.0, 0.0, 0.0,
-//		0.0, 0.0, 0.0,
+		72.0, 0.0, 0.0,
 	)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
 		MotionMagicCruiseVelocity = 2.0
