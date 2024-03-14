@@ -47,6 +47,8 @@ object IntakeSubsystem : SubsystemBase() {
 
 	val isRunning: Boolean get() = abs(bottomMotor.get()) > 0.0
 
+	val bottomMotorCurrent: Double get() = bottomMotor.statorCurrent.value
+	val isBottomMotorUnderLoad: Boolean get() = (bottomMotorCurrent > Constants.BOTTOM_MOTOR_UNDER_LOAD_THRESHOLD.toDouble())
 
 	// --- Motors Control ---
 
@@ -69,7 +71,8 @@ object IntakeSubsystem : SubsystemBase() {
 	override fun initSendable(builder: SendableBuilder) {
 		builder.setSmartDashboardType("Subsystem")
 		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
-
+		builder.addBooleanProperty("Is bottom motor under load", { isBottomMotorUnderLoad }, null)
+		builder.addDoubleProperty("Bottom motor current", { bottomMotorCurrent }, null)
 		builder.addBooleanProperty("Is running", { isRunning }, null)
 		builder.addDoubleProperty("Bottom motor output", { bottomMotor.get() }, null)
 		builder.addDoubleProperty("Top motor output", { topMotor.get() }, null)
