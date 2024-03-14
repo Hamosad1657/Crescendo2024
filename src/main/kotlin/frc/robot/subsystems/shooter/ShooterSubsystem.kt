@@ -17,6 +17,7 @@ import com.hamosad1657.lib.units.Volts
 import com.hamosad1657.lib.units.absoluteValue
 import com.hamosad1657.lib.units.rotations
 import com.hamosad1657.lib.units.rpm
+import com.revrobotics.CANSparkBase.ControlType
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.util.sendable.SendableBuilder
@@ -40,7 +41,7 @@ object ShooterSubsystem : SubsystemBase() {
 
 	private val shooterMainMotor =
 		HaSparkFlex(ShooterMap.UPPER_MOTOR_ID).apply {
-			configShooterMotor(inverted = true)
+			configShooterMotor(inverted = false)
 		}
 
 	private val shooterSecondaryMotor =
@@ -87,7 +88,11 @@ object ShooterSubsystem : SubsystemBase() {
 	private val minAngleLimitSwitch = DigitalInput(ShooterAngleMap.MIN_ANGLE_LIMIT_CHANNEL)
 	private val maxAngleLimitSwitch = DigitalInput(ShooterAngleMap.MAX_ANGLE_LIMIT_CHANNEL)
 
-	private val shooterPIDController = SHOOTER_PID_GAINS.toPIDController()
+	private val shooterPIDController = shooterMainMotor.pidController.apply {
+		setP(SHOOTER_PID_GAINS.kP)
+		setI(SHOOTER_PID_GAINS.kI)
+		setD(SHOOTER_PID_GAINS.kD)
+	}
 	private val shooterEncoder = shooterMainMotor.getEncoder()
 
 
@@ -116,7 +121,7 @@ object ShooterSubsystem : SubsystemBase() {
 
 	// --- State Getters ---
 
-	val currentVelocity get() = AngularVelocity.fromRpm(-shooterEncoder.velocity)
+	val currentVelocity get() = AngularVelocity.fromRpm(shooterEncoder.velocity)
 
 	// I have to track this myself because there is no getter for it in SparkPIDController :(
 	var currentVelocitySetpoint = AngularVelocity.fromRpm(0.0)
@@ -154,7 +159,7 @@ object ShooterSubsystem : SubsystemBase() {
 	// --- Motors Control ---
 
 	fun resetVelocityPIDController() {
-		shooterPIDController.reset()
+		// shooterPIDController.reset()
 	}
 
 	fun setShooterState(shooterState: ShooterState) {
@@ -171,10 +176,7 @@ object ShooterSubsystem : SubsystemBase() {
 		}
 
 		val ff: Volts = SHOOTER_PID_GAINS.kFF(velocitySetpoint.asRpm)
-		val pidOutput: Volts = shooterPIDController.calculate(currentVelocity.asRpm, velocitySetpoint.asRpm)
-
-		val voltage = (pidOutput + ff).absoluteValue
-		shooterMainMotor.setVoltage(-voltage)
+		shooterPIDController.setReference(velocitySetpoint.asRpm, ControlType.kVelocity, 0, ff)
 	}
 
 	private val controlRequestShooterAngle = MotionMagicVoltage(0.0).apply { EnableFOC = false }

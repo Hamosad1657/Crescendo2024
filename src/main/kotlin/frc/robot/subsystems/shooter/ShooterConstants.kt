@@ -79,9 +79,8 @@ object ShooterConstants {
 	// --- PID Gains ---
 
 	val SHOOTER_PID_GAINS = PIDGains(
-		0.0003, 0.005, 0.0,
+		0.00004, 0.0, 0.0,
 		kFF = { setpointRpm -> 0.0019 * setpointRpm },
-		kIZone = 100.0,
 	)
 
 	val ANGLE_PID_GAINS = PIDGains(
