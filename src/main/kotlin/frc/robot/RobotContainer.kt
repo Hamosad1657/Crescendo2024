@@ -154,7 +154,7 @@ object RobotContainer {
 		with(Intake) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Loader) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
-		with(Leds) { defaultCommand = setColorCommand(RGBColor.TEAM_GREEN) }
+		with(Leds) { defaultCommand = setColorCommand(RGBColor.DARK) }
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
 				{ simpleDeadband(-controllerB.leftY, CLIMBING_DEADBAND) },

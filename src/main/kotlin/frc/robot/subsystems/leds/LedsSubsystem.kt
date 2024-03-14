@@ -10,6 +10,7 @@ object LedsSubsystem : SubsystemBase() {
 	data class RGBColor(val red: Int, val green: Int, val blue: Int) {
 		companion object {
 			val TEAM_GREEN = RGBColor(22, 87, 0)
+			val WHITE = RGBColor(255, 255, 255)
 			val RED = RGBColor(255, 0, 0)
 			val BLUE = RGBColor(0, 0, 255)
 			val YELLOW = RGBColor(255, 255, 0)
