@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.AddressableLED
 import edu.wpi.first.wpilibj.AddressableLEDBuffer
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.RobotMap
 import frc.robot.subsystems.leds.LedsConstants as Constants
 
@@ -37,12 +36,12 @@ object LedsSubsystem : SubsystemBase() {
 	}
 
 	fun setColorCommand(color: RGBColor): Command = withName("set color") {
-		runOnce { setColor(color) }
+		runOnce { setColor(color) } andThen run {}
 	}
 
 	fun blinkCommand(color: RGBColor, blinkTime: Seconds): Command = withName("blink") {
-		(setColorCommand(color) alongWith WaitCommand(blinkTime)) andThen
-			(setColorCommand(RGBColor.DARK) alongWith WaitCommand(blinkTime))
+		(setColorCommand(color) withTimeout blinkTime) andThen
+			(setColorCommand(RGBColor.DARK) withTimeout blinkTime)
 				.repeatedly()
 	}
 }
