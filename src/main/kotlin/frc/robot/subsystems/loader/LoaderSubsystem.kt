@@ -36,9 +36,9 @@ object LoaderSubsystem : SubsystemBase() {
 	// --- State Getters ---
 
 	/** Beam-break is positioned between loader and shooter. */
-	val isNoteDetected: Boolean get() = !beamBreak.get()
+	val isNoteDetected get() = !beamBreak.get()
 
-	val isRunning: Boolean get() = abs(motor.get()) > 0.0
+	val isRunning get() = abs(motor.get()) > 0.0
 
 
 	// --- Motors Control ---
