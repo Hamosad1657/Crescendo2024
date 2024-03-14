@@ -13,7 +13,7 @@ object LoaderConstants {
 
 	const val ANALOG_READ_NOTE_DETECTED_THRESHOLD = 3550.0
 
-	const val MOTOR_INTAKE_OUTPUT: Volts = 1.2
+	const val MOTOR_INTAKE_OUTPUT: Volts = 2.0
 	const val MOTOR_LOADING_OUTPUT: Volts = 5.0
 	const val MOTOR_EJECT_OUTPUT: Volts = -4.0
 

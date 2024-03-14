@@ -18,10 +18,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics
-import edu.wpi.first.math.kinematics.SwerveModulePosition
-import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.math.kinematics.*
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.util.sendable.SendableRegistry
@@ -36,7 +33,7 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.vision.AprilTagVision
-import java.util.Optional
+import java.util.*
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -223,16 +220,22 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		AprilTagVision.latestResult?.let { latestResult ->
-			if (!latestResult.hasTargets() or
-//				if best april tag distance larger the 5.2 meters don't add vision measurement
-				(AprilTagVision.bestTag?.bestCameraToTarget?.x?.let
-				{ it > AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters } == true)
+		// Don't update the position from the vision if:
+		val latestResult = AprilTagVision.latestResult
+		if (latestResult != null) {
+			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
+
+			// The detected AprilTag is farther than [AprilTagVision.MAX_TAG_TRUSTING_DISTANCE].
+			val robotToTagDistance = AprilTagVision.bestTag?.bestCameraToTarget?.x
+			if (
+				robotToTagDistance != null &&
+				robotToTagDistance > AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
 			) return
 		}
 
 
-		AprilTagVision.estimatedGlobalPose?.let { estimatedPose ->
+		val estimatedPose = AprilTagVision.estimatedGlobalPose
+		if (estimatedPose != null) {
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 
 			super.addVisionMeasurement(
