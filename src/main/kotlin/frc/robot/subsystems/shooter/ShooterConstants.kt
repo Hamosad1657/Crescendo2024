@@ -137,6 +137,7 @@ object ShooterConstants {
 			val COLLECT = ShooterState(175.degrees, 0.0.rpm)
 			val AUTO_COLLECT = ShooterState(COLLECT.angle, 3000.rpm)
 			val COLLECT_FROM_FEEDER = ShooterState(43.degrees, 0.0.rpm)
+			val COLLECT_FROM_INSIDE_ROBOT = ShooterState(161.degrees, 0.0.rpm)
 
 			// --- Teleop Speaker ---
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
