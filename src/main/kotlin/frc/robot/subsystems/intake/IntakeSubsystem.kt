@@ -50,10 +50,8 @@ object IntakeSubsystem : SubsystemBase() {
 	val isRunning: Boolean get() = abs(bottomMotor.get()) > 0.0
 
 	val bottomMotorSpeed: AngularVelocity get() = bottomMotor.velocity.value.rps
-	val topMotorSpeed: AngularVelocity get() = topMotor.velocity.value.rps
 	val isCollectingNote: Boolean
-		get() = bottomMotorSpeed < Constants.BOTTOM_MOTOR_UNDER_LOAD_THRESHOLD ||
-			topMotorSpeed < Constants.TOP_MOTOR_UNDER_LOAD_THRESHOLD
+		get() = bottomMotorSpeed < Constants.BOTTOM_MOTOR_UNDER_LOAD_THRESHOLD
 
 
 	// --- Motors Control ---
