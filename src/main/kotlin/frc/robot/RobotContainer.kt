@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
-import frc.robot.subsystems.leds.LedsSubsystem.RGBColor
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
@@ -154,7 +153,7 @@ object RobotContainer {
 		with(Intake) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Loader) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
-		with(Leds) { defaultCommand = setColorCommand(RGBColor.DARK) }
+		with(Leds) { defaultCommand = ledsDefaultCommand() }
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
 				{ simpleDeadband(-controllerB.leftY, CLIMBING_DEADBAND) },
