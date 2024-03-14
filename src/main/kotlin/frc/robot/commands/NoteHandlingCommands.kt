@@ -14,14 +14,15 @@ import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
+import frc.robot.subsystems.leds.LedsSubsystem as Leds
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
 
 object Notes
 
-/** - Requirements: Intake, Loader, Shooter. */
+/** - Requirements: Intake, Loader, Shooter, Leds. */
 fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Command = withName("collect") {
-	((Shooter.getToShooterStateCommand(shooterState) alongWith
+	((getToShooterStateCommand(shooterState) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
 		Intake.runIntakeCommand()) until Loader::isNoteDetected
 		).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
@@ -29,18 +30,19 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 
 /**
  * Like [collectCommand], but the shooter spins continuously.
- * - Requirements: Intake, Loader, Shooter.
+ * - Requirements: Intake, Loader, Shooter, Leds.
  */
 fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
-	((Shooter.getToShooterStateCommand(shooterState) alongWith
+	((getToShooterStateCommand(shooterState) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT) alongWith
-		Intake.runIntakeCommand()) until Loader::isNoteDetected
+		Intake.runIntakeCommand() alongWith
+		Leds.intakeModeCommand()) until Loader::isNoteDetected
 		).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
-	(Shooter.getToShooterStateCommand(state) raceWith
+	(getToShooterStateCommand(state) raceWith
 		(WaitCommand(0.2) andThen
 			waitUntil { Shooter.isWithinTolerance }
 				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
@@ -48,14 +50,44 @@ fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and
 			loadIntoShooterCommand()))
 }
 
-/** - Requirements: Loader, Shooter. */
+/** - Requirements: Loader, Shooter, Leds. */
 fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = withName("load and shoot") {
-	(Shooter.getToShooterStateCommand(stateSupplier) raceWith
+	(getToShooterStateCommand(stateSupplier) raceWith
 		(WaitCommand(0.2) andThen
 			waitUntil { Shooter.isWithinTolerance }
 				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
 			WaitCommand(0.1) andThen
 			loadIntoShooterCommand()))
+}
+
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter, Leds.
+ */
+fun Notes.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
+	Leds.shootingModeCommand() alongWith
+		(Shooter.runOnce {
+			Shooter.resetVelocityPIDController()
+		} andThen Shooter.run {
+			Shooter.setShooterState(state)
+		}) finallyDo {
+		Shooter.stopShooterMotors()
+	}
+}
+
+/**
+ * - Command has no end condition.
+ * - Requirements: Shooter, Leds.
+ */
+fun Notes.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
+	Leds.shootingModeCommand() alongWith
+		(Shooter.runOnce {
+			Shooter.resetVelocityPIDController()
+		} andThen Shooter.run {
+			Shooter.setShooterState(state())
+		}) finallyDo {
+		Shooter.stopShooterMotors()
+	}
 }
 
 
@@ -65,9 +97,9 @@ fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = with
  * Finally, interrupts shooter subsystem so it goes back to it's default command.
  * - Requirements: Loader (until the command ends, then Shooter).
  */
-fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
+fun Notes.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
+		(Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) alongWith Leds.blinkReadyCommand()) withTimeout
 		LoaderConstants.AMP_EJECT_DURATION finallyDo
 		Shooter.runOnce {}
 }
@@ -77,8 +109,8 @@ fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
  * Finally, interrupts shooter subsystem so it goes back to it's default command.
  * - Requirements: Loader (until the command ends, then Shooter.)
  */
-fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
-	runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
+fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
+	(Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith Leds.blinkReadyCommand()) withTimeout
 		ShooterConstants.SHOOT_DURATION finallyDo
 		Shooter.runOnce {}
 }
@@ -88,7 +120,7 @@ fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
  * Interrupts shooter subsystem when the scheduled command ends.
  * - Requirements: Loader (until the scheduled command ends, then Shooter).
  */
-fun Loader.loadToShooterOrAmpCommand(): Command =
+fun Notes.loadToShooterOrAmpCommand(): Command =
 	ConditionalCommand(
 		ejectIntoAmpCommand(), // Command on true
 		loadIntoShooterCommand(), // Command on false
@@ -148,22 +180,16 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 	}
 }
 
-/** - Requirements: Loader. */
-fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
-	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
-		ShooterConstants.SHOOT_DURATION
-}
-
 /** - Requirements: Intake, Loader, Shooter. */
 fun Notes.collectAndEject(): Command = withName("collect and eject") {
 	Intake.runIntakeCommand() alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) alongWith
-		Shooter.getToShooterStateCommand(ShooterState.EJECT)
+		getToShooterStateCommand(ShooterState.EJECT)
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from human player") {
-	(Shooter.getToShooterStateCommand(ShooterState.COLLECT_FROM_FEEDER) alongWith
+	(getToShooterStateCommand(ShooterState.COLLECT_FROM_FEEDER) alongWith
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_INTAKE_OUTPUT)) until
 		Loader::isNoteDetected
 }
