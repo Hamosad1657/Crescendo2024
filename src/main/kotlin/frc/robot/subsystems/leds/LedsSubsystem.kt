@@ -1,10 +1,7 @@
 package frc.robot.subsystems.leds
 
-import com.hamosad1657.lib.commands.*
-import com.hamosad1657.lib.units.Seconds
 import edu.wpi.first.wpilibj.AddressableLED
 import edu.wpi.first.wpilibj.AddressableLEDBuffer
-import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 import frc.robot.subsystems.leds.LedsConstants as Constants
@@ -33,15 +30,5 @@ object LedsSubsystem : SubsystemBase() {
 			ledsBuffer.setRGB(i, color.red, color.green, color.blue)
 		}
 		ledStrip.setData(ledsBuffer)
-	}
-
-	fun setColorCommand(color: RGBColor): Command = withName("set color") {
-		runOnce { setColor(color) } andThen run {}
-	}
-
-	fun blinkCommand(color: RGBColor, blinkTime: Seconds): Command = withName("blink") {
-		(setColorCommand(color) withTimeout blinkTime) andThen
-			(setColorCommand(RGBColor.DARK) withTimeout blinkTime)
-				.repeatedly()
 	}
 }
