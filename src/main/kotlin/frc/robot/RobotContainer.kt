@@ -137,11 +137,13 @@ object RobotContainer {
 				}
 
 			// Speaker
-			circle().toggleOnTrue(setShooterState(ShooterState.AT_SPEAKER))
+			//circle().toggleOnTrue(setShooterState(ShooterState.AT_SPEAKER))
+			circle().toggleOnTrue(Shooter.getToAtSpeakerState() alongWith
+				LEDs.setModeCommand(SHOOT) finallyDo { LEDs.setToDefaultMode() })
+
 			cross().toggleOnTrue(setShooterState(ShooterState.NEAR_SPEAKER))
 			options().toggleOnTrue(setShooterState(ShooterState.AT_PODIUM))
 			create().toggleOnTrue(setShooterState(ShooterState.AT_STAGE))
-			R1().toggleOnTrue(setShooterState(ShooterState.REVERSE_AT_SPEAKER))
 
 			// Amp & Trap
 			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP))

@@ -4,6 +4,7 @@ import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants
@@ -38,6 +39,14 @@ fun ShooterSubsystem.getToShooterStateCommand(state: () -> ShooterState): Comman
 		setShooterState(state())
 	} finallyDo {
 		stopShooterMotors()
+	}
+}
+
+fun ShooterSubsystem.getToAtSpeakerState(): Command = withName("get to at speaker state") {
+	getToShooterStateCommand {
+		SmartDashboard.putBoolean("Is facing SPEAKER", SwerveSubsystem.isFacingSpeaker)
+		if (SwerveSubsystem.isFacingSpeaker) ShooterState.AT_SPEAKER
+		else ShooterState.REVERSE_AT_SPEAKER
 	}
 }
 

@@ -18,11 +18,13 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.kinematics.*
+import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import edu.wpi.first.math.kinematics.SwerveModulePosition
+import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.util.sendable.SendableRegistry
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -33,7 +35,7 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.vision.AprilTagVision
-import java.util.*
+import java.util.Optional
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -259,7 +261,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 				// Boolean supplier that controls when the path will be mirrored for the red alliance
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-				Robot.alliance == DriverStation.Alliance.Red
+				Robot.alliance == Alliance.Red
 			},
 			this
 		)
@@ -283,6 +285,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	fun followPathCommand(pathName: String): Command =
 		AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
 
+	val isFacingSpeaker get() = state.Pose.rotation.degrees in -90.0..90.0
 
 	// --- Telemetry ---
 
