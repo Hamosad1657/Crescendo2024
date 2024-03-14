@@ -149,6 +149,13 @@ object RobotContainer {
 			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP))
 			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
 
+			// Sweep
+			touchpad().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
+				if (R1().asBoolean) 0.2
+				else if (L1().asBoolean) -0.2
+				else 0.0
+			})
+
 			// Climbing Stabilizers
 			povUp().toggleOnTrue(Stabilizers.openCommand())
 			povDown().toggleOnTrue(Stabilizers.closeCommand())
