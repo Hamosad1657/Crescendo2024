@@ -78,7 +78,7 @@ object Robot : TimedRobot() {
 		autonomousCommand?.cancel()
 
 		ShooterSubsystem.defaultCommand =
-			LEDsSubsystem.setModeCommand(DEFAULT) andThen ShooterSubsystem.teleopDefaultCommand()
+			LEDsSubsystem::setToDefaultMode.asInstantCommand andThen ShooterSubsystem.teleopDefaultCommand()
 	}
 
 	override fun testInit() {
