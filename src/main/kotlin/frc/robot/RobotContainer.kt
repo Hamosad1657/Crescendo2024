@@ -151,9 +151,8 @@ object RobotContainer {
 
 			// Sweep
 			touchpad().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
-				if (R1().asBoolean) 0.2
-				else if (L1().asBoolean) -0.2
-				else 0.0
+				(simpleDeadband(r2Axis + 1.0, JOYSTICK_DEADBAND) -
+					simpleDeadband(l2Axis + 1.0, JOYSTICK_DEADBAND)) * 0.3
 			})
 
 			// Climbing Stabilizers
