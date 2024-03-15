@@ -170,6 +170,12 @@ object ShooterSubsystem : SubsystemBase() {
 	fun setVelocity(velocitySetpoint: AngularVelocity) {
 		currentVelocitySetpoint = velocitySetpoint
 
+		// If the velocity setpoint is zero, don't actively try to get to zero, just coast.
+		if (velocitySetpoint.asRpm == 0.0) {
+			stopShooterMotors()
+			return
+		}
+
 		val velocityDelta = (shooterEncoder.velocity.rpm - velocitySetpoint).absoluteValue
 		if (velocityDelta < Constants.VELOCITY_TOLERANCE) {
 			resetVelocityPIDController()
