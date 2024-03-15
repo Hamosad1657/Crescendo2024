@@ -71,7 +71,7 @@ object ShooterConstants {
 
 	// --- Tolerances ---
 
-	val VELOCITY_TOLERANCE = 100.0.rpm
+	val VELOCITY_TOLERANCE = 70.0.rpm
 	val SHOOTING_ANGLE_TOLERANCE = 0.5.degrees
 	val AMP_ANGLE_TOLERANCE = 20.0.degrees
 
@@ -80,11 +80,11 @@ object ShooterConstants {
 
 	val SHOOTER_PID_GAINS = PIDGains(
 		0.00004, 0.0, 0.0,
-		kFF = { setpointRpm -> 0.0019 * setpointRpm },
+		kFF = { setpointRpm -> 0.0018 * setpointRpm },
 	)
 
 	val ANGLE_PID_GAINS = PIDGains(
-		68.0, 0.0, 0.0,
+		50.0, 0.0, 0.0,
 	)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
 		MotionMagicCruiseVelocity = 2.0
@@ -142,7 +142,7 @@ object ShooterConstants {
 			val REVERSE_AT_SPEAKER = ShooterState(270.degrees, 2600.rpm)
 			val NEAR_SPEAKER = ShooterState(180.degrees, 3000.rpm)
 			val AT_PODIUM = ShooterState(175.0.degrees, 3500.rpm)
-			var AT_STAGE = ShooterState(162.85.degrees, 3900.rpm)
+			var AT_STAGE = ShooterState(160.8.degrees, 3900.rpm)
 
 			// --- Teleop Misc. ---
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
