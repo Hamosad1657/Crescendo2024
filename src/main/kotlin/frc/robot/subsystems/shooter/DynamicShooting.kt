@@ -23,11 +23,11 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 object DynamicShooting {
 	// --- Constants ---
 
-	private const val MIN_DISTANCE_TO_SPEAKER = 2.5 // Meters
+	private const val MIN_DISTANCE_TO_SPEAKER = 1.56 // Meters
 	private const val MAX_DISTANCE_TO_SPEAKER = 6.0 // Meters
 
-	private const val MIN_ANGLE = 162.0 // Degrees
-	private const val MAX_ANGLE = 183.0 // Degrees
+	private val MIN_ANGLE = ShooterState.AT_STAGE.angle.degrees // Degrees
+	private val MAX_ANGLE = ShooterState.AT_SPEAKER.angle.degrees // Degrees
 
 	private const val MIN_VELOCITY = 2500.0 // RPM
 	private const val MAX_VELOCITY = 4000.0 // RPM
@@ -35,10 +35,6 @@ object DynamicShooting {
 	private val ANGLE_INTERPOLATION_TABLE =
 		LinearInterpolationTable(
 			0.0 to MAX_ANGLE,
-			0.4 to 169.0,
-			0.788 to 164.0,
-			0.85 to 164.0,
-			0.9 to 162.5,
 			1.0 to MIN_ANGLE,
 		)
 	val CHASSIS_ANGLE_TOLERANCE = 1.5
