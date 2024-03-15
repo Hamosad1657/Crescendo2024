@@ -150,7 +150,7 @@ object RobotContainer {
 			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
 
 			// Sweep
-			touchpad().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
+			R1().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
 				(simpleDeadband(r2Axis + 1.0, JOYSTICK_DEADBAND) -
 					simpleDeadband(l2Axis + 1.0, JOYSTICK_DEADBAND)) * 0.3
 			})
