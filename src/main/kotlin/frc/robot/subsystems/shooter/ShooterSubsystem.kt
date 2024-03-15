@@ -159,7 +159,7 @@ object ShooterSubsystem : SubsystemBase() {
 	// --- Motors Control ---
 
 	fun resetVelocityPIDController() {
-		// shooterPIDController.reset()
+		shooterPIDController.setIAccum(0.0)
 	}
 
 	fun setShooterState(shooterState: ShooterState) {
