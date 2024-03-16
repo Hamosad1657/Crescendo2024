@@ -36,7 +36,7 @@ object DynamicShooting {
 		LinearInterpolationTable(
 			0.0 to MAX_ANGLE,
 			0.2 to 183.0,
-			0.4 to 172.3,
+			0.4 to 174.0,
 			0.7 to 167.0,
 			1.0 to MIN_ANGLE,
 		)
