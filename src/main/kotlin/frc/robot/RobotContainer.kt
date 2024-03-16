@@ -45,6 +45,7 @@ fun joystickCurve(value: Double) = -value.pow(2) * value.sign
 object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
 	private const val CLIMBING_DEADBAND = 0.08
+	private const val CLIMBING_MULTIPLIER = 0.5
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -172,8 +173,8 @@ object RobotContainer {
 		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
-				{ simpleDeadband(-controllerB.leftY, CLIMBING_DEADBAND) },
-				{ simpleDeadband(-controllerB.rightY, CLIMBING_DEADBAND) },
+				{ simpleDeadband(-controllerB.leftY * CLIMBING_MULTIPLIER, CLIMBING_DEADBAND) },
+				{ simpleDeadband(-controllerB.rightY * CLIMBING_MULTIPLIER, CLIMBING_DEADBAND) },
 			)
 		}
 	}
