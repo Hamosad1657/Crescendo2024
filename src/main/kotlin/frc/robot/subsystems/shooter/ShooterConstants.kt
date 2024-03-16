@@ -147,6 +147,7 @@ object ShooterConstants {
 
 			// --- Teleop Misc. ---
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
+			val TO_TRAP = ShooterState(41.3.degrees, 0.0.rpm)
 			val EJECT = ShooterState(168.degrees, 1000.rpm)
 			val BEFORE_CLIMB = ShooterState(50.0.degrees, 0.0.rpm)
 

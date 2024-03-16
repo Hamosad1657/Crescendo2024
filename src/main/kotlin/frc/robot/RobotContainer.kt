@@ -121,7 +121,7 @@ object RobotContainer {
 			)
 
 			// Load
-			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand() finallyDo LEDs::actionFinished)
+			R1().toggleOnTrue(Loader.loadToShooterAmpOrTrapCommand() finallyDo LEDs::actionFinished)
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
@@ -145,6 +145,7 @@ object RobotContainer {
 			// Amp & Trap
 			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP))
 			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
+			L1().toggleOnTrue(setShooterState(ShooterState.TO_TRAP))
 
 			// Sweep
 			R1().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
