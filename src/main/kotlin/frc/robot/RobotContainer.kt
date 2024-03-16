@@ -137,11 +137,10 @@ object RobotContainer {
 				}
 
 			// Speaker
-			//circle().toggleOnTrue(setShooterState(ShooterState.AT_SPEAKER))
 			circle().toggleOnTrue(Shooter.getToAtSpeakerState() alongWith
 				LEDs.setModeCommand(SHOOT) finallyDo { LEDs.setToDefaultMode() })
 
-			cross().toggleOnTrue(setShooterState(ShooterState.NEAR_SPEAKER))
+			cross().toggleOnTrue(setShooterState(ShooterState.BEHIND_DEFENCE_BOT))
 			options().toggleOnTrue(setShooterState(ShooterState.AT_PODIUM))
 			create().toggleOnTrue(setShooterState(ShooterState.AT_STAGE))
 

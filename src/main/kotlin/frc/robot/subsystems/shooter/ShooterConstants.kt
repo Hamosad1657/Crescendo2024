@@ -140,6 +140,7 @@ object ShooterConstants {
 			// --- Teleop Speaker ---
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
 			val REVERSE_AT_SPEAKER = ShooterState(270.degrees, 2600.rpm)
+			val BEHIND_DEFENCE_BOT = ShooterState(282.0.degrees, 2800.0.rpm)
 			val NEAR_SPEAKER = ShooterState(180.degrees, 3000.rpm)
 			val AT_PODIUM = ShooterState(175.0.degrees, 3500.rpm)
 			var AT_STAGE = ShooterState(160.8.degrees, 3900.rpm)
