@@ -97,6 +97,7 @@ object RobotContainer {
 				} until ::areControllerAJoysticksMoving
 			)
 
+			create().toggleOnTrue(Swerve.rotateToAmpCommand() until ::areControllerAJoysticksMoving)
 
 			// --- Notes ---
 			// Dynamic shooting
@@ -128,11 +129,6 @@ object RobotContainer {
 		}
 
 		with(controllerB) {
-			fun setShooterState(shooterState: ShooterState) =
-				Shooter.getToShooterStateCommand(shooterState) alongWith
-					LEDs.setModeCommand(SHOOT) finallyDo {
-					LEDs.setToDefaultMode()
-				}
 
 			// Speaker
 			circle().toggleOnTrue(Shooter.getToAtSpeakerState() alongWith
@@ -288,6 +284,11 @@ object RobotContainer {
 		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 	}
 
+	fun setShooterState(shooterState: ShooterState) =
+		Shooter.getToShooterStateCommand(shooterState) alongWith
+			LEDs.setModeCommand(SHOOT) finallyDo {
+			LEDs.setToDefaultMode()
+		}
 
 	// --- Joysticks ---
 
