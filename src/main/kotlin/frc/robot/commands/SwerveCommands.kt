@@ -163,7 +163,7 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 )
 
 fun Swerve.aimAtSpeaker(flipGoal: Boolean) = getToAngleCommand {
-	val offset = 3.degrees
+	val offset = (3).degrees
 
 	val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
 	val angleSetpoint = robotToGoal.angle.degrees

@@ -54,9 +54,13 @@ object AprilTagVision {
 				this[0, 0] = 0.9 // Translation X
 				this[1, 0] = 0.9 // Translation Y
 				this[2, 0] = 0.95 // Rotation
+			} else if (frc.robot.Robot.isAutonomous) {
+				this[0, 0] = 0.5 // Translation X
+				this[1, 0] = 0.5 // Translation Y
+				this[2, 0] = 0.95 // Rotation
 			}
-			this[0, 0] = 0.5 // Translation X
-			this[1, 0] = 0.5 // Translation Y
+			this[0, 0] = 0.35 // Translation X
+			this[1, 0] = 0.35 // Translation Y
 			this[2, 0] = 0.95 // Rotation
 		}
 
