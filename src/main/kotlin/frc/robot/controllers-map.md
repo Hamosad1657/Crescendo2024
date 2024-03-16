@@ -7,7 +7,7 @@
 **circle** - at podium rotation <br>
 **triangle** - at stage rotation <br>
 **square** - dynamic shooting <br>
-**create** - rotate to amp <br>
+**create** - rotate to amp while driving <br>
 **L1** - collect <br>
 **R1** - load <br>
 **PS** - eject from intake <br>

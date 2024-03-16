@@ -97,7 +97,15 @@ object RobotContainer {
 				} until ::areControllerAJoysticksMoving
 			)
 
-			create().toggleOnTrue(Swerve.rotateToAmpCommand() until ::areControllerAJoysticksMoving)
+			// Maintain angle for amp while driving
+			create().whileTrue(
+				Swerve.teleopDriveWithAutoAngleCommand(
+					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+					vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+					{ 90.degrees },
+					{ true },
+				)
+			)
 
 			// --- Notes ---
 			// Dynamic shooting
