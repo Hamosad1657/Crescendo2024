@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.ctre.phoenix6.configs.MotionMagicConfigs
+import com.hamosad1657.lib.math.LinearInterpolationTable
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
@@ -71,9 +72,35 @@ object ShooterConstants {
 
 	// --- Tolerances ---
 
-	val VELOCITY_TOLERANCE = 70.0.rpm
-	val SHOOTING_ANGLE_TOLERANCE = 0.5.degrees
 	val AMP_ANGLE_TOLERANCE = 20.0.degrees
+
+	const val TOLERANCE_TABLE_DEFAULT_DISTANCE = 100
+
+	/**
+	 * The tolerance of the shooter's angle (degrees) to allow shooting,
+	 * in a linear-interpolation-table defined by the robot's distance from the speaker.
+	 *
+	 * If we don't know the distance of the robot from the speaker,
+	 * we default to 100 meters to get the lowest tolerance.
+	 */
+	val ANGLE_TOLERANCE_TABLE = LinearInterpolationTable(
+		1.5 to 3.0,
+		3.65 to 0.5,
+		100.0 to 0.5,
+	)
+
+	/**
+	 * The tolerance of the shooter's velocity (RPM) to allow shooting,
+	 * in a linear-interpolation-table defined by the robot's distance from the speaker.
+	 *
+	 * If we don't know the distance of the robot from the speaker,
+	 * we default to 100 meters to get the lowest tolerance.
+	 */
+	val VELOCITY_TOLERANCE_TABLE = LinearInterpolationTable(
+		1.5 to 200.0,
+		3.65 to 70.0,
+		100.0 to 70.0,
+	)
 
 
 	// --- PID Gains ---

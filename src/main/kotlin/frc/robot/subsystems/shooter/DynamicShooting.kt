@@ -50,9 +50,12 @@ object DynamicShooting {
 
 	// --- Calculations ---
 
+	fun getFlatDistanceToSpeaker(robotPosition: Translation2d = Swerve.robotPose.translation) =
+		robotPosition.getDistance(speakerPosition)
+
 	/** This function assumes the robot is directly facing the speaker. */
-	fun calculateShooterState(robotPosition: Translation2d): ShooterState {
-		val robotToSpeakerFlatDistance = robotPosition.getDistance(speakerPosition)
+	fun calculateShooterState(robotPosition: Translation2d = Swerve.robotPose.translation): ShooterState {
+		val robotToSpeakerFlatDistance = getFlatDistanceToSpeaker(robotPosition)
 			.also { if (Robot.isTesting) SmartDashboard.putNumber("Robot to speaker distance", it) }
 
 		val distanceToSpeaker01 = distanceToSpeaker01(robotToSpeakerFlatDistance)
