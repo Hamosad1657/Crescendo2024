@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.8333111873815688,
+        "y": 7.323120885862176
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.8138348020468287,
+        "y": 7.673695821887493
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8333111873815688,
+        "y": 7.6542194365527525
+      },
+      "prevControl": {
+        "x": 1.8430493800489387,
+        "y": 7.449717390537984
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 700.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 91.68468431789628,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "alex_rakushkin",
+  "previewStartingState": {
+    "rotation": 90.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

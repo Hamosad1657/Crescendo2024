@@ -76,7 +76,7 @@ object RobotContainer {
 			)
 
 			// Lock wheels
-			cross().onTrue(Swerve.crossLockWheelsCommand() until ::areControllerAJoysticksMoving)
+			cross().onTrue(Swerve.pathFindToPathCommand("to_climbing"))
 
 			// Speed controls
 			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
@@ -133,6 +133,8 @@ object RobotContainer {
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
+
+
 		}
 
 		with(controllerB) {

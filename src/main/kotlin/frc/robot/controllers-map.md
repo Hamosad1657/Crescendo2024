@@ -3,7 +3,7 @@
 **options** - zero gyro <br>
 **POV up** - full speed swerve <br>
 **POV down** - half speed swerve <br>
-**cross** - cross lock wheels <br>
+**cross** - pathfind to trap <br>
 **circle** - at podium rotation <br>
 **triangle** - at stage rotation <br>
 **square** - dynamic shooting <br>
