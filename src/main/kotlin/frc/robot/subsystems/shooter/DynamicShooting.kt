@@ -37,7 +37,7 @@ object DynamicShooting {
 			0.0 to MAX_ANGLE,
 			0.2 to 183.0,
 			0.4 to 172.3,
-			0.7 to 165.0,
+			0.7 to 167.0,
 			1.0 to MIN_ANGLE,
 		)
 	val CHASSIS_ANGLE_TOLERANCE = 1.5
