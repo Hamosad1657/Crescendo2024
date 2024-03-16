@@ -119,9 +119,6 @@ object RobotContainer {
 				) finallyDo LEDs::actionFinished
 			)
 
-			// Collect from human player
-			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
-
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand() finallyDo LEDs::actionFinished)
 
