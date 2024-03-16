@@ -119,9 +119,6 @@ object RobotContainer {
 				) finallyDo LEDs::actionFinished
 			)
 
-			// Collect from human player
-			create().toggleOnTrue(Notes.collectFromHumanPlayerCommand())
-
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand() finallyDo LEDs::actionFinished)
 
@@ -137,11 +134,10 @@ object RobotContainer {
 				}
 
 			// Speaker
-			//circle().toggleOnTrue(setShooterState(ShooterState.AT_SPEAKER))
 			circle().toggleOnTrue(Shooter.getToAtSpeakerState() alongWith
 				LEDs.setModeCommand(SHOOT) finallyDo { LEDs.setToDefaultMode() })
 
-			cross().toggleOnTrue(setShooterState(ShooterState.NEAR_SPEAKER))
+			cross().toggleOnTrue(setShooterState(ShooterState.BEHIND_DEFENCE_BOT))
 			options().toggleOnTrue(setShooterState(ShooterState.AT_PODIUM))
 			create().toggleOnTrue(setShooterState(ShooterState.AT_STAGE))
 
@@ -150,7 +146,7 @@ object RobotContainer {
 			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
 
 			// Sweep
-			touchpad().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
+			R1().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
 				(simpleDeadband(r2Axis + 1.0, JOYSTICK_DEADBAND) -
 					simpleDeadband(l2Axis + 1.0, JOYSTICK_DEADBAND)) * 0.3
 			})
