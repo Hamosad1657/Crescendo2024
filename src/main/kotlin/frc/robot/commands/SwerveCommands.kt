@@ -9,7 +9,6 @@ import com.hamosad1657.lib.units.radPs
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -17,6 +16,7 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.joystickCurve
 import frc.robot.subsystems.shooter.DynamicShooting
+import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_AIM_AT_NOTE_PID_CONTROLLER
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
 import frc.robot.vision.NoteVision
 import kotlin.math.abs
@@ -76,8 +76,8 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	pidController: () -> PIDController = { CHASSIS_ANGLE_PID_CONTROLLER },
 ): Command = withName("teleop drive with auto angle") {
 	run {
-		val vx = -joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
-		val vy = -joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
+		val vx = joystickCurve(vxSupplier()) * Constants.MAX_SPEED_MPS
+		val vy = joystickCurve(vySupplier()) * Constants.MAX_SPEED_MPS
 		val omega = pidController().calculate(robotHeading.degrees, angleSupplier().degrees)
 
 		if (Robot.isTesting) {
@@ -150,17 +150,28 @@ fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier,
 	vySupplier,
 	{
-		val offset = 3.degrees
+		val offset = 5.degrees
 
 		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-		var angleSetpoint = robotToGoal.angle.degrees
-		if (Robot.alliance == Alliance.Red) {
-			angleSetpoint -= 180
-		}
+		val angleSetpoint = robotToGoal.angle.degrees
+
+		SmartDashboard.putBoolean("is chassis at angle setpoint", DynamicShooting.inChassisAngleTolerance)
+
 		mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
 	},
-	{ false },
+	{ true },
 )
+
+fun Swerve.aimAtSpeaker(flipGoal: Boolean) = getToAngleCommand {
+	val offset = (3).degrees
+
+	val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+	val angleSetpoint = robotToGoal.angle.degrees
+
+	SmartDashboard.putNumber("is chassis at angle setpoint", DynamicShooting.CHASSIS_ANGLE_TOLERANCE)
+
+	mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
+}
 
 /**
  * - Command has no end condition.
@@ -202,7 +213,7 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 
 		val omega =
 			// The driver takes control of the rotation.
-			if (joystickMoved or !NoteVision.hasTargets) {
+			if (joystickMoved || !NoteVision.hasTargets) {
 				shouldFollowNote = false
 
 				joystickMoveTimer.reset()
@@ -221,7 +232,7 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 
 				// Calculate the required omega to rotate towards the Note using PID.
 				val setpoint = (robotHeading plus rotationDelta).degrees
-				CHASSIS_ANGLE_PID_CONTROLLER.calculate(robotHeading.degrees, setpoint)
+				CHASSIS_AIM_AT_NOTE_PID_CONTROLLER.calculate(robotHeading.degrees, setpoint)
 			}
 			// Stay at the same angle (do not rotate) for [joystickMovedWaitTimeSec] seconds.
 			else {

@@ -14,7 +14,7 @@ object NoteVision : Sendable {
 	 * The angle to the NOTE as reported by the vision,
 	 * when the intake is perfectly centered at it.
 	 */
-	val CAMERA_OFFSET = 0.0.degrees
+	private val CAMERA_OFFSET = 0.0.degrees
 
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("NOTE-Cam")
@@ -27,7 +27,7 @@ object NoteVision : Sendable {
 	val hasTargets: Boolean get() = latestResult?.hasTargets() ?: false
 
 	/** Get the yaw delta between the robot and the target note. */
-	fun getRobotToTargetYawDelta(target: PhotonTrackedTarget): Rotation2d {
+	private fun getRobotToTargetYawDelta(target: PhotonTrackedTarget): Rotation2d {
 		// Inverted because vision conventions are CW positive, and
 		// math conventions (which are  used in FRC) are CCW positive.
 		val cameraToTargetYaw = -target.yaw.degrees
@@ -46,7 +46,11 @@ object NoteVision : Sendable {
 		builder.addBooleanProperty("Has targets", ::hasTargets, null)
 		builder.addDoubleProperty(
 			"Camera to target delta yaw",
-			{ bestTarget?.let { getRobotToTargetYawDelta(it).degrees } ?: -1.0 },
+			{
+				bestTarget?.let {
+					getRobotToTargetYawDelta(it).degrees
+				} ?: -1.0
+			},
 			null
 		)
 	}

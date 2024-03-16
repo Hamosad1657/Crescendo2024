@@ -18,9 +18,8 @@ import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
 object AprilTagVision {
-	val MAX_VISION_TO_ODOMETRY_DELTA = 1.0.meters
+	val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
 
-	val MAX_TAG_TRUSTING_DISTANCE = 6.0.meters
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("AprilTag-Cam")
 	} catch (_: Exception) {
@@ -29,25 +28,25 @@ object AprilTagVision {
 
 	private val robotToCamera =
 		Transform3d(
-			Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, -0.4),
-			Rotation3d(0.0, 60.degrees.radians, 0.0)
+			Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
+			Rotation3d(0.0, -60.degrees.radians, 0.0)
 		)
 
-	var aprilTags: AprilTagFieldLayout =
-		AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
+	private var aprilTags: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
 
-	private val poseEstimator: PhotonPoseEstimator? = if (camera != null) {
-		PhotonPoseEstimator(
-			aprilTags,
-			PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-			camera,
-			robotToCamera,
-		).apply {
-			setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
+	private val poseEstimator: PhotonPoseEstimator? =
+		if (camera != null) {
+			PhotonPoseEstimator(
+				aprilTags,
+				PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+				camera,
+				robotToCamera,
+			).apply {
+				setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
+			}
+		} else {
+			null
 		}
-	} else {
-		null
-	}
 
 	val poseEstimationStdDevs
 		get() = Matrix(Nat.N3(), Nat.N1()).apply {
@@ -55,9 +54,13 @@ object AprilTagVision {
 				this[0, 0] = 0.9 // Translation X
 				this[1, 0] = 0.9 // Translation Y
 				this[2, 0] = 0.95 // Rotation
+			} else if (frc.robot.Robot.isAutonomous) {
+				this[0, 0] = 0.5 // Translation X
+				this[1, 0] = 0.5 // Translation Y
+				this[2, 0] = 0.95 // Rotation
 			}
-			this[0, 0] = 0.3 // Translation X
-			this[1, 0] = 0.3 // Translation Y
+			this[0, 0] = 0.35 // Translation X
+			this[1, 0] = 0.35 // Translation Y
 			this[2, 0] = 0.95 // Rotation
 		}
 

@@ -1,5 +1,6 @@
 package com.hamosad1657.lib.units
 
+import com.hamosad1657.lib.robotPrintError
 import kotlin.math.absoluteValue
 import com.hamosad1657.lib.units.AngularVelocity.Unit as AngularVelocityUnit
 
@@ -19,9 +20,13 @@ class AngularVelocity
 private constructor(velocity: Double, velocityUnit: AngularVelocityUnit) : Comparable<AngularVelocity> {
 	private var rpm = 0.0
 		set(value) {
-			require(!value.isNaN()) { "AngularVelocity cannot be NaN." }
-			require(value.isFinite()) { "AngularVelocity cannot be infinite." }
-			field = value
+			field = if (value.isNaN()) {
+				robotPrintError("AngularVelocity cannot be NaN.", true)
+				0.0
+			} else if (value.isInfinite()) {
+				robotPrintError("AngularVelocity cannot be infinite.", true)
+				0.0
+			} else value
 		}
 
 	val asRpm get() = rpm

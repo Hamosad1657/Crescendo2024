@@ -11,6 +11,7 @@ import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.toNeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
@@ -24,7 +25,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.util.sendable.SendableRegistry
-import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
+import edu.wpi.first.wpilibj.DriverStation.Alliance.Blue
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -34,6 +36,7 @@ import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.subsystems.swerve.SwerveConstants
 import frc.robot.vision.AprilTagVision
+import java.util.Optional
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 
 object SwerveSubsystem : SwerveDrivetrain(
@@ -114,8 +117,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 	) {
 		if (isFieldRelative) {
 			super.setControl(controlRequestFieldRelative.apply {
-				VelocityX = translation.x
-				VelocityY = translation.y
+				VelocityX = translation.x * if (Robot.alliance == Alliance.Red) -1 else 1
+				VelocityY = translation.y * if (Robot.alliance == Alliance.Red) -1 else 1
 				RotationalRate = omega.asRadPs
 				DriveRequestType = if (useClosedLoopDrive) Velocity else OpenLoopVoltage
 				SteerRequestType = MotionMagic
@@ -220,16 +223,22 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		AprilTagVision.latestResult?.let { latestResult ->
-			if (!latestResult.hasTargets() or
-//				if best april tag distance larger the 5.2 meters don't add vision measurement
-				(AprilTagVision.bestTag?.bestCameraToTarget?.x?.let
-				{ it > AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters } == true)
+		// Don't update the position from the vision if:
+		val latestResult = AprilTagVision.latestResult
+		if (latestResult != null) {
+			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
+
+			// The detected AprilTag is farther than [AprilTagVision.MAX_TAG_TRUSTING_DISTANCE].
+			val robotToTagDistance = AprilTagVision.bestTag?.bestCameraToTarget?.x
+			if (
+				robotToTagDistance != null &&
+				robotToTagDistance > AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
 			) return
 		}
 
 
-		AprilTagVision.estimatedGlobalPose?.let { estimatedPose ->
+		val estimatedPose = AprilTagVision.estimatedGlobalPose
+		if (estimatedPose != null) {
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 
 			super.addVisionMeasurement(
@@ -253,10 +262,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 				// Boolean supplier that controls when the path will be mirrored for the red alliance
 				// This will flip the path being followed to the red side of the field.
 				// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-				Robot.alliance == DriverStation.Alliance.Red
+				Robot.alliance == Alliance.Red
 			},
 			this
 		)
+
+		PPHolonomicDriveController.setRotationTargetOverride { Optional.empty() }
 	}
 
 	fun pathFindToPathCommand(pathname: String): Command {
@@ -275,6 +286,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 	fun followPathCommand(pathName: String): Command =
 		AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
 
+	var isFacingSpeaker = true
+		get() {
+			val isFacingBlueSpeaker = state.Pose.rotation.degrees !in -90.0..90.0
+			field = if (Robot.alliance == Blue) isFacingBlueSpeaker else !isFacingBlueSpeaker
+			return field
+		}
 
 	// --- Telemetry ---
 

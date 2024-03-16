@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.math.clamp
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.PercentOutput
 import com.hamosad1657.lib.units.toNeutralModeValue
 import com.revrobotics.CANSparkBase.IdleMode
@@ -33,7 +34,10 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 	 * Use only as setter.
 	 */
 	var idleMode: IdleMode = IdleMode.kBrake
-		get() = throw UnsupportedOperationException("use this field only as a setter")
+		get() {
+			robotPrintError("Use [idleMode] field only as a setter", true)
+			return field
+		}
 		set(value) {
 			super.setNeutralMode(value.toNeutralModeValue())
 			field = value
@@ -41,7 +45,7 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 
 	/** USE [idleMode] SETTER INSTEAD. */
 	override fun setNeutralMode(neutralMode: NeutralModeValue) {
-		throw UnsupportedOperationException("use [idleMode] setter instead")
+		robotPrintError("Use [idleMode] setter instead of [setNeutralMode]", true)
 	}
 
 	var forwardLimit: () -> Boolean = { false }
@@ -71,7 +75,7 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 				kD = gains.kD
 			}
 
-			else -> throw IllegalArgumentException()
+			else -> robotPrintError("Illegal PID Slot: $slotIndex")
 		}
 		configurator.apply(configuration)
 	}
@@ -104,9 +108,12 @@ class HaTalonFX(deviceNumber: Int) : TalonFX(deviceNumber) {
 		get() = deviceTemp.value < FalconSafeTempC
 
 	override fun set(output: PercentOutput) {
-		require(maxPercentOutput >= minPercentOutput)
-		speed = clamp(output, minPercentOutput, maxPercentOutput)
-		super.set(speed)
+		if (maxPercentOutput > minPercentOutput) {
+			speed = clamp(output, minPercentOutput, maxPercentOutput)
+			super.set(speed)
+		} else {
+			robotPrintError("maxPercentOutput is smaller than minPercentOutput")
+		}
 	}
 
 	fun setWithLimits(output: PercentOutput) {

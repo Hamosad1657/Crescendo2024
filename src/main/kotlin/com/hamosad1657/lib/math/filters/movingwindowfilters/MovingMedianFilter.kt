@@ -1,6 +1,7 @@
 package com.hamosad1657.lib.math.filters.movingwindowfilters
 
 import com.hamosad1657.lib.math.median
+import com.hamosad1657.lib.robotPrintError
 import java.util.LinkedList
 
 /**
@@ -18,8 +19,13 @@ import java.util.LinkedList
 class MovingMedianFilter(window: Int) : MovingWindowFilter() {
 	override var window: Int = window
 		set(value) {
-			require(value > 0) { "window must be positive" }
-			field = value
+			field =
+				if (value > 0) value
+				else {
+					robotPrintError("window must be positive", true)
+					0
+				}
 		}
+	
 	override val calculation = { values: LinkedList<Double> -> median(values) }
 }

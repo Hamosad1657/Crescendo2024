@@ -81,21 +81,20 @@ object SwerveConstants {
 
 	/** Feedback from gyro, setpoint from anywhere. */
 	val CHASSIS_ANGLE_PID_CONTROLLER =
-		PIDController(0.2, 0.0, 0.0).apply {
+		PIDController(0.24, 0.0, 0.0).apply {
 			enableContinuousInput(-180.0, 180.0)
 		}
 
-	/** Feedback from gyro, setpoint from vision! */
-	val CHASSIS_VISION_ANGLE_PID_CONTROLLER =
-		PIDController(0.15, 0.0, 0.0).apply {
+	val CHASSIS_AIM_AT_NOTE_PID_CONTROLLER =
+		PIDController(0.17, 0.0, 0.0).apply {
 			enableContinuousInput(-180.0, 180.0)
 		}
 
 
 	// --- PathPlanner ---
 
-	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(19.0, 0.0, 0.0)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(20.0, 0.0, 0.00)
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(35.0, 0.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(12.0, 0.0, 0.00)
 
 	// TODO: Tune.
 	val PATH_CONSTRAINTS = PathConstraints(

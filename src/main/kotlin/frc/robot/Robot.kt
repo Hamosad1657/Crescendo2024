@@ -3,7 +3,6 @@ package frc.robot
 import com.hamosad1657.lib.Telemetry
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.robotPrint
-import com.hamosad1657.lib.units.degrees
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
@@ -15,9 +14,11 @@ import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.DEFAULT
+import frc.robot.subsystems.leds.LEDsSubsystem
 import frc.robot.subsystems.loader.LoaderSubsystem
 import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.swerve.SwerveSubsystem
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -28,7 +29,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel = Telemetry.Competition
+	val telemetryLevel = Telemetry.Testing
 		.also { SmartDashboard.putString("Telemetry", it.name) }
 	val isTesting = telemetryLevel == Telemetry.Testing
 
@@ -59,23 +60,25 @@ object Robot : TimedRobot() {
 		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand =
 			ShooterSubsystem.escapeAngleLockCommand() andThen
-				RobotContainer.getAutonomousCommand().also {
-					robotPrint("Auto command: ${it.name}")
-				}.asProxy()
+					RobotContainer.getAutonomousCommand().also {
+						robotPrint("Auto command: ${it.name}")
+					}.asProxy()
 		autonomousCommand?.schedule()
 	}
-	
+
 
 	override fun autonomousExit() {
-		if (alliance == Alliance.Red) {
-			robotPrint("CHANGED GYRO ANGLE")
-			SwerveSubsystem.setGyro((SwerveSubsystem.robotHeading.degrees - 180.0).degrees)
-		}
+//		if (alliance == Alliance.Red) {
+//			robotPrint("CHANGED GYRO ANGLE")
+//			SwerveSubsystem.setGyro(SwerveSubsystem.robotHeading minus 180.degrees)
+//		}
 	}
 
 	override fun teleopInit() {
-		ShooterSubsystem.defaultCommand = ShooterSubsystem.teleopDefaultCommand()
 		autonomousCommand?.cancel()
+
+		ShooterSubsystem.defaultCommand =
+			LEDsSubsystem::setToDefaultMode.asInstantCommand andThen ShooterSubsystem.teleopDefaultCommand()
 	}
 
 	override fun testInit() {
@@ -85,9 +88,11 @@ object Robot : TimedRobot() {
 
 	override fun disabledInit() {
 		LoaderSubsystem.idleMode = IdleMode.kCoast
+		LEDsSubsystem.currentMode = LEDsMode.ROBOT_DISABLED
 	}
 
 	override fun disabledExit() {
 		LoaderSubsystem.idleMode = IdleMode.kBrake
+		LEDsSubsystem.currentMode = DEFAULT
 	}
 }

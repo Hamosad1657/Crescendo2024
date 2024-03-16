@@ -2,6 +2,7 @@ package com.hamosad1657.lib.motors
 
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.math.clamp
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.PercentOutput
 import com.revrobotics.CANSparkFlex
 import edu.wpi.first.util.sendable.Sendable
@@ -63,8 +64,11 @@ class HaSparkFlex(
 	 * percentOutput is clamped between properties minPercentOutput and maxPercentOutput.
 	 */
 	override fun set(output: PercentOutput) {
-		require(maxPercentOutput >= minPercentOutput)
-		super.set(clamp(output, minPercentOutput, maxPercentOutput))
+		if (maxPercentOutput <= minPercentOutput) {
+			robotPrintError("maxPercentOutput is smaller or equal to minPercentOutput")
+		} else {
+			super.set(clamp(output, minPercentOutput, maxPercentOutput))
+		}
 	}
 
 	fun setWithLimits(output: PercentOutput) {

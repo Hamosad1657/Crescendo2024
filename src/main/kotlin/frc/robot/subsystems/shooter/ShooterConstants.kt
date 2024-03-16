@@ -3,15 +3,16 @@ package frc.robot.subsystems.shooter
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs
 import com.ctre.phoenix6.configs.MotionMagicConfigs
 import com.hamosad1657.lib.math.PIDGains
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.PercentOutput
+import com.hamosad1657.lib.units.Seconds
 import com.hamosad1657.lib.units.Volts
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.minus
 import com.hamosad1657.lib.units.rpm
 import edu.wpi.first.math.geometry.Rotation2d
 import kotlin.math.cos
-
 
 object ShooterConstants {
 	// --- Configs ---
@@ -51,7 +52,7 @@ object ShooterConstants {
 	const val KEEP_AT_MIN_ANGLE_OUTPUT: PercentOutput = 0.0
 
 	const val ESCAPE_ANGLE_LOCK_OUTPUT: PercentOutput = -0.2
-	const val TIME_TO_ESCAPE_ANGLE_LOCK_SEC = 0.1
+	const val ESCAPE_ANGLE_LOCK_DURATION: Seconds = 0.1
 
 	private const val KEEP_PARALLEL_TO_FLOOR_OUTPUT = -0.0185
 
@@ -59,18 +60,18 @@ object ShooterConstants {
 	 * Time between when loading started to when the note is shot.
 	 * It might be a little different in different speeds, so put here it's maximum value.
 	 */
-	const val SHOOT_TIME_SEC = 1.0
+	const val SHOOT_DURATION: Seconds = 1.0
 
 	/**
 	 * Time after which we load the note into the shooter no matter the velocity and angle error.
 	 * It might be a little different in different speeds, so put here it's maximum value.
 	 */
-	const val SHOOT_TIMEOUT_SEC = 1.75
+	const val SHOOT_TIMEOUT = 1.75
 
 
 	// --- Tolerances ---
 
-	val VELOCITY_TOLERANCE = 50.0.rpm
+	val VELOCITY_TOLERANCE = 70.0.rpm
 	val SHOOTING_ANGLE_TOLERANCE = 0.5.degrees
 	val AMP_ANGLE_TOLERANCE = 20.0.degrees
 
@@ -78,14 +79,12 @@ object ShooterConstants {
 	// --- PID Gains ---
 
 	val SHOOTER_PID_GAINS = PIDGains(
-		0.0003, 0.005, 0.0,
-		kFF = { setpointRpm -> 0.0019 * setpointRpm },
-		kIZone = 100.0,
+		0.00004, 0.0, 0.0,
+		kFF = { setpointRpm -> 0.0018 * setpointRpm },
 	)
 
 	val ANGLE_PID_GAINS = PIDGains(
-		45.0, 0.0, 0.0,
-//		0.0, 0.0, 0.0,
+		50.0, 0.0, 0.0,
 	)
 	val ANGLE_MOTION_MAGIC_CONFIG = MotionMagicConfigs().apply {
 		MotionMagicCruiseVelocity = 2.0
@@ -108,13 +107,27 @@ object ShooterConstants {
 		TOWARDS_MAX;
 	}
 
-	data class ShooterState(
-		val angle: Rotation2d,
-		val velocity: AngularVelocity,
-	) {
+	// ShooterState is a data class and not an enum, because we might want to make
+	// a continuous shooting function if we have the time. In the meantime, we will
+	// shoot from a few constant positions. Keep instances of ShooterState as constants.
+	class ShooterState(angle: Rotation2d, velocity: AngularVelocity) {
+		val angle: Rotation2d
+		val velocity: AngularVelocity
+
 		init {
-			require(angle.degrees in 0.0..MAX_ANGLE.degrees) { "angle ${angle.degrees}: have a nice day :D" }
-			require(velocity.asRpm in 0.0..5000.0) { "velocity ${velocity.asRpm}: have a nice day :D" }
+			this.angle =
+				if (angle.degrees in 0.0..MAX_ANGLE.degrees) angle
+				else {
+					robotPrintError("Shooter angle out of bounds: ${angle.degrees}", true)
+					0.degrees
+				}
+
+			this.velocity =
+				if (velocity.asRpm in 0.0..5000.0) velocity
+				else {
+					robotPrintError("Shooter velocity out of bounds: ${angle.degrees}", true)
+					0.rpm
+				}
 		}
 
 		companion object {
@@ -122,17 +135,20 @@ object ShooterConstants {
 			val COLLECT = ShooterState(175.degrees, 0.0.rpm)
 			val AUTO_COLLECT = ShooterState(COLLECT.angle, 3000.rpm)
 			val COLLECT_FROM_FEEDER = ShooterState(43.degrees, 0.0.rpm)
+			val COLLECT_FROM_INSIDE_ROBOT = ShooterState(161.degrees, 0.0.rpm)
 
 			// --- Teleop Speaker ---
 			val AT_SPEAKER = ShooterState(200.degrees, 2600.rpm)
+			val REVERSE_AT_SPEAKER = ShooterState(270.degrees, 2600.rpm)
+			val BEHIND_DEFENCE_BOT = ShooterState(282.0.degrees, 2800.0.rpm)
 			val NEAR_SPEAKER = ShooterState(180.degrees, 3000.rpm)
 			val AT_PODIUM = ShooterState(175.0.degrees, 3500.rpm)
-			var AT_STAGE = ShooterState(162.85.degrees, 3900.rpm)
+			var AT_STAGE = ShooterState(162.0.degrees, 4100.rpm)
 
 			// --- Teleop Misc. ---
 			val TO_AMP = ShooterState(5.degrees, 0.0.rpm)
 			val EJECT = ShooterState(168.degrees, 1000.rpm)
-			val TO_TRAP = ShooterState(15.0.degrees, 0.0.rpm)
+			val BEFORE_CLIMB = ShooterState(50.0.degrees, 0.0.rpm)
 
 			// --- Auto ---
 			val AUTO_LINE_ONE_THREE = ShooterState(176.degrees, 3500.rpm)

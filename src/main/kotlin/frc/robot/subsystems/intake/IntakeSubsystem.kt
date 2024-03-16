@@ -2,7 +2,9 @@ package frc.robot.subsystems.intake
 
 import com.ctre.phoenix6.controls.VoltageOut
 import com.hamosad1657.lib.motors.HaTalonFX
+import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.Volts
+import com.hamosad1657.lib.units.rps
 import com.revrobotics.CANSparkBase.IdleMode
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -47,6 +49,10 @@ object IntakeSubsystem : SubsystemBase() {
 
 	val isRunning: Boolean get() = abs(bottomMotor.get()) > 0.0
 
+	val bottomMotorSpeed: AngularVelocity get() = bottomMotor.velocity.value.rps
+	val isCollectingNote: Boolean
+		get() = bottomMotorSpeed < Constants.BOTTOM_MOTOR_UNDER_LOAD_THRESHOLD
+
 
 	// --- Motors Control ---
 
@@ -69,9 +75,7 @@ object IntakeSubsystem : SubsystemBase() {
 	override fun initSendable(builder: SendableBuilder) {
 		builder.setSmartDashboardType("Subsystem")
 		builder.addStringProperty("Command", { currentCommand?.name ?: "none" }, null)
-
 		builder.addBooleanProperty("Is running", { isRunning }, null)
-		builder.addDoubleProperty("Bottom motor output", { bottomMotor.get() }, null)
-		builder.addDoubleProperty("Top motor output", { topMotor.get() }, null)
+		builder.addBooleanProperty("Is bottom motor under load", { isCollectingNote }, null)
 	}
 }

@@ -6,8 +6,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
 import com.hamosad1657.lib.math.PIDGains
 import com.hamosad1657.lib.math.clamp
 import com.hamosad1657.lib.math.wrapPositionSetpoint
+import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.toNeutralMode
-import com.revrobotics.CANSparkBase
+import com.revrobotics.CANSparkBase.IdleMode
 
 class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	init {
@@ -42,13 +43,16 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	 *
 	 * Use only as setter.
 	 * */
-	var idleMode: CANSparkBase.IdleMode
-		get() = throw UnsupportedOperationException("use this field only as a setter")
+	var idleMode: IdleMode
+		get() {
+			robotPrintError("Use [idleMode] field only as a setter", true)
+			return IdleMode.kCoast
+		}
 		set(value) = setNeutralMode(idleMode.toNeutralMode())
 
 	/** USE [idleMode] SETTER INSTEAD. */
 	override fun setNeutralMode(neutralMode: NeutralMode?) {
-		throw UnsupportedOperationException("use [idleMode] setter instead")
+		robotPrintError("Use [idleMode] setter instead of [setNeutralMode]", true)
 	}
 
 	private var minPositionSetpoint: Double = 0.0
@@ -57,11 +61,13 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	private var speed = 0.0
 
 	fun configPIDGains(gains: PIDGains, slotIndex: Int = 0) {
-		require(slotIndex in 0..2)
+		if (slotIndex !in 0..3) {
+			return robotPrintError("Illegal PID Slot: $slotIndex")
+		}
 		config_kP(slotIndex, gains.kP)
 		config_kI(slotIndex, gains.kI)
 		config_kD(slotIndex, gains.kD)
-		config_IntegralZone(0, gains.kIZone)
+		config_IntegralZone(slotIndex, gains.kIZone)
 	}
 
 	/**
@@ -93,13 +99,16 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	 * [percentOutput] is clamped between [minPercentOutput] and [maxPercentOutput].
 	 */
 	override fun set(percentOutput: Double) {
-		require(maxPercentOutput >= minPercentOutput)
 		if ((forwardLimit() && percentOutput > 0.0) || (reverseLimit() && percentOutput < 0.0)) {
 			speed = 0.0
 			super.set(ControlMode.PercentOutput, 0.0)
 		} else {
-			speed = clamp(percentOutput, minPercentOutput, maxPercentOutput)
-			super.set(ControlMode.PercentOutput, speed)
+			if (maxPercentOutput > minPercentOutput) {
+				speed = clamp(percentOutput, minPercentOutput, maxPercentOutput)
+				super.set(ControlMode.PercentOutput, speed)
+			} else {
+				robotPrintError("maxPercentOutput is smaller then minPercentOutput", true)
+			}
 		}
 	}
 
@@ -115,7 +124,9 @@ class HaTalonSRX(deviceID: Int) : WPI_TalonSRX(deviceID) {
 	 * @param maxPossibleSetpoint The largest setpoint.
 	 */
 	fun enablePositionWrap(minPossibleSetpoint: Double, maxPossibleSetpoint: Double) {
-		require(minPossibleSetpoint < maxPossibleSetpoint)
+		if (!(minPossibleSetpoint < maxPossibleSetpoint)) {
+			robotPrintError("minPossibleSetpoint is bigger than maxPossibleSetpoint", true)
+		}
 		this.minPositionSetpoint = minPossibleSetpoint
 		this.maxPositionSetpoint = maxPossibleSetpoint
 		isPositionWrapEnabled = true

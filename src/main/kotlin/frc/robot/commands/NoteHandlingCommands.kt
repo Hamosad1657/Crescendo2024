@@ -4,7 +4,6 @@ package frc.robot.commands
 
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.Volts
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior
 import edu.wpi.first.wpilibj2.command.Commands
@@ -12,10 +11,8 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
-import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -31,7 +28,7 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
 }
 
 /**
- * Like [collectCommand], but interruptable, and the shooter spins continuously.
+ * Like [collectCommand], but the shooter spins continuously.
  * - Requirements: Intake, Loader, Shooter.
  */
 fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = withName("collect") {
@@ -46,7 +43,7 @@ fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and
 	(Shooter.getToShooterStateCommand(state) raceWith
 		(WaitCommand(0.2) andThen
 			waitUntil { Shooter.isWithinTolerance }
-				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
+				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
 			WaitCommand(0.1) andThen
 			loadIntoShooterCommand()))
 }
@@ -56,79 +53,33 @@ fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = with
 	(Shooter.getToShooterStateCommand(stateSupplier) raceWith
 		(WaitCommand(0.2) andThen
 			waitUntil { Shooter.isWithinTolerance }
-				.withTimeout(ShooterConstants.SHOOT_TIMEOUT_SEC) andThen
+				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
 			WaitCommand(0.1) andThen
 			loadIntoShooterCommand()))
 }
 
-/**
- * - Command has no end condition.
- * - Requirements: Shooter.
- */
-fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
-	runOnce {
-		resetVelocityPIDController()
-	} andThen run {
-		setShooterState(state)
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-/**
- * - Command has no end condition.
- * - Requirements: Shooter.
- */
-fun Shooter.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
-	runOnce {
-		resetVelocityPIDController()
-	} andThen run {
-		setShooterState(state())
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-/**
- * - Command has no end condition.
- * - Requirements: Shooter.
- */
-fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to shooter state") {
-	run {
-		setAngle(angle)
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-/** - Requirements: Shooter. */
-fun Shooter.dynamicShootingCommand() = Shooter.getToShooterStateCommand {
-	SwerveSubsystem.robotPose.let { estimatedPose ->
-		DynamicShooting.calculateShooterState(estimatedPose.translation)
-	}
-}
 
 /**
  * Waits until shooter is within angle tolerance to AMP,
- * then ejects the note through the loader for [ShooterConstants.SHOOT_TIME_SEC] seconds.
+ * then ejects the note through the loader for [ShooterConstants.SHOOT_DURATION] seconds.
  * Finally, interrupts shooter subsystem so it goes back to it's default command.
  * - Requirements: Loader (until the command ends, then Shooter).
  */
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
 		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
-		LoaderConstants.AMP_EJECT_TIME_SEC finallyDo
+		LoaderConstants.AMP_EJECT_DURATION finallyDo
 		Shooter.runOnce {}
 }
 
 /**
- * Runs the loader motor for [ShooterConstants.SHOOT_TIME_SEC] seconds.
+ * Runs the loader motor for [ShooterConstants.SHOOT_DURATION] seconds.
  * Finally, interrupts shooter subsystem so it goes back to it's default command.
  * - Requirements: Loader (until the command ends, then Shooter.)
  */
 fun Loader.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC finallyDo
+		ShooterConstants.SHOOT_DURATION finallyDo
 		Shooter.runOnce {}
 }
 
@@ -200,7 +151,7 @@ fun Loader.runLoaderCommand(voltage: Volts): Command = withName("run") {
 /** - Requirements: Loader. */
 fun Notes.loadIntoShooterCommand(): Command = withName("load into shooter") {
 	Loader.runLoaderCommand(LoaderConstants.MOTOR_LOADING_OUTPUT) withTimeout
-		ShooterConstants.SHOOT_TIME_SEC
+		ShooterConstants.SHOOT_DURATION
 }
 
 /** - Requirements: Intake, Loader, Shooter. */
@@ -224,7 +175,7 @@ fun Notes.collectFromHumanPlayerCommand(): Command = withName("collect from huma
 fun Intake.ejectFromIntakeCommand(): Command = withName("eject from intake") {
 	run {
 		setVoltage(-IntakeConstants.BOTTOM_MOTOR_OUTPUT, -IntakeConstants.TOP_MOTOR_OUTPUT)
-	} withTimeout IntakeConstants.EJECT_TIME_SEC finallyDo {
+	} withTimeout IntakeConstants.EJECT_DURATION finallyDo {
 		stopMotors()
 	}
 }
