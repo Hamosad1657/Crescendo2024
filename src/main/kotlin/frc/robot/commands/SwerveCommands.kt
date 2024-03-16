@@ -194,6 +194,10 @@ fun Swerve.aimAtGoalWhileDrivingCommand(
 	)
 }
 
+fun Swerve.rotateToAmpCommand(): Command = withName("rotate to amp") {
+	getToAngleCommand(90.degrees)
+}
+
 /**
  * - Command has no end condition.
  * - Requirements: Swerve.

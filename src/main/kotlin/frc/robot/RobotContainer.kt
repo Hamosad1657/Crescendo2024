@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
-import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.COLLECT
-import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.SHOOT
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
@@ -97,6 +96,15 @@ object RobotContainer {
 				} until ::areControllerAJoysticksMoving
 			)
 
+			// Maintain angle for amp while driving
+			touchpad().whileTrue(
+				Swerve.teleopDriveWithAutoAngleCommand(
+					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+					vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+					{ 90.degrees },
+					{ true },
+				)
+			)
 
 			// --- Notes ---
 			// Dynamic shooting
@@ -105,7 +113,7 @@ object RobotContainer {
 					Swerve.aimAtSpeakerWhileDrivingCommand(
 						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 						vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
-					) alongWith LEDs.setModeCommand(SHOOT)
+					) alongWith LEDs.setModeCommand(DYNAMIC_SHOOT)
 				)
 			)
 
@@ -121,18 +129,13 @@ object RobotContainer {
 			)
 
 			// Load
-			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand() finallyDo LEDs::actionFinished)
+			R1().toggleOnTrue(Loader.loadToShooterAmpOrTrapCommand() finallyDo LEDs::actionFinished)
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
 		}
 
 		with(controllerB) {
-			fun setShooterState(shooterState: ShooterState) =
-				Shooter.getToShooterStateCommand(shooterState) alongWith
-					LEDs.setModeCommand(SHOOT) finallyDo {
-					LEDs.setToDefaultMode()
-				}
 
 			// Speaker
 			circle().toggleOnTrue(Shooter.getToAtSpeakerState() alongWith
@@ -145,6 +148,7 @@ object RobotContainer {
 			// Amp & Trap
 			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP))
 			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
+			L1().toggleOnTrue(setShooterState(ShooterState.TO_TRAP))
 
 			// Sweep
 			R1().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
@@ -287,6 +291,11 @@ object RobotContainer {
 		register("shoot_from_speaker_command", Notes.loadAndShootCommand(ShooterState.AT_SPEAKER))
 	}
 
+	fun setShooterState(shooterState: ShooterState) =
+		Shooter.getToShooterStateCommand(shooterState) alongWith
+			LEDs.setModeCommand(SHOOT) finallyDo {
+			LEDs.setToDefaultMode()
+		}
 
 	// --- Joysticks ---
 

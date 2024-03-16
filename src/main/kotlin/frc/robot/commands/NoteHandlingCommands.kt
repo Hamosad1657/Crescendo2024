@@ -67,9 +67,14 @@ fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = with
  */
 fun Loader.ejectIntoAmpCommand(): Command = withName("eject") {
 	waitUntil(Shooter::isWithinAngleToleranceToAmp) andThen
-		Loader.runLoaderCommand(LoaderConstants.MOTOR_EJECT_OUTPUT) withTimeout
+		Loader.runLoaderCommand(LoaderConstants.AMP_EJECT_OUTPUT) withTimeout
 		LoaderConstants.AMP_EJECT_DURATION finallyDo
 		Shooter.runOnce {}
+}
+
+fun Loader.ejectIntoTrapCommand(): Command = withName("eject") {
+	Loader.runLoaderCommand(LoaderConstants.TRAP_EJECT_OUTPUT) withTimeout
+		LoaderConstants.AMP_EJECT_DURATION
 }
 
 /**
@@ -94,6 +99,12 @@ fun Loader.loadToShooterOrAmpCommand(): Command =
 		loadIntoShooterCommand(), // Command on false
 		Shooter::isWithinAngleToleranceToAmp,
 	)
+
+fun Loader.loadToShooterAmpOrTrapCommand(): Command =
+	ConditionalCommand(
+		ejectIntoTrapCommand(),
+		loadToShooterOrAmpCommand()
+	) { Shooter.isTryingToTrap || (Shooter.currentCommand.name == "angle open loop teleop : ShooterSubsystem") }
 
 
 // ---

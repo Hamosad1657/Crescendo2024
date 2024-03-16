@@ -20,6 +20,24 @@ import org.photonvision.targeting.PhotonTrackedTarget
 object AprilTagVision {
 	val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
 
+	val SEEING_ONE_TAG_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+		this[0, 0] = 0.9 // Translation X
+		this[1, 0] = 0.9 // Translation Y
+		this[2, 0] = 0.95 // Rotation
+	}
+
+	val AUTO_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+		this[0, 0] = 0.5 // Translation X
+		this[1, 0] = 0.5 // Translation Y
+		this[2, 0] = 0.95 // Rotation
+	}
+
+	val TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+		this[0, 0] = 0.35 // Translation X
+		this[1, 0] = 0.35 // Translation Y
+		this[2, 0] = 0.95 // Rotation
+	}
+
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("AprilTag-Cam")
 	} catch (_: Exception) {
@@ -49,19 +67,12 @@ object AprilTagVision {
 		}
 
 	val poseEstimationStdDevs
-		get() = Matrix(Nat.N3(), Nat.N1()).apply {
-			if ((latestResult!!.targets.size == 1)) {
-				this[0, 0] = 0.9 // Translation X
-				this[1, 0] = 0.9 // Translation Y
-				this[2, 0] = 0.95 // Rotation
-			} else if (frc.robot.Robot.isAutonomous) {
-				this[0, 0] = 0.5 // Translation X
-				this[1, 0] = 0.5 // Translation Y
-				this[2, 0] = 0.95 // Rotation
-			}
-			this[0, 0] = 0.35 // Translation X
-			this[1, 0] = 0.35 // Translation Y
-			this[2, 0] = 0.95 // Rotation
+		get() = if ((latestResult!!.targets.size == 1)) {
+			SEEING_ONE_TAG_STANDARD_DEVS
+		} else if (frc.robot.Robot.isAutonomous) {
+			AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
+		} else {
+			TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
 		}
 
 	/**

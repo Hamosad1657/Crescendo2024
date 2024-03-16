@@ -16,14 +16,11 @@ import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
 import frc.robot.subsystems.leds.LEDsConstants.RGBColor
 import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.leds.LEDsConstants as Constants
 
 object LEDsSubsystem : SubsystemBase() {
 	// --- LEDs ---
-
-	private val blinkTimer = Timer()
-	private val actionFinishedModeExitTimer = Timer()
-	private val collectWithNoteTimer = Timer()
 
 	private val ledsBuffer = AddressableLEDBuffer(Constants.LENGTH)
 	private val ledStrip = AddressableLED(RobotMap.Leds.PWM_PORT).apply {
@@ -38,6 +35,12 @@ object LEDsSubsystem : SubsystemBase() {
 	var currentMode: LEDsMode = ROBOT_DISABLED
 
 	private var currentColor = RGBColor.LEDS_OFF
+
+	private val blinkTimer = Timer()
+	private val actionFinishedModeExitTimer = Timer()
+	private val collectWithNoteTimer = Timer()
+
+	private var hasCollectedNote = false
 
 
 	// --- State Getters ---
@@ -60,7 +63,7 @@ object LEDsSubsystem : SubsystemBase() {
 		if (color != RGBColor.LEDS_OFF) currentColor = color
 	}
 
-	private fun toggleLeds() {
+	private fun toggleLEDs() {
 		setColor(
 			if (areLedsOn) RGBColor.LEDS_OFF
 			else currentColor
@@ -71,7 +74,7 @@ object LEDsSubsystem : SubsystemBase() {
 	private fun blink(blinkTime: Seconds) {
 		blinkTimer.start()
 		if (blinkTimer.hasElapsed(blinkTime)) {
-			toggleLeds()
+			toggleLEDs()
 			blinkTimer.restart()
 		}
 	}
@@ -84,21 +87,30 @@ object LEDsSubsystem : SubsystemBase() {
 	}
 
 	private fun collectMode() {
+		if (IntakeSubsystem.isCollectingNote &&
+			collectWithNoteTimer.hasElapsed(Constants.WAIT_WITH_NOTE_DELAY)
+		) {
+			hasCollectedNote = true
+		}
+
 		setColor(
-			if (
-				IntakeSubsystem.isCollectingNote &&
-				collectWithNoteTimer.hasElapsed(Constants.WAIT_WITH_NOTE_DELAY)
-			)
-				RGBColor.MAGENTA
+			if (hasCollectedNote) RGBColor.GREEN
 			else RGBColor.YELLOW
 		)
 	}
 
 	private fun shootMode() {
 		setColor(
-			if (ShooterSubsystem.isWithinTolerance) RGBColor.MAGENTA
+			if (ShooterSubsystem.isWithinTolerance) RGBColor.GREEN
 			else RGBColor.YELLOW
 		)
+	}
+
+	private fun dynamicShootMode() {
+		if (!SwerveSubsystem.isInVisionRange) {
+			currentColor = RGBColor.ORANGE
+			blink(0.1)
+		} else shootMode()
 	}
 
 	private fun defaultMode() {
@@ -133,7 +145,10 @@ object LEDsSubsystem : SubsystemBase() {
 	fun setModeCommand(mode: LEDsMode): Command =
 		instantCommand {
 			currentMode = mode
-			if (mode == COLLECT) collectWithNoteTimer.restart()
+			if (mode == COLLECT) {
+				collectWithNoteTimer.restart()
+				hasCollectedNote = false
+			}
 		}
 
 
@@ -151,6 +166,7 @@ object LEDsSubsystem : SubsystemBase() {
 
 			COLLECT -> collectMode()
 			SHOOT -> shootMode()
+			DYNAMIC_SHOOT -> dynamicShootMode()
 			DEFAULT -> defaultMode()
 			ROBOT_DISABLED -> robotDisabledMode()
 		}
