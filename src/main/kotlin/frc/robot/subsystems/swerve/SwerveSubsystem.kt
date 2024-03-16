@@ -183,6 +183,13 @@ object SwerveSubsystem : SwerveDrivetrain(
 		}
 	}
 
+	val isInVisionRange: Boolean
+		get() {
+			val robotToTagDistance = AprilTagVision.bestTag?.bestCameraToTarget?.x
+			if (robotToTagDistance == null) return false
+			return robotToTagDistance < AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
+		}
+
 	var idleMode: IdleMode = IdleMode.kBrake
 		set(value) {
 			super.configNeutralMode(value.toNeutralModeValue())
@@ -228,12 +235,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 		if (latestResult != null) {
 			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
 
-			// The detected AprilTag is farther than [AprilTagVision.MAX_TAG_TRUSTING_DISTANCE].
-			val robotToTagDistance = AprilTagVision.bestTag?.bestCameraToTarget?.x
-			if (
-				robotToTagDistance != null &&
-				robotToTagDistance > AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
-			) return
+			if (!isInVisionRange) return
 		}
 
 

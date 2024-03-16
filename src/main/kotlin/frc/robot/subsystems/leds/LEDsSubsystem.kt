@@ -16,6 +16,7 @@ import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
 import frc.robot.subsystems.leds.LEDsConstants.RGBColor
 import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.subsystems.leds.LEDsConstants as Constants
 
 object LEDsSubsystem : SubsystemBase() {
@@ -101,6 +102,13 @@ object LEDsSubsystem : SubsystemBase() {
 		)
 	}
 
+	private fun dynamicShootMode() {
+		if (!SwerveSubsystem.isInVisionRange) {
+			currentColor = RGBColor.ORANGE
+			blink(0.1)
+		} else shootMode()
+	}
+
 	private fun defaultMode() {
 		setColor(RGBColor.LEDS_OFF)
 	}
@@ -151,6 +159,7 @@ object LEDsSubsystem : SubsystemBase() {
 
 			COLLECT -> collectMode()
 			SHOOT -> shootMode()
+			DYNAMIC_SHOOT -> dynamicShootMode()
 			DEFAULT -> defaultMode()
 			ROBOT_DISABLED -> robotDisabledMode()
 		}

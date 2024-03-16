@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller
 import frc.robot.commands.*
-import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.COLLECT
-import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.SHOOT
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
@@ -114,7 +113,7 @@ object RobotContainer {
 					Swerve.aimAtSpeakerWhileDrivingCommand(
 						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 						vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
-					) alongWith LEDs.setModeCommand(SHOOT)
+					) alongWith LEDs.setModeCommand(DYNAMIC_SHOOT)
 				)
 			)
 
