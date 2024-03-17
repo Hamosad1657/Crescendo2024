@@ -229,12 +229,6 @@ object RobotContainer {
 			add("Auto chooser", autoChooser).withSize(3, 1).withPosition(2, 1)
 			add("Alliance", allianceChooser).withSize(3, 1).withPosition(7, 1)
 		}
-
-		with(Shuffleboard.getTab("Driving")) {
-			addBoolean("Note detected", Loader::isNoteDetected).withSize(3, 1).withPosition(2, 1)
-			addBoolean("Shooter at setpoint", Shooter::isWithinAngleTolerance).withSize(3, 1).withPosition(2, 3)
-			addBoolean("Intake running", Intake::isRunning).withSize(3, 1).withPosition(7, 1)
-		}
 	}
 
 	// --- Auto ---
