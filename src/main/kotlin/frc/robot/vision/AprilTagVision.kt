@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
+import frc.robot.Robot
 import org.photonvision.EstimatedRobotPose
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
@@ -21,31 +22,12 @@ object AprilTagVision {
 	private var TAGS_LAYOUT: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
 
 	object RPi4 {
-		val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
-
-		val SEEING_ONE_TAG_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
-			this[0, 0] = 0.9 // Translation X
-			this[1, 0] = 0.9 // Translation Y
-			this[2, 0] = 0.95 // Rotation
-		}
-
-		val AUTO_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
-			this[0, 0] = 0.5 // Translation X
-			this[1, 0] = 0.5 // Translation Y
-			this[2, 0] = 0.95 // Rotation
-		}
-
-		val TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
-			this[0, 0] = 0.35 // Translation X
-			this[1, 0] = 0.35 // Translation Y
-			this[2, 0] = 0.95 // Rotation
-		}
-
-		private val camera: PhotonCamera? = try {
-			PhotonCamera("AprilTag-Cam")
-		} catch (_: Exception) {
-			null
-		}
+		private val camera: PhotonCamera? =
+			try {
+				PhotonCamera("AprilTag-Cam")
+			} catch (_: Exception) {
+				null
+			}
 
 		private val robotToCamera =
 			Transform3d(
@@ -53,8 +35,9 @@ object AprilTagVision {
 				Rotation3d(0.0, -60.degrees.radians, 0.0)
 			)
 
+
 		private val poseEstimator: PhotonPoseEstimator? =
-			if (camera != null) {
+			camera?.let {
 				PhotonPoseEstimator(
 					TAGS_LAYOUT,
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
@@ -63,17 +46,6 @@ object AprilTagVision {
 				).apply {
 					setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
 				}
-			} else {
-				null
-			}
-
-		val poseEstimationStdDevs
-			get() = if ((latestResult!!.targets.size == 1)) {
-				SEEING_ONE_TAG_STANDARD_DEVS
-			} else if (frc.robot.Robot.isAutonomous) {
-				AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
-			} else {
-				TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
 			}
 
 		/**
@@ -82,12 +54,38 @@ object AprilTagVision {
 		 * Returns null if it doesn't detect any AprilTags.
 		 */
 		val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
-		val estimatedPose2d: Pose2d? get() = estimatedGlobalPose?.estimatedPose?.toPose2d()
 
 		val latestResult: PhotonPipelineResult? get() = camera?.latestResult
-
 		val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
-		fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
+
+		val poseEstimationStdDevs
+			get() = if (latestResult?.targets?.size == 1) {
+				ONE_TAG_STANDARD_DEVS
+			} else if (Robot.isAutonomous) {
+				TWO_TAGS_AUTO_STANDARD_DEVS
+			} else {
+				TWO_TAGS_TELEOP_STANDARD_DEVS
+			}
+
+		val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
+
+		val ONE_TAG_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.9 // Translation X
+			this[1, 0] = 0.9 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
+
+		val TWO_TAGS_AUTO_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.5 // Translation X
+			this[1, 0] = 0.5 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
+
+		val TWO_TAGS_TELEOP_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.35 // Translation X
+			this[1, 0] = 0.35 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
 	}
 
 	object LeftLimelight {
@@ -140,7 +138,7 @@ object AprilTagVision {
 		val poseEstimationStdDevs
 			get() = if ((latestResult!!.targets.size == 1)) {
 				SEEING_ONE_TAG_STANDARD_DEVS
-			} else if (frc.robot.Robot.isAutonomous) {
+			} else if (Robot.isAutonomous) {
 				AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
 			} else {
 				TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
@@ -210,7 +208,7 @@ object AprilTagVision {
 		val poseEstimationStdDevs
 			get() = if ((latestResult!!.targets.size == 1)) {
 				SEEING_ONE_TAG_STANDARD_DEVS
-			} else if (frc.robot.Robot.isAutonomous) {
+			} else if (Robot.isAutonomous) {
 				AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
 			} else {
 				TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
