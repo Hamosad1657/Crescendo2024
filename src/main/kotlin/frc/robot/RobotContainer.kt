@@ -19,7 +19,6 @@ import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
 import frc.robot.subsystems.swerve.SwerveConstants
-import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.vision.NoteVision
 import java.util.Optional
 import kotlin.math.absoluteValue
@@ -55,7 +54,7 @@ object RobotContainer {
 	private var swerveIsFieldRelative = true
 
 	init {
-		SwerveSubsystem
+		Swerve
 		registerAutoCommands()
 		configureButtonBindings()
 		setDefaultCommands()
@@ -121,7 +120,7 @@ object RobotContainer {
 			// Collect
 			L1().toggleOnTrue(((
 				Notes.collectCommand() raceWith
-					SwerveSubsystem.aimAtNoteWhileDrivingCommand(
+					Swerve.aimAtNoteWhileDrivingCommand(
 						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 						vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
 						omegaSupplier = { controllerA.rightX }

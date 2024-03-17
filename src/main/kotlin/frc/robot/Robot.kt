@@ -16,9 +16,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.DEFAULT
-import frc.robot.subsystems.leds.LEDsSubsystem
-import frc.robot.subsystems.loader.LoaderSubsystem
-import frc.robot.subsystems.shooter.ShooterSubsystem
+import frc.robot.subsystems.intake.IntakeSubsystem as Intake
+import frc.robot.subsystems.leds.LEDsSubsystem as LEDs
+import frc.robot.subsystems.loader.LoaderSubsystem as Loader
+import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -29,19 +30,19 @@ import frc.robot.subsystems.shooter.ShooterSubsystem
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-	val telemetryLevel = Telemetry.Testing
-		.also { SmartDashboard.putString("Telemetry", it.name) }
-	val isTesting = telemetryLevel == Telemetry.Testing
+	val telemetryLevel =
+		Telemetry.Testing
+			.also { SmartDashboard.putString("Telemetry", it.name) }
 
-	private var autonomousCommand: Command? = null
-	private var commandScheduler = CommandScheduler.getInstance().also {
-		SmartDashboard.putData("commandScheduler", it)
-	}
+	val isTesting = telemetryLevel == Telemetry.Testing
 
 	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
 
-	var submittedAuto: Command? = null
+	private var autonomousCommand: Command? = null
+	private var commandScheduler =
+		CommandScheduler.getInstance()
+			.also { SmartDashboard.putData("commandScheduler", it) }
 
 	override fun robotInit() {
 		// Report the use of the Kotlin Language for "FRC Usage Report" statistics
@@ -57,42 +58,37 @@ object Robot : TimedRobot() {
 	}
 
 	override fun autonomousInit() {
-		ShooterSubsystem.defaultCommand = ShooterSubsystem.autoDefaultCommand()
 		autonomousCommand =
-			ShooterSubsystem.escapeAngleLockCommand() andThen
-					RobotContainer.getAutonomousCommand().also {
-						robotPrint("Auto command: ${it.name}")
-					}.asProxy()
+			Shooter.escapeAngleLockCommand() andThen
+				RobotContainer.getAutonomousCommand()
+					.also { robotPrint("Auto command: ${it.name}") }
+					.asProxy()
+
 		autonomousCommand?.schedule()
-	}
 
-
-	override fun autonomousExit() {
-//		if (alliance == Alliance.Red) {
-//			robotPrint("CHANGED GYRO ANGLE")
-//			SwerveSubsystem.setGyro(SwerveSubsystem.robotHeading minus 180.degrees)
-//		}
+		Shooter.defaultCommand = Shooter.autoDefaultCommand()
 	}
 
 	override fun teleopInit() {
 		autonomousCommand?.cancel()
 
-		ShooterSubsystem.defaultCommand =
-			LEDsSubsystem::setToDefaultMode.asInstantCommand andThen ShooterSubsystem.teleopDefaultCommand()
+		Shooter.defaultCommand = Shooter.teleopDefaultCommand()
+	}
+
+	override fun disabledInit() {
+		Loader.idleMode = IdleMode.kCoast
+		Intake.idleMode = IdleMode.kCoast
+		LEDs.currentMode = LEDsMode.ROBOT_DISABLED
+	}
+
+	override fun disabledExit() {
+		Loader.idleMode = IdleMode.kBrake
+		Intake.idleMode = IdleMode.kBrake
+		LEDs.currentMode = DEFAULT
 	}
 
 	override fun testInit() {
 		// Cancels all running commands at the start of test mode.
 		commandScheduler.cancelAll()
-	}
-
-	override fun disabledInit() {
-		LoaderSubsystem.idleMode = IdleMode.kCoast
-		LEDsSubsystem.currentMode = LEDsMode.ROBOT_DISABLED
-	}
-
-	override fun disabledExit() {
-		LoaderSubsystem.idleMode = IdleMode.kBrake
-		LEDsSubsystem.currentMode = DEFAULT
 	}
 }

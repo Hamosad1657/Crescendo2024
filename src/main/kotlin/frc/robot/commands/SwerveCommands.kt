@@ -146,31 +146,32 @@ fun Swerve.getToAngleCommand(angle: Rotation2d): Command = withName("get to angl
 fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
-): Command = teleopDriveWithAutoAngleCommand(
-	vxSupplier,
-	vySupplier,
-	{
-		val offset = 5.degrees
+): Command = withName("aim at speaker while driving") {
+	teleopDriveWithAutoAngleCommand(
+		vxSupplier,
+		vySupplier,
+		{
+			val offset = 5.degrees
 
+			val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+			val angleSetpoint = robotToGoal.angle.degrees
+
+			SmartDashboard.putBoolean("is chassis at angle setpoint", DynamicShooting.inChassisAngleTolerance)
+
+			mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
+		},
+		{ true },
+	)
+}
+
+fun Swerve.aimAtSpeaker() = withName("aim at speaker") {
+	getToAngleCommand {
 		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
 		val angleSetpoint = robotToGoal.angle.degrees
 
-		SmartDashboard.putBoolean("is chassis at angle setpoint", DynamicShooting.inChassisAngleTolerance)
-
+		val offset = 3.degrees
 		mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
-	},
-	{ true },
-)
-
-fun Swerve.aimAtSpeaker(flipGoal: Boolean) = getToAngleCommand {
-	val offset = (3).degrees
-
-	val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-	val angleSetpoint = robotToGoal.angle.degrees
-
-	SmartDashboard.putNumber("is chassis at angle setpoint", DynamicShooting.CHASSIS_ANGLE_TOLERANCE)
-
-	mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
+	}
 }
 
 /**

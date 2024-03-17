@@ -11,11 +11,11 @@ import frc.robot.Robot
 import frc.robot.subsystems.leds.LEDsConstants.ACTION_FINISHED_MODE_TIMEOUT
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
-import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.swerve.SwerveSubsystem
 import frc.robot.RobotMap.Leds as LedsMap
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.leds.LEDsConstants as Constants
+import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
+import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
 object LEDsSubsystem : SubsystemBase() {
 	// --- LEDs ---
@@ -63,13 +63,13 @@ object LEDsSubsystem : SubsystemBase() {
 
 	private fun shootMode() {
 		ledStrip.setColor(
-			if (ShooterSubsystem.isWithinTolerance) RGBColor.GREEN
+			if (Shooter.isWithinTolerance) RGBColor.GREEN
 			else RGBColor.YELLOW
 		)
 	}
 
 	private fun dynamicShootMode() {
-		if (!SwerveSubsystem.isInVisionRange) {
+		if (!Swerve.isInVisionRange) {
 			ledStrip.currentColor = RGBColor.ORANGE
 			ledStrip.blink(Constants.DYNAMIC_SHOOTING_FAILED_BLINK_TIME)
 		} else {
