@@ -45,6 +45,7 @@ object RobotContainer {
 	const val JOYSTICK_DEADBAND = 0.02
 	private const val CLIMBING_DEADBAND = 0.08
 	private const val CLIMBING_MULTIPLIER = 0.5
+	private const val SHOOTER_TELEOP_MULTIPLIER = 0.7
 
 	private val controllerA = CommandPS5Controller(RobotMap.DRIVER_A_CONTROLLER_PORT)
 	private val controllerB = CommandPS5Controller(RobotMap.DRIVER_B_CONTROLLER_PORT)
@@ -152,8 +153,8 @@ object RobotContainer {
 
 			// Sweep
 			R1().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
-				(simpleDeadband(r2Axis + 1.0, JOYSTICK_DEADBAND) -
-					simpleDeadband(l2Axis + 1.0, JOYSTICK_DEADBAND)) * 0.3
+				(simpleDeadband((r2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND) -
+					simpleDeadband((l2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND)) * 0.3
 			})
 
 			// Climbing Stabilizers
