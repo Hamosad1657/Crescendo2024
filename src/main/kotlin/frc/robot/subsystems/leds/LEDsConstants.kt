@@ -4,6 +4,7 @@ object LEDsConstants {
 	data class RGBColor(val red: Int, val green: Int, val blue: Int) {
 		companion object {
 			val GREEN = RGBColor(22, 87, 0)
+			val PURE_GREEN = RGBColor(0, 255, 0)
 			val WHITE = RGBColor(255, 255, 255)
 			val RED = RGBColor(255, 0, 0)
 			val BLUE = RGBColor(0, 0, 255)
@@ -27,7 +28,7 @@ object LEDsConstants {
 	const val LENGTH = 24
 
 	const val ACTION_FINISHED_MODE_BLINK_TIME = 0.15
-	const val ACTION_FINISHED_MODE_TIMEOUT = 6.5 * ACTION_FINISHED_MODE_BLINK_TIME
+	const val ACTION_FINISHED_MODE_TIMEOUT = 1.0
 
 	const val WAIT_WITH_NOTE_DELAY = 0.15
 }

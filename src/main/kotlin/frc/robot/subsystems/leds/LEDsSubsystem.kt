@@ -133,7 +133,7 @@ object LEDsSubsystem : SubsystemBase() {
 			if (interrupted) {
 				DEFAULT
 			} else {
-				setColor(RGBColor.GREEN)
+				setColor(RGBColor.PURE_GREEN)
 				ACTION_FINISHED
 			}
 	}
