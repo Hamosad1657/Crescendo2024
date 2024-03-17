@@ -18,73 +18,215 @@ import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
 object AprilTagVision {
-	val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
+	private var TAGS_LAYOUT: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
 
-	val SEEING_ONE_TAG_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
-		this[0, 0] = 0.9 // Translation X
-		this[1, 0] = 0.9 // Translation Y
-		this[2, 0] = 0.95 // Rotation
-	}
+	object RPi4 {
+		val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
 
-	val AUTO_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
-		this[0, 0] = 0.5 // Translation X
-		this[1, 0] = 0.5 // Translation Y
-		this[2, 0] = 0.95 // Rotation
-	}
+		val SEEING_ONE_TAG_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.9 // Translation X
+			this[1, 0] = 0.9 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
 
-	val TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
-		this[0, 0] = 0.35 // Translation X
-		this[1, 0] = 0.35 // Translation Y
-		this[2, 0] = 0.95 // Rotation
-	}
+		val AUTO_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.5 // Translation X
+			this[1, 0] = 0.5 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
 
-	private val camera: PhotonCamera? = try {
-		PhotonCamera("AprilTag-Cam")
-	} catch (_: Exception) {
-		null
-	}
+		val TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.35 // Translation X
+			this[1, 0] = 0.35 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
 
-	private val robotToCamera =
-		Transform3d(
-			Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
-			Rotation3d(0.0, -60.degrees.radians, 0.0)
-		)
-
-	private var aprilTags: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
-
-	private val poseEstimator: PhotonPoseEstimator? =
-		if (camera != null) {
-			PhotonPoseEstimator(
-				aprilTags,
-				PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-				camera,
-				robotToCamera,
-			).apply {
-				setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
-			}
-		} else {
+		private val camera: PhotonCamera? = try {
+			PhotonCamera("AprilTag-Cam")
+		} catch (_: Exception) {
 			null
 		}
 
-	val poseEstimationStdDevs
-		get() = if ((latestResult!!.targets.size == 1)) {
-			SEEING_ONE_TAG_STANDARD_DEVS
-		} else if (frc.robot.Robot.isAutonomous) {
-			AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
-		} else {
-			TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
+		private val robotToCamera =
+			Transform3d(
+				Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
+				Rotation3d(0.0, -60.degrees.radians, 0.0)
+			)
+
+		private val poseEstimator: PhotonPoseEstimator? =
+			if (camera != null) {
+				PhotonPoseEstimator(
+					TAGS_LAYOUT,
+					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+					camera,
+					robotToCamera,
+				).apply {
+					setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
+				}
+			} else {
+				null
+			}
+
+		val poseEstimationStdDevs
+			get() = if ((latestResult!!.targets.size == 1)) {
+				SEEING_ONE_TAG_STANDARD_DEVS
+			} else if (frc.robot.Robot.isAutonomous) {
+				AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
+			} else {
+				TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
+			}
+
+		/**
+		 * Gets the estimated robot position from the PhotonVision camera.
+		 *
+		 * Returns null if it doesn't detect any AprilTags.
+		 */
+		val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
+		val estimatedPose2d: Pose2d? get() = estimatedGlobalPose?.estimatedPose?.toPose2d()
+
+		val latestResult: PhotonPipelineResult? get() = camera?.latestResult
+
+		val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
+		fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
+	}
+
+	object LeftLimelight {
+		val MAX_TAG_TRUSTING_DISTANCE = 4.0.meters
+
+		val SEEING_ONE_TAG_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.9 // Translation X
+			this[1, 0] = 0.9 // Translation Y
+			this[2, 0] = 0.95 // Rotation
 		}
 
-	/**
-	 * Gets the estimated robot position from the PhotonVision camera.
-	 *
-	 * Returns null if it doesn't detect any AprilTags.
-	 */
-	val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
-	val estimatedPose2d: Pose2d? get() = estimatedGlobalPose?.estimatedPose?.toPose2d()
+		val AUTO_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.5 // Translation X
+			this[1, 0] = 0.5 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
 
-	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
+		val TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.35 // Translation X
+			this[1, 0] = 0.35 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
 
-	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
-	fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
+		private val camera: PhotonCamera? = try {
+			PhotonCamera("AprilTag-Cam")
+		} catch (_: Exception) {
+			null
+		}
+
+		private val robotToCamera =
+			Transform3d(
+				Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
+				Rotation3d(0.0, -60.degrees.radians, 0.0)
+			)
+
+		private val poseEstimator: PhotonPoseEstimator? =
+			if (camera != null) {
+				PhotonPoseEstimator(
+					TAGS_LAYOUT,
+					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+					camera,
+					robotToCamera,
+				).apply {
+					setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
+				}
+			} else {
+				null
+			}
+
+		val poseEstimationStdDevs
+			get() = if ((latestResult!!.targets.size == 1)) {
+				SEEING_ONE_TAG_STANDARD_DEVS
+			} else if (frc.robot.Robot.isAutonomous) {
+				AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
+			} else {
+				TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
+			}
+
+		/**
+		 * Gets the estimated robot position from the PhotonVision camera.
+		 *
+		 * Returns null if it doesn't detect any AprilTags.
+		 */
+		val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
+		val estimatedPose2d: Pose2d? get() = estimatedGlobalPose?.estimatedPose?.toPose2d()
+
+		val latestResult: PhotonPipelineResult? get() = camera?.latestResult
+
+		val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
+		fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
+	}
+
+	object RightLimelight {
+		val MAX_TAG_TRUSTING_DISTANCE = 4.0.meters
+
+		val SEEING_ONE_TAG_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.9 // Translation X
+			this[1, 0] = 0.9 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
+
+		val AUTO_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.5 // Translation X
+			this[1, 0] = 0.5 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
+
+		val TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS = Matrix(Nat.N3(), Nat.N1()).apply {
+			this[0, 0] = 0.35 // Translation X
+			this[1, 0] = 0.35 // Translation Y
+			this[2, 0] = 0.95 // Rotation
+		}
+
+		private val camera: PhotonCamera? = try {
+			PhotonCamera("AprilTag-Cam")
+		} catch (_: Exception) {
+			null
+		}
+
+		private val robotToCamera =
+			Transform3d(
+				Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
+				Rotation3d(0.0, -60.degrees.radians, 0.0)
+			)
+
+		private val poseEstimator: PhotonPoseEstimator? =
+			if (camera != null) {
+				PhotonPoseEstimator(
+					TAGS_LAYOUT,
+					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+					camera,
+					robotToCamera,
+				).apply {
+					setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
+				}
+			} else {
+				null
+			}
+
+		val poseEstimationStdDevs
+			get() = if ((latestResult!!.targets.size == 1)) {
+				SEEING_ONE_TAG_STANDARD_DEVS
+			} else if (frc.robot.Robot.isAutonomous) {
+				AUTO_SEEING_TWO_TAGS_STANDARD_DEVS
+			} else {
+				TELEOP_SEEING_TWO_TAGS_STANDARD_DEVS
+			}
+
+		/**
+		 * Gets the estimated robot position from the PhotonVision camera.
+		 *
+		 * Returns null if it doesn't detect any AprilTags.
+		 */
+		val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
+		val estimatedPose2d: Pose2d? get() = estimatedGlobalPose?.estimatedPose?.toPose2d()
+
+		val latestResult: PhotonPipelineResult? get() = camera?.latestResult
+
+		val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
+		fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.getTargets()?.find { it.fiducialId == tagID }
+	}
 }
