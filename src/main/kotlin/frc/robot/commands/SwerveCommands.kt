@@ -72,7 +72,7 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	angleSupplier: () -> Rotation2d,
-	isFieldRelative: () -> Boolean,
+	isFieldRelative: () -> Boolean = { true },
 	pidController: () -> PIDController = { CHASSIS_ANGLE_PID_CONTROLLER },
 ): Command = withName("teleop drive with auto angle") {
 	run {

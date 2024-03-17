@@ -71,7 +71,6 @@ object RobotContainer {
 				{
 					if (Robot.alliance == Alliance.Blue) Swerve.zeroGyro()
 					else Swerve.setGyro(180.degrees)
-
 				}.asInstantCommand
 			)
 
@@ -97,12 +96,11 @@ object RobotContainer {
 			)
 
 			// Maintain angle for amp while driving
-			touchpad().whileTrue(
+			R3().whileTrue(
 				Swerve.teleopDriveWithAutoAngleCommand(
 					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 					vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
-					{ 90.degrees },
-					{ true },
+					angleSupplier = { 90.degrees },
 				)
 			)
 
