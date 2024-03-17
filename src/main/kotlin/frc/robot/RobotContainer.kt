@@ -262,7 +262,7 @@ object RobotContainer {
 
 		register(
 			"aim_at_speaker",
-			(Swerve.aimAtSpeaker(flipGoal = false) until {
+			(Swerve.aimAtSpeaker() until {
 				DynamicShooting.inChassisAngleTolerance
 			} finallyDo {
 				Swerve.stop()
