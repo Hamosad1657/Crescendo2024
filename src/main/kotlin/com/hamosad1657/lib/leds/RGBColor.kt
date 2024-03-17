@@ -1,4 +1,4 @@
-package com.hamosad1657.lib.led
+package com.hamosad1657.lib.leds
 
 data class RGBColor(val red: Int, val green: Int, val blue: Int) {
 	companion object {
