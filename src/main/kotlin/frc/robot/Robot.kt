@@ -72,7 +72,9 @@ object Robot : TimedRobot() {
 	override fun teleopInit() {
 		autonomousCommand?.cancel()
 
-		Shooter.defaultCommand = Shooter.teleopDefaultCommand()
+		Shooter.defaultCommand =
+			LEDs::setToDefaultMode.asInstantCommand andThen
+				Shooter.teleopDefaultCommand()
 	}
 
 	override fun disabledInit() {

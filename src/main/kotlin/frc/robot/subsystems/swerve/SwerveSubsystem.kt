@@ -185,8 +185,8 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	val isInVisionRange: Boolean
 		get() {
-			val robotToTagDistance = AprilTagVision.RPi4.bestTag?.bestCameraToTarget?.x ?: return false
-			return robotToTagDistance < AprilTagVision.RPi4.maxTagTrustingDistance.asMeters
+			val robotToTagDistance = AprilTagVision.bestTag?.bestCameraToTarget?.x ?: return false
+			return robotToTagDistance < AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
 		}
 
 	var idleMode: IdleMode = IdleMode.kBrake
@@ -229,70 +229,23 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		addVisionMeasurementFromFrontCam()
-		addVisionMeasurementFromLeftCam()
-		addVisionMeasurementFromRightCam()
-	}
-
-	fun addVisionMeasurementFromFrontCam() {
 		// Don't update the position from the vision if:
-		val latestResult = AprilTagVision.RPi4.latestResult
+		val latestResult = AprilTagVision.latestResult
 		if (latestResult != null) {
 			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
 
 			if (!isInVisionRange) return
 		}
 
-		val estimatedPose = AprilTagVision.RPi4.estimatedGlobalPose
+
+		val estimatedPose = AprilTagVision.estimatedGlobalPose
 		if (estimatedPose != null) {
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 
 			super.addVisionMeasurement(
 				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
 				estimatedPose.timestampSeconds,
-				AprilTagVision.RPi4.poseEstimationStdDevs,
-			)
-		}
-	}
-
-	fun addVisionMeasurementFromLeftCam() {
-		// Don't update the position from the vision if:
-		val latestResult = AprilTagVision.LeftLimelight.latestResult
-		if (latestResult != null) {
-			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
-
-			if (!isInVisionRange) return
-		}
-
-		val estimatedPose = AprilTagVision.LeftLimelight.estimatedGlobalPose
-		if (estimatedPose != null) {
-			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
-
-			super.addVisionMeasurement(
-				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
-				estimatedPose.timestampSeconds,
-				AprilTagVision.LeftLimelight.poseEstimationStdDevs,
-			)
-		}
-	}
-
-	fun addVisionMeasurementFromRightCam() {
-		// Don't update the position from the vision if:
-		val latestResult = AprilTagVision.RightLimelight.latestResult
-		if (latestResult != null) {
-			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
-
-			if (!isInVisionRange) return
-		}
-
-		val estimatedPose = AprilTagVision.RightLimelight.estimatedGlobalPose
-		if (estimatedPose != null) {
-			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
-
-			super.addVisionMeasurement(
-				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
-				estimatedPose.timestampSeconds,
-				AprilTagVision.RightLimelight.poseEstimationStdDevs,
+				AprilTagVision.poseEstimationStdDevs,
 			)
 		}
 	}
