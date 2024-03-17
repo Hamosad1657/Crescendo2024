@@ -96,8 +96,6 @@ object DynamicShooting {
 
 	// --- Speaker Info ---
 
-	val isSpeakerTagDetected get() = AprilTagVision.getTag(speakerTagId) != null
-
 	/** The Translation2d of the blue speaker if you are in the blue alliance, according to WPILib's field coordinate system. */
 	private val SPEAKER_BLUE_POSITION_METERS = Translation2d(-0.04, 5.55) // Meters
 
