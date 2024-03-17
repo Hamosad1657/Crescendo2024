@@ -186,7 +186,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	val isInVisionRange: Boolean
 		get() {
 			val robotToTagDistance = AprilTagVision.RPi4.bestTag?.bestCameraToTarget?.x ?: return false
-			return robotToTagDistance < AprilTagVision.RPi4.MAX_TAG_TRUSTING_DISTANCE.asMeters
+			return robotToTagDistance < AprilTagVision.RPi4.maxTagTrustingDistance.asMeters
 		}
 
 	var idleMode: IdleMode = IdleMode.kBrake
