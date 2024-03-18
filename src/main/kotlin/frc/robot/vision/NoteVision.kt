@@ -1,5 +1,7 @@
 package frc.robot.vision
 
+import com.hamosad1657.lib.Alert
+import com.hamosad1657.lib.Alert.AlertType.ERROR
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.minus
 import edu.wpi.first.math.geometry.Rotation2d
@@ -10,6 +12,9 @@ import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
 object NoteVision : Sendable {
+
+	private val disconnectedAlert = Alert("NOTE-Cam disconnected", ERROR)
+
 	/**
 	 * The angle to the NOTE as reported by the vision,
 	 * when the intake is perfectly centered at it.
@@ -22,7 +27,11 @@ object NoteVision : Sendable {
 		null
 	}
 
-	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
+	val isConnected: Boolean get() = (camera?.isConnected ?: false).also {
+		disconnectedAlert.set(it)
+	}
+
+	val latestResult: PhotonPipelineResult? get() = if (isConnected) camera?.latestResult else null
 	val bestTarget: PhotonTrackedTarget? get() = latestResult?.bestTarget
 	val hasTargets: Boolean get() = latestResult?.hasTargets() ?: false
 
