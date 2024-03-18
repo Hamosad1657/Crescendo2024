@@ -44,7 +44,7 @@ abstract class AprilTagCamera(cameraName: String) {
 
 	protected abstract val robotToCamera: Transform3d
 
-	private fun getPoseEstimator(): PhotonPoseEstimator? =
+	private fun retrievePoseEstimator(): PhotonPoseEstimator? =
 		camera?.let {
 			PhotonPoseEstimator(
 				TAGS_LAYOUT,
@@ -57,10 +57,10 @@ abstract class AprilTagCamera(cameraName: String) {
 		}
 
 	// Try to retrieve the pose estimator again only if it is null (it will be null if the camera is)
-	private var poseEstimatorBacking: PhotonPoseEstimator? = getPoseEstimator()
+	private var poseEstimatorBacking: PhotonPoseEstimator? = retrievePoseEstimator()
 	protected val poseEstimator: PhotonPoseEstimator?
 		get() {
-			if (poseEstimatorBacking == null) poseEstimatorBacking = getPoseEstimator()
+			if (poseEstimatorBacking == null) poseEstimatorBacking = retrievePoseEstimator()
 			return poseEstimatorBacking
 		}
 
