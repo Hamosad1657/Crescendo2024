@@ -11,7 +11,7 @@ import kotlin.math.absoluteValue
 
 class HaSparkFlex(
 	deviceID: Int,
-	motorType: MotorType = MotorType.kBrushless
+	motorType: MotorType = MotorType.kBrushless,
 ) : CANSparkFlex(deviceID, motorType), Sendable {
 	/**
 	 * Software forward limit, ONLY for percent-output control.

@@ -40,19 +40,22 @@ object DynamicShooting {
 			0.7 to 167.0,
 			1.0 to MIN_ANGLE,
 		)
-	val CHASSIS_ANGLE_TOLERANCE = 1.5
+	val CHASSIS_ANGLE_TOLERANCE = 1.5.degrees
 
 	val inChassisAngleTolerance
 		get() =
 			(CHASSIS_ANGLE_PID_CONTROLLER.setpoint -
 				Swerve.robotHeading.degrees).absoluteValue <
-				CHASSIS_ANGLE_TOLERANCE
+				CHASSIS_ANGLE_TOLERANCE.degrees
 
 	// --- Calculations ---
 
+	fun getFlatDistanceToSpeaker(robotPosition: Translation2d = Swerve.robotPose.translation) =
+		robotPosition.getDistance(speakerPosition)
+
 	/** This function assumes the robot is directly facing the speaker. */
-	fun calculateShooterState(robotPosition: Translation2d): ShooterState {
-		val robotToSpeakerFlatDistance = robotPosition.getDistance(speakerPosition)
+	fun calculateShooterState(robotPosition: Translation2d = Swerve.robotPose.translation): ShooterState {
+		val robotToSpeakerFlatDistance = getFlatDistanceToSpeaker(robotPosition)
 			.also { if (Robot.isTesting) SmartDashboard.putNumber("Robot to speaker distance", it) }
 
 		val distanceToSpeaker01 = distanceToSpeaker01(robotToSpeakerFlatDistance)
@@ -93,7 +96,7 @@ object DynamicShooting {
 
 	// --- Speaker Info ---
 
-	val isSpeakerTagDetected get() = AprilTagVision.getTag(speakerTagId) != null
+	val isSpeakerTagDetected get() = AprilTagVision.FrontCam.getTag(speakerTagId) != null
 
 	/** The Translation2d of the blue speaker if you are in the blue alliance, according to WPILib's field coordinate system. */
 	private val SPEAKER_BLUE_POSITION_METERS = Translation2d(-0.04, 5.55) // Meters

@@ -10,6 +10,7 @@ import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.toNeutralModeValue
+import com.hamosad1657.lib.vision.AprilTagCamera
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
@@ -54,7 +55,9 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		addVisionMeasurement()
+		if (AprilTagVision.FrontCam.isConnected) {
+			addVisionMeasurement()
+		}
 	}
 
 
@@ -81,6 +84,15 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Gets the current pose (position and rotation) of the robot, as reported by odometry. */
 	val robotPose: Pose2d get() = poseEstimator.estimatedPosition
+
+	val isFacingSpeaker: Boolean
+		get() =
+			currentState.Pose.rotation.degrees.let {
+				if (Robot.alliance == Blue) it !in -90.0..90.0
+				else it in -90.0..90.0
+			}
+
+	val isInVisionRange get() = AprilTagVision.FrontCam.isInRange
 
 
 	// --- Drive & Module States Control
@@ -183,13 +195,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 		}
 	}
 
-	val isInVisionRange: Boolean
-		get() {
-			val robotToTagDistance = AprilTagVision.bestTag?.bestCameraToTarget?.x
-			if (robotToTagDistance == null) return false
-			return robotToTagDistance < AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
-		}
-
 	var idleMode: IdleMode = IdleMode.kBrake
 		set(value) {
 			super.configNeutralMode(value.toNeutralModeValue())
@@ -230,26 +235,41 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
-		// Don't update the position from the vision if:
-		val latestResult = AprilTagVision.latestResult
-		if (latestResult != null) {
-			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
+		fun addFrom(camera: AprilTagCamera) {
+			// Don't update the position from the vision if:
+			// - There is no pipeline result
+			// - There is no detected AprilTag
+			// - The robot is out of range.
+			val latestResult = camera.latestResult ?: return
+			latestResult.let {
+				if (!it.hasTargets()) return
+				if (!isInVisionRange) return
+			}
 
-			if (!isInVisionRange) return
+			val estimatedPose = camera.estimatedGlobalPose
+			if (estimatedPose != null) {
+				field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
+
+				super.addVisionMeasurement(
+					estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
+					estimatedPose.timestampSeconds,
+					camera.poseEstimationStdDevs,
+				)
+			}
 		}
 
+		// The order matters for accuracy! Put last what you trust most.
+		/*		if (Robot.alliance == Blue) {
+					addFrom(AprilTagVision.RightCam)
+					addFrom(AprilTagVision.LeftCam)
+				} else {
+					addFrom(AprilTagVision.LeftCam)
+					addFrom(AprilTagVision.RightCam)
+				} */
+		addFrom(AprilTagVision.FrontCam)
 
-		val estimatedPose = AprilTagVision.estimatedGlobalPose
-		if (estimatedPose != null) {
-			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
-
-			super.addVisionMeasurement(
-				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
-				estimatedPose.timestampSeconds,
-				AprilTagVision.poseEstimationStdDevs,
-			)
-		}
 	}
+
 
 	// --- Auto & Paths ---
 
@@ -288,12 +308,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 	fun followPathCommand(pathName: String): Command =
 		AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
 
-	var isFacingSpeaker = true
-		get() {
-			val isFacingBlueSpeaker = state.Pose.rotation.degrees !in -90.0..90.0
-			field = if (Robot.alliance == Blue) isFacingBlueSpeaker else !isFacingBlueSpeaker
-			return field
-		}
 
 	// --- Telemetry ---
 

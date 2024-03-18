@@ -26,6 +26,6 @@ class MovingMedianFilter(window: Int) : MovingWindowFilter() {
 					0
 				}
 		}
-	
+
 	override val calculation = { values: LinkedList<Double> -> median(values) }
 }

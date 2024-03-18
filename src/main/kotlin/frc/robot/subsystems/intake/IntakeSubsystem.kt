@@ -32,7 +32,7 @@ object IntakeSubsystem : SubsystemBase() {
 	// --- Motors Configuration ---
 
 	private fun HaTalonFX.configMotor(inverted: Boolean) {
-		this.inverted = false
+		this.inverted = inverted
 		idleMode = IdleMode.kBrake
 		configurator.apply(Constants.CURRENT_LIMITS_CONFIGS)
 	}

@@ -11,14 +11,14 @@ import frc.robot.subsystems.shooter.ShooterConstants
 import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_DURATION
 import frc.robot.subsystems.shooter.ShooterConstants.ESCAPE_ANGLE_LOCK_OUTPUT
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterState
-import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.swerve.SwerveSubsystem
+import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
+import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
 /**
  * - Command has no end condition.
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
+fun Shooter.getToShooterStateCommand(state: ShooterState): Command = withName("get to shooter state") {
 	runOnce {
 		resetVelocityPIDController()
 	} andThen run {
@@ -32,7 +32,7 @@ fun ShooterSubsystem.getToShooterStateCommand(state: ShooterState): Command = wi
  * - Command has no end condition.
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
+fun Shooter.getToShooterStateCommand(state: () -> ShooterState): Command = withName("get to shooter state") {
 	runOnce {
 		resetVelocityPIDController()
 	} andThen run {
@@ -42,18 +42,19 @@ fun ShooterSubsystem.getToShooterStateCommand(state: () -> ShooterState): Comman
 	}
 }
 
-fun ShooterSubsystem.getToAtSpeakerState(): Command = withName("get to at speaker state") {
+fun Shooter.getToAtSpeakerState(): Command = withName("get to at speaker state") {
 	getToShooterStateCommand {
-		SmartDashboard.putBoolean("Is facing SPEAKER", SwerveSubsystem.isFacingSpeaker)
-		if (SwerveSubsystem.isFacingSpeaker) ShooterState.AT_SPEAKER
+		SmartDashboard.putBoolean("Is facing SPEAKER", Swerve.isFacingSpeaker)
+		if (Swerve.isFacingSpeaker) ShooterState.AT_SPEAKER
 		else ShooterState.REVERSE_AT_SPEAKER
 	}
 }
 
 /** - Requirements: Shooter. */
-fun ShooterSubsystem.dynamicShootingCommand() = ShooterSubsystem.getToShooterStateCommand {
-	SwerveSubsystem.robotPose.let { estimatedPose ->
-		DynamicShooting.calculateShooterState(estimatedPose.translation)
+fun Shooter.dynamicShootingCommand() = withName("dynamic shooting") {
+	getToShooterStateCommand {
+		val estimatedTranslation = Swerve.robotPose.translation
+		DynamicShooting.calculateShooterState(estimatedTranslation)
 	}
 }
 
@@ -61,7 +62,7 @@ fun ShooterSubsystem.dynamicShootingCommand() = ShooterSubsystem.getToShooterSta
  * - Command has no end condition.
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.getToAngleCommand(angle: Rotation2d): Command = withName("get to shooter state") {
+fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to shooter state") {
 	run {
 		setAngle(angle)
 	} finallyDo {
@@ -73,7 +74,7 @@ fun ShooterSubsystem.getToAngleCommand(angle: Rotation2d): Command = withName("g
  * Maintains [ShooterConstants.ShooterState.AUTO_COLLECT].
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.autoDefaultCommand(): Command = withName("auto get to state collect") {
+fun Shooter.autoDefaultCommand(): Command = withName("auto get to state collect") {
 	getToShooterStateCommand(ShooterState.AUTO_COLLECT)
 }
 
@@ -81,7 +82,7 @@ fun ShooterSubsystem.autoDefaultCommand(): Command = withName("auto get to state
  * Maintains [ShooterConstants.ShooterState.COLLECT].
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("teleop get to state collect") {
+fun Shooter.teleopDefaultCommand(): Command = withName("teleop get to state collect") {
 	getToShooterStateCommand(ShooterState.COLLECT)
 }
 
@@ -89,7 +90,7 @@ fun ShooterSubsystem.teleopDefaultCommand(): Command = withName("teleop get to s
  * Run the shooter angle motor at high speed for a short duration to get it out of the angle lock.
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.escapeAngleLockCommand(): Command = withName("escape angle lock") {
+fun Shooter.escapeAngleLockCommand(): Command = withName("escape angle lock") {
 	run {
 		setAngleMotorOutput(ESCAPE_ANGLE_LOCK_OUTPUT)
 	} withTimeout ESCAPE_ANGLE_LOCK_DURATION finallyDo {
@@ -105,7 +106,7 @@ fun ShooterSubsystem.escapeAngleLockCommand(): Command = withName("escape angle 
 // ---
 
 /** - Requirements: Shooter. */
-fun ShooterSubsystem.openLoopTeleop_shooterAngle(
+fun Shooter.openLoopTeleop_shooterAngle(
 	output: () -> PercentOutput,
 ): Command = withName("angle open loop teleop") {
 	run {
@@ -121,7 +122,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterAngle(
  *
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.closedLoopTeleop_shooterAngle(
+fun Shooter.closedLoopTeleop_shooterAngle(
 	changeInAngle: () -> Double, multiplier: Double,
 ): Command = withName("angle closed loop teleop") {
 	run {
@@ -131,7 +132,7 @@ fun ShooterSubsystem.closedLoopTeleop_shooterAngle(
 }
 
 /** - Requirements: Shooter. */
-fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
+fun Shooter.openLoopTeleop_shooterVelocity(
 	output: () -> PercentOutput,
 ): Command = withName("velocity open loop teleop") {
 	run {
@@ -147,7 +148,7 @@ fun ShooterSubsystem.openLoopTeleop_shooterVelocity(
  *
  * - Requirements: Shooter.
  */
-fun ShooterSubsystem.closedLoopTeleop_shooterVelocity(
+fun Shooter.closedLoopTeleop_shooterVelocity(
 	changeInVelocity: () -> Double, multiplier: Double,
 ): Command = withName("velocity closed loop teleop") {
 	run {
