@@ -30,7 +30,6 @@ import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.leds.LEDsSubsystem as LEDs
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
-import frc.robot.subsystems.stabilizers.StabilizersSubsystem as Stabilizers
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
 fun joystickCurve(value: Double) = -value.pow(2) * value.sign
@@ -156,8 +155,8 @@ object RobotContainer {
 			})
 
 			// Climbing Stabilizers
-			povUp().toggleOnTrue(Stabilizers.openCommand())
-			povDown().toggleOnTrue(Stabilizers.closeCommand())
+//			povUp().toggleOnTrue(Stabilizers.openCommand())
+//			povDown().toggleOnTrue(Stabilizers.closeCommand())
 		}
 	}
 
@@ -173,7 +172,7 @@ object RobotContainer {
 		// Shooter default commands are set in Robot.kt
 		with(Intake) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Loader) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
-		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
+//		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
 				{ simpleDeadband(-controllerB.leftY * CLIMBING_MULTIPLIER, CLIMBING_DEADBAND) },
