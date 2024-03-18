@@ -11,11 +11,6 @@ object RobotMap {
 		const val LEFT_BACK_MOTOR_ID = 26
 		const val RIGHT_FRONT_MOTOR_ID = 27
 		const val RIGHT_BACK_MOTOR_ID = 28
-
-		object Stabilizers {
-			const val LEFT_MOTOR_ID = 29
-			const val RIGHT_MOTOR_ID = 30
-		}
 	}
 
 	object Intake {
@@ -70,7 +65,7 @@ object RobotMap {
 		}
 	}
 
-	object Leds {
+	object LEDs {
 		const val PWM_PORT = 0
 	}
 }
