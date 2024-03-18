@@ -11,7 +11,7 @@ import frc.robot.Robot
 import frc.robot.subsystems.leds.LEDsConstants.ACTION_FINISHED_MODE_TIMEOUT
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
-import frc.robot.RobotMap.Leds as LedsMap
+import frc.robot.RobotMap.LEDs as LedsMap
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.leds.LEDsConstants as Constants
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -50,6 +50,11 @@ object LEDsSubsystem : SubsystemBase() {
 		ledStrip.blink(Constants.ACTION_FINISHED_MODE_BLINK_TIME)
 	}
 
+	private fun actionFailingMode() {
+		ledStrip.currentColor = RGBColor.ORANGE
+		ledStrip.blink(Constants.ACTION_FAILING_BLINK_TIME)
+	}
+
 	private fun collectMode() {
 		val delayPassed = collectWithNoteTimer.hasElapsed(Constants.WAIT_WITH_NOTE_DELAY)
 		if (Intake.isCollectingNote && delayPassed)
@@ -69,12 +74,8 @@ object LEDsSubsystem : SubsystemBase() {
 	}
 
 	private fun dynamicShootMode() {
-		if (!Swerve.isInVisionRange) {
-			ledStrip.currentColor = RGBColor.ORANGE
-			ledStrip.blink(Constants.DYNAMIC_SHOOTING_FAILED_BLINK_TIME)
-		} else {
-			shootMode()
-		}
+		if (!Swerve.isInVisionRange) actionFailingMode()
+		else shootMode()
 	}
 
 
@@ -116,7 +117,8 @@ object LEDsSubsystem : SubsystemBase() {
 					actionFinishedModeExitTimer.stop()
 				}
 			}
-
+			
+			ACTION_FAILING -> actionFailingMode()
 			COLLECT -> collectMode()
 			SHOOT -> shootMode()
 			DYNAMIC_SHOOT -> dynamicShootMode()
