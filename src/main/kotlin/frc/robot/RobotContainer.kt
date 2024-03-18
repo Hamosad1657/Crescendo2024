@@ -67,19 +67,14 @@ object RobotContainer {
 		with(controllerA) {
 			// --- Swerve ---
 			// Zero gyro
-			options().onTrue(
-				{
-					if (Robot.alliance == Alliance.Blue) Swerve.zeroGyro()
-					else Swerve.setGyro(180.degrees)
-				}.asInstantCommand
-			)
-
-			// Lock wheels
-			cross().onTrue(Swerve.crossLockWheelsCommand() until ::areControllerAJoysticksMoving)
+			options().onTrue {
+				if (Robot.alliance == Alliance.Blue) Swerve.zeroGyro()
+				else Swerve.setGyro(180.degrees)
+			}
 
 			// Speed controls
-			povDown().onTrue({ swerveTeleopMultiplier = 0.5 }.asInstantCommand)
-			povUp().onTrue({ swerveTeleopMultiplier = 1.0 }.asInstantCommand)
+			povDown().onTrue { swerveTeleopMultiplier = 0.5 }
+			povUp().onTrue { swerveTeleopMultiplier = 1.0 }
 
 			// Rotate to speaker at podium
 			circle().toggleOnTrue(
@@ -104,40 +99,50 @@ object RobotContainer {
 				)
 			)
 
-			// --- Notes ---
-			// Dynamic shooting
-			square().whileTrue((
-				Shooter.dynamicShootingCommand() alongWith
-					Swerve.aimAtSpeakerWhileDrivingCommand(
-						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
-						vySupplier = { controllerA.leftX * swerveTeleopMultiplier }
-					) alongWith LEDs.setModeCommand(DYNAMIC_SHOOT)
-				)
-			)
+			// Pathfind to closest AprilTag
+			cross().onTrue(Swerve.pathFindToPathCommand("to_climbing"))
 
+			// --- Notes ---
 			// Collect
-			L1().toggleOnTrue((((
-				Notes.collectCommand() raceWith
-					Swerve.aimAtNoteWhileDrivingCommand(
-						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
-						vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
-						omegaSupplier = { controllerA.rightX }
-					)) alongWith LEDs.setModeCommand(COLLECT)
-				) finallyDo LEDs::actionFinished
-				).withInterruptBehavior(kCancelIncoming))
+			L1().toggleOnTrue((
+				(
+					Notes.collectCommand() raceWith
+						Swerve.aimAtNoteWhileDrivingCommand(
+							vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+							vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+							omegaSupplier = { controllerA.rightX },
+						)
+					) alongWith
+					LEDs.setModeCommand(COLLECT) finallyDo
+					LEDs::actionFinished
+				).withInterruptBehavior(kCancelIncoming)
+			)
 
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterAmpOrTrapCommand() finallyDo LEDs::actionFinished)
+
+			// Dynamic shooting
+			square().whileTrue(
+				Shooter.dynamicShootingCommand() alongWith
+					Swerve.aimAtSpeakerWhileDrivingCommand(
+						vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+						vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+					) alongWith
+					LEDs.setModeCommand(DYNAMIC_SHOOT)
+			)
 
 			// Eject
 			PS().toggleOnTrue(Intake.ejectFromIntakeCommand())
 		}
 
 		with(controllerB) {
-
 			// Speaker
-			circle().toggleOnTrue(Shooter.getToAtSpeakerState() alongWith
-				LEDs.setModeCommand(SHOOT) finallyDo { LEDs.setToDefaultMode() })
+			circle().toggleOnTrue(
+				Shooter.getToAtSpeakerState() alongWith
+					LEDs.setModeCommand(SHOOT) finallyDo {
+					LEDs.setToDefaultMode()
+				}
+			)
 
 			cross().toggleOnTrue(setShooterState(ShooterState.BEHIND_DEFENCE_BOT))
 			options().toggleOnTrue(setShooterState(ShooterState.AT_PODIUM))
@@ -149,14 +154,12 @@ object RobotContainer {
 			L1().toggleOnTrue(setShooterState(ShooterState.TO_TRAP))
 
 			// Sweep
-			R1().toggleOnTrue(Shooter.openLoopTeleop_shooterAngle {
-				(simpleDeadband((r2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND) -
-					simpleDeadband((l2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND)) * 0.3
-			})
-
-			// Climbing Stabilizers
-//			povUp().toggleOnTrue(Stabilizers.openCommand())
-//			povDown().toggleOnTrue(Stabilizers.closeCommand())
+			R1().toggleOnTrue(
+				Shooter.openLoopTeleop_shooterAngle {
+					(simpleDeadband((r2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND) -
+						simpleDeadband((l2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND)) * 0.3
+				}
+			)
 		}
 	}
 
@@ -172,7 +175,6 @@ object RobotContainer {
 		// Shooter default commands are set in Robot.kt
 		with(Intake) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Loader) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
-//		with(Stabilizers) { defaultCommand = run { stopMotors() }.withName("stop (default)") }
 		with(Climbing) {
 			defaultCommand = openLoopTeleopCommand(
 				{ simpleDeadband(-controllerB.leftY * CLIMBING_MULTIPLIER, CLIMBING_DEADBAND) },
