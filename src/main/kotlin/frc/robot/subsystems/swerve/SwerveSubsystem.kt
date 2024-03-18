@@ -85,6 +85,15 @@ object SwerveSubsystem : SwerveDrivetrain(
 	/** Gets the current pose (position and rotation) of the robot, as reported by odometry. */
 	val robotPose: Pose2d get() = poseEstimator.estimatedPosition
 
+	val isFacingSpeaker: Boolean
+		get() =
+			currentState.Pose.rotation.degrees.let {
+				if (Robot.alliance == Blue) it !in -90.0..90.0
+				else it in -90.0..90.0
+			}
+
+	val isInVisionRange get() = AprilTagVision.FrontCam.isInRange
+
 
 	// --- Drive & Module States Control
 
@@ -186,8 +195,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 		}
 	}
 
-	val isInVisionRange: Boolean get() = AprilTagVision.FrontCam.isInRange
-
 	var idleMode: IdleMode = IdleMode.kBrake
 		set(value) {
 			super.configNeutralMode(value.toNeutralModeValue())
@@ -263,6 +270,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	}
 
+
 	// --- Auto & Paths ---
 
 	private fun configureAutoBuilder() {
@@ -300,12 +308,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 	fun followPathCommand(pathName: String): Command =
 		AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
 
-	var isFacingSpeaker = true
-		get() {
-			val isFacingBlueSpeaker = state.Pose.rotation.degrees !in -90.0..90.0
-			field = if (Robot.alliance == Blue) isFacingBlueSpeaker else !isFacingBlueSpeaker
-			return field
-		}
 
 	// --- Telemetry ---
 
