@@ -15,11 +15,16 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.joystickCurve
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_AIM_AT_NOTE_PID_CONTROLLER
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
+import frc.robot.vision.AprilTagVision.FrontCam
+import frc.robot.vision.AprilTagsIDs.Blue
+import frc.robot.vision.AprilTagsIDs.Red
 import frc.robot.vision.NoteVision
 import kotlin.math.abs
+import frc.robot.subsystems.leds.LEDsSubsystem as LEDs
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
@@ -97,13 +102,16 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 }
 
 /**
+ * When the command is scheduled, the angle is retrieved from [angleSupplier]
+ * and then the command periodically gets to that angle.
+ *
  * - Command has no end condition.
  * - Requirements: Swerve.
  */
-fun Swerve.getToOneAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
+fun Swerve.getToOneAngleCommand(angleSupplier: () -> Rotation2d): Command = withName("get to angle command") {
 	var setpoint = 0.0.degrees
 	runOnce {
-		setpoint = angle()
+		setpoint = angleSupplier()
 	} andThen
 		run {
 			CHASSIS_ANGLE_PID_CONTROLLER.setpoint = setpoint.degrees
@@ -195,10 +203,6 @@ fun Swerve.aimAtGoalWhileDrivingCommand(
 	)
 }
 
-fun Swerve.rotateToAmpCommand(): Command = withName("rotate to amp") {
-	getToAngleCommand(90.degrees)
-}
-
 /**
  * - Command has no end condition.
  * - Requirements: Swerve.
@@ -255,4 +259,16 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 			useClosedLoopDrive = false,
 		)
 	}
+}
+
+fun Swerve.getToAmpOrClimbCommand(): Command = withName("get to amp or climb") {
+	pathfindToInitialPoseThenFollowPathCommand(
+		when {
+			FrontCam.anyTagDetected(Blue.AMP, Red.AMP) -> "to_amp"
+			FrontCam.anyTagDetected(Blue.BACK_CLIMB, Red.BACK_CLIMB) -> "to_back_climb"
+			FrontCam.anyTagDetected(Blue.AMP_CLIMB, Red.AMP_CLIMB) -> "to_amp_climb"
+			FrontCam.anyTagDetected(Blue.SOURCE_CLIMB, Red.SOURCE_CLIMB) -> "to_source_climb"
+			else -> return@withName LEDs.setModeCommand(LEDsMode.ACTION_FAILING)
+		}
+	)
 }

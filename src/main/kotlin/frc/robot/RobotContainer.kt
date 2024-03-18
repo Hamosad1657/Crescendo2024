@@ -99,8 +99,8 @@ object RobotContainer {
 				)
 			)
 
-			// Pathfind to closest AprilTag
-			cross().onTrue(Swerve.pathFindToPathCommand("to_climbing"))
+			// Pathfind to amp or climb
+			cross().onTrue(Swerve.getToAmpOrClimbCommand())
 
 			// --- Notes ---
 			// Collect
