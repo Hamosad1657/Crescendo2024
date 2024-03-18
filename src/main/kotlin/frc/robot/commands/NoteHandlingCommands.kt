@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
-import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.subsystems.intake.IntakeConstants
 import frc.robot.subsystems.loader.LoaderConstants
 import frc.robot.subsystems.shooter.ShooterConstants
@@ -31,25 +30,26 @@ fun Notes.collectCommand(shooterState: ShooterState = ShooterState.COLLECT): Com
  * Like [collectCommand], but the shooter spins continuously.
  * - Requirements: Intake, Loader, Shooter.
  */
-fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command = collectCommand(shooterState)
+fun Notes.autoCollectCommand(shooterState: ShooterState = ShooterState.AUTO_COLLECT): Command =
+	collectCommand(shooterState)
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(state: ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(state) raceWith
-		(WaitCommand(0.2) andThen
+		(wait(0.2) andThen
 			waitUntil { Shooter.isWithinTolerance }
 				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
-			WaitCommand(0.1) andThen
+			wait(0.1) andThen
 			loadIntoShooterCommand()))
 }
 
 /** - Requirements: Loader, Shooter. */
 fun Notes.loadAndShootCommand(stateSupplier: () -> ShooterState): Command = withName("load and shoot") {
 	(Shooter.getToShooterStateCommand(stateSupplier) raceWith
-		(WaitCommand(0.2) andThen
+		(wait(0.2) andThen
 			waitUntil { Shooter.isWithinTolerance }
 				.withTimeout(ShooterConstants.SHOOT_TIMEOUT) andThen
-			WaitCommand(0.1) andThen
+			wait(0.1) andThen
 			loadIntoShooterCommand()))
 }
 
