@@ -43,6 +43,7 @@ object ShooterSubsystem : SubsystemBase() {
 	private val shooterMainMotor =
 		HaSparkFlex(ShooterMap.UPPER_MOTOR_ID).apply {
 			configShooterMotor(inverted = false)
+			closedLoopRampRate = 0.3
 		}
 
 	private val shooterSecondaryMotor =
