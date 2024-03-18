@@ -250,10 +250,16 @@ object SwerveSubsystem : SwerveDrivetrain(
 				)
 			}
 		}
-
+		
+		// The order matters for accuracy! Put last what you trust most.
+		if (Robot.alliance == Blue) {
+			addFrom(AprilTagVision.RightCam)
+			addFrom(AprilTagVision.LeftCam)
+		} else {
+			addFrom(AprilTagVision.LeftCam)
+			addFrom(AprilTagVision.RightCam)
+		}
 		addFrom(AprilTagVision.FrontCam)
-		addFrom(AprilTagVision.LeftCam)
-		addFrom(AprilTagVision.RightCam)
 
 	}
 
