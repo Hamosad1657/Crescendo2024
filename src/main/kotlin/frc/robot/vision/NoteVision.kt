@@ -28,7 +28,7 @@ object NoteVision : Sendable {
 	}
 
 	val isConnected: Boolean get() = (camera?.isConnected ?: false).also {
-		disconnectedAlert.set(it)
+		disconnectedAlert.set(!it)
 	}
 
 	val latestResult: PhotonPipelineResult? get() = if (isConnected) camera?.latestResult else null

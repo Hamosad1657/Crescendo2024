@@ -49,7 +49,7 @@ object AprilTagVision {
 		}
 
 	val isConnected: Boolean get() = (camera?.isConnected ?: false).also {
-		disconnectedAlert.set(it)
+		disconnectedAlert.set(!it)
 	}
 
 	val poseEstimationStdDevs
