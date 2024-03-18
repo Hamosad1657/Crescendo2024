@@ -59,7 +59,7 @@ object Robot : TimedRobot() {
 		commandScheduler.run()
 
 		// Call periodically so the alert updates in Shuffleboard
-		AprilTagVision.isConnected
+		AprilTagVision.FrontCam.isConnected
 		NoteVision.isConnected
 	}
 
