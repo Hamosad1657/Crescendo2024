@@ -9,73 +9,55 @@ import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 
 object AprilTagVision {
-	object FrontCam: AprilTagCamera("AprilTag-Cam") {
+	object FrontCam : AprilTagCamera("AprilTag-Cam") {
+		override val maxTagTrustingDistance = 5.meters
 
-		val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
-
-		val isInRange: Boolean get() {
-			val robotToTagDistance = bestTag?.bestCameraToTarget?.x ?: return false
-			return robotToTagDistance < MAX_TAG_TRUSTING_DISTANCE.asMeters
-		}
-
-		override val robotToCamera: Transform3d
+		override val robotToCamera
 			get() = Transform3d(
-				Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
+				Translation3d(0.75 / 2 - 0.055, 0.75 / 2 - 0.06, 0.4),
 				Rotation3d(0.0, -60.degrees.radians, 0.0)
 			)
 
-		override val stdDevs: AprilTagsStdDevs
+		override val stdDevs
 			get() = AprilTagsStdDevs(
-				RobotPoseStdDevs(0.9, 0.9, 0.95),
-				RobotPoseStdDevs(0.5, 0.5, 0.95),
-				RobotPoseStdDevs(0.35, 0.35, 0.95)
+				oneTag = RobotPoseStdDevs(0.9, 0.9, 0.95),
+				twoTagsAuto = RobotPoseStdDevs(0.5, 0.5, 0.95),
+				twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
 			)
 	}
 
-	object LeftCam: AprilTagCamera("Left-Limelight") {
+	object LeftCam : AprilTagCamera("Left-Limelight") {
+		override val maxTagTrustingDistance = 4.meters
 
-		val MAX_TAG_TRUSTING_DISTANCE = 4.0.meters
-
-		val isInRange: Boolean get() {
-			val robotToTagDistance = bestTag?.bestCameraToTarget?.x ?: return false
-			return robotToTagDistance < MAX_TAG_TRUSTING_DISTANCE.asMeters
-		}
-
-		override val robotToCamera: Transform3d
+		override val robotToCamera
 			get() = Transform3d(
-				Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
+				Translation3d(0.75 / 2 - 0.055, 0.75 / 2 - 0.06, 0.4),
 				Rotation3d(0.0, -60.degrees.radians, 0.0)
 			)
 
-		override val stdDevs: AprilTagsStdDevs
+		override val stdDevs
 			get() = AprilTagsStdDevs(
-				RobotPoseStdDevs(0.9, 0.9, 0.95),
-				RobotPoseStdDevs(0.5, 0.5, 0.95),
-				RobotPoseStdDevs(0.35, 0.35, 0.95)
+				oneTag = RobotPoseStdDevs(0.9, 0.9, 0.95),
+				twoTagsAuto = RobotPoseStdDevs(0.5, 0.5, 0.95),
+				twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
 			)
 	}
 
 
-	object RightCam: AprilTagCamera("Right-Limelight") {
+	object RightCam : AprilTagCamera("Right-Limelight") {
+		override val maxTagTrustingDistance = 4.meters
 
-		val MAX_TAG_TRUSTING_DISTANCE = 4.0.meters
-
-		val isInRange: Boolean get() {
-			val robotToTagDistance = bestTag?.bestCameraToTarget?.x ?: return false
-			return robotToTagDistance < MAX_TAG_TRUSTING_DISTANCE.asMeters
-		}
-
-		override val robotToCamera: Transform3d
+		override val robotToCamera
 			get() = Transform3d(
-				Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
+				Translation3d(0.75 / 2 - 0.055, 0.75 / 2 - 0.06, 0.4),
 				Rotation3d(0.0, -60.degrees.radians, 0.0)
 			)
 
-		override val stdDevs: AprilTagsStdDevs
+		override val stdDevs
 			get() = AprilTagsStdDevs(
-				RobotPoseStdDevs(0.9, 0.9, 0.95),
-				RobotPoseStdDevs(0.5, 0.5, 0.95),
-				RobotPoseStdDevs(0.35, 0.35, 0.95)
+				oneTag = RobotPoseStdDevs(0.9, 0.9, 0.95),
+				twoTagsAuto = RobotPoseStdDevs(0.5, 0.5, 0.95),
+				twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
 			)
 	}
 }

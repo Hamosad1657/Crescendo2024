@@ -2,7 +2,7 @@ package com.hamosad1657.lib.vision
 
 import com.hamosad1657.lib.Alert
 import com.hamosad1657.lib.Alert.AlertType.ERROR
-import com.hamosad1657.lib.units.meters
+import com.hamosad1657.lib.units.Length
 import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
@@ -33,6 +33,11 @@ class RobotPoseStdDevs(
 private val TAGS_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
 
 abstract class AprilTagCamera(cameraName: String) {
+	protected abstract val robotToCamera: Transform3d
+
+	abstract val maxTagTrustingDistance: Length
+	abstract val stdDevs: AprilTagsStdDevs
+
 	protected val camera: PhotonCamera? =
 		try {
 			PhotonCamera(cameraName)
@@ -41,8 +46,6 @@ abstract class AprilTagCamera(cameraName: String) {
 		}
 
 	private val disconnectedAlert = Alert("$cameraName disconnected", ERROR)
-
-	protected abstract val robotToCamera: Transform3d
 
 	private fun retrievePoseEstimator(): PhotonPoseEstimator? =
 		camera?.let {
@@ -64,9 +67,15 @@ abstract class AprilTagCamera(cameraName: String) {
 			return poseEstimatorBacking
 		}
 
-	val isConnected: Boolean = (camera?.isConnected ?: false).also {
-		disconnectedAlert.set(!it)
-	}
+	val isConnected
+		get() = (camera?.isConnected ?: false)
+			.also { disconnectedAlert.set(!it) }
+
+	val isInRange: Boolean
+		get() {
+			val robotToTagDistance = bestTag?.bestCameraToTarget?.x ?: return false
+			return robotToTagDistance < maxTagTrustingDistance.asMeters
+		}
 
 	val latestResult: PhotonPipelineResult? get() = if (isConnected) camera?.latestResult else null
 	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
@@ -78,10 +87,8 @@ abstract class AprilTagCamera(cameraName: String) {
 	 *
 	 * Returns null if it doesn't detect any AprilTags.
 	 */
-	val estimatedGlobalPose: EstimatedRobotPose? get() = if (isConnected) poseEstimator?.update()?.orElse(null) else null
-
-	open val maxTagTrustingDistance = 5.meters
-	abstract val stdDevs: AprilTagsStdDevs
+	val estimatedGlobalPose: EstimatedRobotPose?
+		get() = if (isConnected) poseEstimator?.update()?.orElse(null) else null
 
 	val poseEstimationStdDevs
 		get() = if (latestResult?.targets?.size == 1) {
