@@ -26,7 +26,7 @@ class LEDStrip(private val length: Int, pwmPort: Int) {
 
 	// --- State Getters ---
 
-	val areLedsOn: Boolean
+	val areLEDsOn: Boolean
 		get() =
 			(ledBuffer.getRed(0) != 0) ||
 				(ledBuffer.getGreen(0) != 0) ||
@@ -46,7 +46,7 @@ class LEDStrip(private val length: Int, pwmPort: Int) {
 
 	fun toggleLEDs() {
 		setColor(
-			if (areLedsOn) LEDS_OFF
+			if (areLEDsOn) LEDS_OFF
 			else currentColor
 		)
 	}

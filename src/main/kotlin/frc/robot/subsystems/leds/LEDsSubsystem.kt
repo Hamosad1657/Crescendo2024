@@ -11,7 +11,7 @@ import frc.robot.Robot
 import frc.robot.subsystems.leds.LEDsConstants.ACTION_FINISHED_MODE_TIMEOUT
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
-import frc.robot.RobotMap.LEDs as LedsMap
+import frc.robot.RobotMap.LEDs as LEDsMap
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.leds.LEDsConstants as Constants
 import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
@@ -20,7 +20,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 object LEDsSubsystem : SubsystemBase() {
 	// --- LEDs ---
 
-	private val ledStrip = LEDStrip(Constants.LENGTH, LedsMap.PWM_PORT)
+	private val ledStrip = LEDStrip(Constants.LENGTH, LEDsMap.PWM_PORT)
 
 
 	// --- LEDs State ---
@@ -117,7 +117,7 @@ object LEDsSubsystem : SubsystemBase() {
 					actionFinishedModeExitTimer.stop()
 				}
 			}
-			
+
 			ACTION_FAILING -> actionFailingMode()
 			COLLECT -> collectMode()
 			SHOOT -> shootMode()
