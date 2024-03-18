@@ -3,6 +3,7 @@ package frc.robot.commands
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.wpilibj2.command.Command
+import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
 
 /**
@@ -28,9 +29,13 @@ fun Climbing.openLoopTeleopCommand(
 ): Command =
 	withName("climbing open loop teleop") {
 		run {
-			setLeft(leftOutput())
-			setRight(rightOutput())
+			setLeft(climbSpeed(leftOutput()))
+			setRight(climbSpeed(rightOutput()))
 		} finallyDo {
 			stopMotors()
 		}
 	}
+
+private fun climbSpeed(output: PercentOutput) =
+	if (output > 0.0) output * Constants.OPEN_CLIMBING_OUTPUT
+	else output * Constants.CLOSE_CLIMBING_OUTPUT
