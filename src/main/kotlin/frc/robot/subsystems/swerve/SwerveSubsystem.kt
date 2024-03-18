@@ -54,7 +54,9 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		addVisionMeasurement()
+		if (AprilTagVision.isConnected) {
+			addVisionMeasurement()
+		}
 	}
 
 
@@ -230,10 +232,12 @@ object SwerveSubsystem : SwerveDrivetrain(
 	/** Update the odometry using the detected AprilTag (if any were detected). */
 	private fun addVisionMeasurement() {
 		// Don't update the position from the vision if:
-		val latestResult = AprilTagVision.latestResult
-		if (latestResult != null) {
-			if (!latestResult.hasTargets()) return // There is no detected AprilTag.
-
+		// - There is no pipeline result
+		// - There is no detected AprilTag
+		// - The robot is out of range.
+		val latestResult = AprilTagVision.latestResult ?: return
+		latestResult.let {
+			if (!it.hasTargets()) return
 			if (!isInVisionRange) return
 		}
 
