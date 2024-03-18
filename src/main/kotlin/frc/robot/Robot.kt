@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.*
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.DEFAULT
+import frc.robot.vision.AprilTagVision
+import frc.robot.vision.NoteVision
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.leds.LEDsSubsystem as LEDs
 import frc.robot.subsystems.loader.LoaderSubsystem as Loader
@@ -55,6 +57,10 @@ object Robot : TimedRobot() {
 
 	override fun robotPeriodic() {
 		commandScheduler.run()
+
+		// Call periodically so the alert updates in Shuffleboard
+		AprilTagVision.isConnected
+		NoteVision.isConnected
 	}
 
 	override fun autonomousInit() {
