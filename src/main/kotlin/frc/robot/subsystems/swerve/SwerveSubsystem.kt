@@ -55,7 +55,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	override fun periodic() {
 		if (AprilTagVision.FrontCam.isConnected) {
-			addVisionMeasurement()
+			addVisionMeasurementFromFrontCam()
 		}
 	}
 
@@ -185,11 +185,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 		}
 	}
 
-	val isInVisionRange: Boolean
-		get() {
-			val robotToTagDistance = AprilTagVision.FrontCam.bestTag?.bestCameraToTarget?.x ?: return false
-			return robotToTagDistance < AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
-		}
+	val isInVisionRange: Boolean get() = AprilTagVision.FrontCam.isInRange
 
 	var idleMode: IdleMode = IdleMode.kBrake
 		set(value) {
@@ -230,7 +226,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
-	private fun addVisionMeasurement() {
+	private fun addVisionMeasurementFromFrontCam() {
 		// Don't update the position from the vision if:
 		// - There is no pipeline result
 		// - There is no detected AprilTag
@@ -240,7 +236,6 @@ object SwerveSubsystem : SwerveDrivetrain(
 			if (!it.hasTargets()) return
 			if (!isInVisionRange) return
 		}
-
 
 		val estimatedPose = AprilTagVision.FrontCam.estimatedGlobalPose
 		if (estimatedPose != null) {

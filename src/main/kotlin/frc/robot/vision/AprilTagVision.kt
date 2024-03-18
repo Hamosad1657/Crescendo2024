@@ -23,6 +23,14 @@ import org.photonvision.targeting.PhotonTrackedTarget
 
 object AprilTagVision {
 	object FrontCam: AprilTagCamera("AprilTag-Cam") {
+
+		val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
+
+		val isInRange: Boolean get() {
+			val robotToTagDistance = AprilTagVision.FrontCam.bestTag?.bestCameraToTarget?.x ?: return false
+			return robotToTagDistance < AprilTagVision.FrontCam.MAX_TAG_TRUSTING_DISTANCE.asMeters
+		}
+
 		override val robotToCamera: Transform3d
 			get() = Transform3d(
 				Translation3d((0.75 / 2 - 0.055), 0.75 / 2 - 0.06, 0.4),
@@ -33,8 +41,7 @@ object AprilTagVision {
 			get() = AprilTagsStdDevs(
 				RobotPoseStdDevs(0.9, 0.9, 0.95),
 				RobotPoseStdDevs(0.5, 0.5, 0.95),
-				RobotPoseStdDevs(0.35, 0.35, 0.95))
+				RobotPoseStdDevs(0.35, 0.35, 0.95)
+			)
 	}
-
-	val MAX_TAG_TRUSTING_DISTANCE = 5.0.meters
 }
