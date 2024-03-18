@@ -88,10 +88,10 @@ object Robot : TimedRobot() {
 	override fun disabledInit() {
 		Loader.idleMode = IdleMode.kCoast
 		Intake.idleMode = IdleMode.kCoast
+	}
 
-		commandScheduler.schedule(
-			wait(0.25) andThen instantCommand { LEDs.currentMode = LEDsMode.ROBOT_DISABLED }
-		)
+	override fun disabledPeriodic() {
+		LEDs.currentMode = LEDsMode.ROBOT_DISABLED
 	}
 
 	override fun disabledExit() {
