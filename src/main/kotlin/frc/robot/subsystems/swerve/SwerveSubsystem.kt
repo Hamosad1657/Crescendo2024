@@ -6,6 +6,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.OpenLoo
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType.Velocity
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType.MotionMagic
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest
+import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
@@ -292,23 +293,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 		PPHolonomicDriveController.setRotationTargetOverride { Optional.empty() }
 	}
 
-	fun pathFindToPathCommand(pathname: String): Command {
-		return AutoBuilder.pathfindThenFollowPath(
-			PathPlannerPath.fromPathFile(pathname),
-			SwerveConstants.PATH_CONSTRAINTS,
-		)
-	}
-
-	fun pathfindToPoseCommand(pose: Pose2d): Command =
-		AutoBuilder.pathfindToPose(pose, SwerveConstants.PATH_CONSTRAINTS)
-
-	fun followAutoCommand(autoName: String): Command =
-		AutoBuilder.buildAuto(autoName)
-
-	fun followPathCommand(pathName: String): Command =
-		AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName))
-
-
+	
 	// --- Telemetry ---
 
 	private val field = Field2d()
