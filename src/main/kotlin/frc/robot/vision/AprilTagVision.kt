@@ -1,5 +1,7 @@
 package frc.robot.vision
 
+import com.hamosad1657.lib.Alert
+import com.hamosad1657.lib.Alert.AlertType.ERROR
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.meters
 import edu.wpi.first.apriltag.AprilTagFieldLayout
@@ -18,6 +20,7 @@ import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
 object AprilTagVision {
+	private val disconnectedAlert = Alert("AprilTag-Cam disconnected", ERROR)
 
 	private val camera: PhotonCamera? = try {
 		PhotonCamera("AprilTag-Cam")
@@ -45,7 +48,9 @@ object AprilTagVision {
 			}
 		}
 
-	val isConnected: Boolean = camera?.isConnected ?: false
+	val isConnected: Boolean get() = (camera?.isConnected ?: false).also {
+		disconnectedAlert.set(it)
+	}
 
 	val poseEstimationStdDevs
 		get() = if ((latestResult?.targets?.size == 1)) {
