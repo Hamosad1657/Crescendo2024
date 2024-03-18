@@ -124,7 +124,7 @@ object RobotContainer {
 						omegaSupplier = { controllerA.rightX }
 					)) alongWith LEDs.setModeCommand(COLLECT)
 				) finallyDo LEDs::actionFinished
-			).withInterruptBehavior(kCancelIncoming))
+				).withInterruptBehavior(kCancelIncoming))
 
 			// Load
 			R1().toggleOnTrue(Loader.loadToShooterAmpOrTrapCommand() finallyDo LEDs::actionFinished)

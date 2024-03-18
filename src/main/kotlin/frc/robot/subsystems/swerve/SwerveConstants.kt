@@ -33,8 +33,8 @@ object SwerveConstants {
 	private val DRIVEBASE_RADIUS = 0.417405.meters
 
 	/**
-	 * When the robot is adjacent and parallel to the PODIUM's HDPE plate,
-	 *  rotate the chassis by this amount to score to the speaker.
+	 * When the robot is adjacent and parallel to the PODIUM,
+	 * rotate the chassis by this amount to score to the speaker.
 	 */
 	val AT_PODIUM_TO_SPEAKER_ROTATION
 		get() =

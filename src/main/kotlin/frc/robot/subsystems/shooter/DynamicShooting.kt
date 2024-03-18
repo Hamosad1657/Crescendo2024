@@ -40,13 +40,13 @@ object DynamicShooting {
 			0.7 to 167.0,
 			1.0 to MIN_ANGLE,
 		)
-	val CHASSIS_ANGLE_TOLERANCE = 1.5
+	val CHASSIS_ANGLE_TOLERANCE = 1.5.degrees
 
 	val inChassisAngleTolerance
 		get() =
 			(CHASSIS_ANGLE_PID_CONTROLLER.setpoint -
 				Swerve.robotHeading.degrees).absoluteValue <
-				CHASSIS_ANGLE_TOLERANCE
+				CHASSIS_ANGLE_TOLERANCE.degrees
 
 	// --- Calculations ---
 

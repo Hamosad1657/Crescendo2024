@@ -19,7 +19,7 @@ const val NEOSafeTempC = 90
 
 class HaSparkMax(
 	deviceID: Int,
-	motorType: MotorType = MotorType.kBrushless
+	motorType: MotorType = MotorType.kBrushless,
 ) : CANSparkMax(deviceID, motorType), Sendable {
 	/**
 	 * Software forward limit, ONLY for percent-output control.

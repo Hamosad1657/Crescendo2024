@@ -2,7 +2,7 @@ package frc.robot.subsystems.leds
 
 object LEDsConstants {
 	const val LENGTH = 24
-	
+
 	const val ACTION_FINISHED_MODE_TIMEOUT = 1.0
 
 	const val ACTION_FINISHED_MODE_BLINK_TIME = 0.1
