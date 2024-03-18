@@ -1,5 +1,7 @@
 package com.hamosad1657.lib.vision
 
+import com.hamosad1657.lib.Alert
+import com.hamosad1657.lib.Alert.AlertType.ERROR
 import com.hamosad1657.lib.units.meters
 import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
@@ -38,9 +40,11 @@ abstract class AprilTagCamera(cameraName: String) {
 			null
 		}
 
+	private val disconnectedAlert = Alert("$cameraName disconnected", ERROR)
+
 	protected abstract val robotToCamera: Transform3d
 
-	protected val poseEstimator: PhotonPoseEstimator? =
+	private fun getPoseEstimator(): PhotonPoseEstimator? =
 		camera?.let {
 			PhotonPoseEstimator(
 				TAGS_LAYOUT,
@@ -52,15 +56,29 @@ abstract class AprilTagCamera(cameraName: String) {
 			}
 		}
 
+	// Try to retrieve the pose estimator again only if it is null (it will be null if the camera is)
+	private var poseEstimatorBacking: PhotonPoseEstimator? = getPoseEstimator()
+	protected val poseEstimator: PhotonPoseEstimator?
+		get() {
+			if (poseEstimatorBacking == null) poseEstimatorBacking = getPoseEstimator()
+			return poseEstimatorBacking
+		}
+
+	val isConnected: Boolean = (camera?.isConnected ?: false).also {
+		disconnectedAlert.set(!it)
+	}
+
+	val latestResult: PhotonPipelineResult? get() = if (isConnected) camera?.latestResult else null
+	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
+
+	fun getTag(tagID: Int): PhotonTrackedTarget? = latestResult?.targets?.find { it.fiducialId == tagID }
+
 	/**
 	 * Gets the estimated robot position from the PhotonVision camera.
 	 *
 	 * Returns null if it doesn't detect any AprilTags.
 	 */
-	val estimatedGlobalPose: EstimatedRobotPose? get() = poseEstimator?.update()?.orElse(null)
-
-	val latestResult: PhotonPipelineResult? get() = camera?.latestResult
-	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
+	val estimatedGlobalPose: EstimatedRobotPose? get() = if (isConnected) poseEstimator?.update()?.orElse(null) else null
 
 	open val maxTagTrustingDistance = 5.meters
 	abstract val stdDevs: AprilTagsStdDevs

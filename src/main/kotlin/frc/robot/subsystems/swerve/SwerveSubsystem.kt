@@ -54,7 +54,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	override fun periodic() {
-		if (AprilTagVision.isConnected) {
+		if (AprilTagVision.FrontCam.isConnected) {
 			addVisionMeasurement()
 		}
 	}
@@ -187,7 +187,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	val isInVisionRange: Boolean
 		get() {
-			val robotToTagDistance = AprilTagVision.bestTag?.bestCameraToTarget?.x ?: return false
+			val robotToTagDistance = AprilTagVision.FrontCam.bestTag?.bestCameraToTarget?.x ?: return false
 			return robotToTagDistance < AprilTagVision.MAX_TAG_TRUSTING_DISTANCE.asMeters
 		}
 
@@ -235,21 +235,21 @@ object SwerveSubsystem : SwerveDrivetrain(
 		// - There is no pipeline result
 		// - There is no detected AprilTag
 		// - The robot is out of range.
-		val latestResult = AprilTagVision.latestResult ?: return
+		val latestResult = AprilTagVision.FrontCam.latestResult ?: return
 		latestResult.let {
 			if (!it.hasTargets()) return
 			if (!isInVisionRange) return
 		}
 
 
-		val estimatedPose = AprilTagVision.estimatedGlobalPose
+		val estimatedPose = AprilTagVision.FrontCam.estimatedGlobalPose
 		if (estimatedPose != null) {
 			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
 
 			super.addVisionMeasurement(
 				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
 				estimatedPose.timestampSeconds,
-				AprilTagVision.poseEstimationStdDevs,
+				AprilTagVision.FrontCam.poseEstimationStdDevs,
 			)
 		}
 	}
