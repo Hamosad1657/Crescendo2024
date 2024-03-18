@@ -18,18 +18,6 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROC
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 
-class RobotPoseStdDevs(
-	translationX: Double,
-	translationY: Double,
-	rotation: Double,
-) : Matrix<N3, N1>(Nat.N3(), Nat.N1()) {
-	init {
-		this[0, 0] = translationX
-		this[1, 0] = translationY
-		this[2, 0] = rotation
-	}
-}
-
 private val TAGS_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
 
 abstract class AprilTagCamera(val cameraName: String) {
@@ -74,6 +62,8 @@ abstract class AprilTagCamera(val cameraName: String) {
 	val bestTag: PhotonTrackedTarget? get() = latestResult?.bestTarget
 
 	fun getTag(tagID: Int) = latestResult?.targets?.find { it.fiducialId == tagID }
+	fun isTagDetected(tagID: Int) = getTag(tagID) != null
+	fun anyTagDetected(vararg tagIDs: Int) = tagIDs.any(::isTagDetected)
 
 	/**
 	 * Gets the estimated robot position from the PhotonVision camera.
@@ -97,4 +87,16 @@ abstract class AprilTagCamera(val cameraName: String) {
 		val twoTagsAuto: RobotPoseStdDevs,
 		val twoTagsTeleop: RobotPoseStdDevs,
 	)
+}
+
+class RobotPoseStdDevs(
+	translationX: Double,
+	translationY: Double,
+	rotation: Double,
+) : Matrix<N3, N1>(Nat.N3(), Nat.N1()) {
+	init {
+		this[0, 0] = translationX
+		this[1, 0] = translationY
+		this[2, 0] = rotation
+	}
 }
