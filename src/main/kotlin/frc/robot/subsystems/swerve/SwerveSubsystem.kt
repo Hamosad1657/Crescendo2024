@@ -10,6 +10,7 @@ import com.hamosad1657.lib.robotPrintError
 import com.hamosad1657.lib.units.AngularVelocity
 import com.hamosad1657.lib.units.degrees
 import com.hamosad1657.lib.units.toNeutralModeValue
+import com.hamosad1657.lib.vision.AprilTagCamera
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.path.PathPlannerPath
@@ -55,7 +56,7 @@ object SwerveSubsystem : SwerveDrivetrain(
 
 	override fun periodic() {
 		if (AprilTagVision.FrontCam.isConnected) {
-			addVisionMeasurementFromFrontCam()
+			addVisionMeasurement()
 		}
 	}
 
@@ -226,27 +227,34 @@ object SwerveSubsystem : SwerveDrivetrain(
 	}
 
 	/** Update the odometry using the detected AprilTag (if any were detected). */
-	private fun addVisionMeasurementFromFrontCam() {
-		// Don't update the position from the vision if:
-		// - There is no pipeline result
-		// - There is no detected AprilTag
-		// - The robot is out of range.
-		val latestResult = AprilTagVision.FrontCam.latestResult ?: return
-		latestResult.let {
-			if (!it.hasTargets()) return
-			if (!isInVisionRange) return
+	private fun addVisionMeasurement() {
+		fun addFrom(camera: AprilTagCamera) {
+			// Don't update the position from the vision if:
+			// - There is no pipeline result
+			// - There is no detected AprilTag
+			// - The robot is out of range.
+			val latestResult = camera.latestResult ?: return
+			latestResult.let {
+				if (!it.hasTargets()) return
+				if (!isInVisionRange) return
+			}
+
+			val estimatedPose = camera.estimatedGlobalPose
+			if (estimatedPose != null) {
+				field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
+
+				super.addVisionMeasurement(
+					estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
+					estimatedPose.timestampSeconds,
+					camera.poseEstimationStdDevs,
+				)
+			}
 		}
 
-		val estimatedPose = AprilTagVision.FrontCam.estimatedGlobalPose
-		if (estimatedPose != null) {
-			field.getObject("vision_robot").pose = estimatedPose.estimatedPose.toPose2d()
+		addFrom(AprilTagVision.FrontCam)
+		addFrom(AprilTagVision.LeftCam)
+		addFrom(AprilTagVision.RightCam)
 
-			super.addVisionMeasurement(
-				estimatedPose.estimatedPose.toPose2d().let { Pose2d(it.x, it.y, robotHeading) },
-				estimatedPose.timestampSeconds,
-				AprilTagVision.FrontCam.poseEstimationStdDevs,
-			)
-		}
 	}
 
 	// --- Auto & Paths ---
