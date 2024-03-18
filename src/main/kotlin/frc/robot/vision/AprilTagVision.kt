@@ -32,7 +32,7 @@ object AprilTagVision {
 			)
 	}
 
-	object LeftCam: AprilTagCamera("Left-Cam") {
+	object LeftCam: AprilTagCamera("Left-Limelight") {
 
 		val MAX_TAG_TRUSTING_DISTANCE = 4.0.meters
 
@@ -56,7 +56,7 @@ object AprilTagVision {
 	}
 
 
-	object RightCam: AprilTagCamera("Right-Cam") {
+	object RightCam: AprilTagCamera("Right-Limelight") {
 
 		val MAX_TAG_TRUSTING_DISTANCE = 4.0.meters
 
