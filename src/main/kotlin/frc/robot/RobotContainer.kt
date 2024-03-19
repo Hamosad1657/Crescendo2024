@@ -90,16 +90,13 @@ object RobotContainer {
 			)
 
 			// Maintain angle for amp while driving
-			R3().whileTrue(
+			cross().whileTrue(
 				Swerve.teleopDriveWithAutoAngleCommand(
 					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
 					vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
 					angleSupplier = { 90.degrees },
 				)
 			)
-
-			// Pathfind to amp or climb
-			cross().whileTrue(Swerve.getToAmpOrClimbCommand())
 
 			// --- Notes ---
 			// Collect
