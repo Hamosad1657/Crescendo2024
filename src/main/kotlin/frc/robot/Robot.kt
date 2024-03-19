@@ -60,8 +60,6 @@ object Robot : TimedRobot() {
 
 		// Call periodically so the alert updates in Shuffleboard
 		AprilTagVision.FrontCam.isConnected
-		AprilTagVision.LeftCam.isConnected
-		AprilTagVision.RightCam.isConnected
 		NoteVision.isConnected
 	}
 

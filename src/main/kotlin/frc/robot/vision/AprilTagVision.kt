@@ -25,39 +25,40 @@ object AprilTagVision {
 				twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
 			)
 	}
+	/*
+		object LeftCam : AprilTagCamera("Left-Limelight") {
+			override val maxTagTrustingDistance = 4.meters
 
-	object LeftCam : AprilTagCamera("Left-Limelight") {
-		override val maxTagTrustingDistance = 4.meters
+			override val robotToCamera
+				get() = Transform3d(
+					Translation3d(0.75 / 2 - 0.055, 0.75 / 2 - 0.06, 0.4),
+					Rotation3d(0.0, -60.degrees.radians, 0.0)
+				)
 
-		override val robotToCamera
-			get() = Transform3d(
-				Translation3d(0.75 / 2 - 0.055, 0.75 / 2 - 0.06, 0.4),
-				Rotation3d(0.0, -60.degrees.radians, 0.0)
-			)
-
-		override val stdDevs
-			get() = AprilTagsStdDevs(
-				oneTag = RobotPoseStdDevs(0.9, 0.9, 0.95),
-				twoTagsAuto = RobotPoseStdDevs(0.5, 0.5, 0.95),
-				twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
-			)
-	}
+			override val stdDevs
+				get() = AprilTagsStdDevs(
+					oneTag = RobotPoseStdDevs(0.9, 0.9, 0.95),
+					twoTagsAuto = RobotPoseStdDevs(0.5, 0.5, 0.95),
+					twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
+				)
+		}
 
 
-	object RightCam : AprilTagCamera("Right-Limelight") {
-		override val maxTagTrustingDistance = 4.meters
+		object RightCam : AprilTagCamera("Right-Limelight") {
+			override val maxTagTrustingDistance = 4.meters
 
-		override val robotToCamera
-			get() = Transform3d(
-				Translation3d(0.75 / 2 - 0.055, 0.75 / 2 - 0.06, 0.4),
-				Rotation3d(0.0, -60.degrees.radians, 0.0)
-			)
+			override val robotToCamera
+				get() = Transform3d(
+					Translation3d(0.75 / 2 - 0.055, 0.75 / 2 - 0.06, 0.4),
+					Rotation3d(0.0, -60.degrees.radians, 0.0)
+				)
 
-		override val stdDevs
-			get() = AprilTagsStdDevs(
-				oneTag = RobotPoseStdDevs(0.9, 0.9, 0.95),
-				twoTagsAuto = RobotPoseStdDevs(0.5, 0.5, 0.95),
-				twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
-			)
-	}
+			override val stdDevs
+				get() = AprilTagsStdDevs(
+					oneTag = RobotPoseStdDevs(0.9, 0.9, 0.95),
+					twoTagsAuto = RobotPoseStdDevs(0.5, 0.5, 0.95),
+					twoTagsTeleop = RobotPoseStdDevs(0.35, 0.35, 0.95),
+				)
+		}
+		*/
 }
