@@ -34,7 +34,7 @@ object ShooterConstants {
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = (66.0 / 32.0) * 4 * 4
 
 	const val SHOOTER_VOLTAGE_NEUTRAL_DEADBAND: Volts = 0.5
-	const val SHOOTER_RAMP_RATE_SEC = 0.25
+	const val SHOOTER_RAMP_RATE_SEC = 0.3
 
 
 	// --- Constants ---
