@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 2.3591735914195437,
+      "y": 5.73579548108088
+    },
+    "rotation": 180.0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -9,12 +15,6 @@
           "type": "path",
           "data": {
             "pathName": "one_meter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "one_meter_back"
           }
         }
       ]
