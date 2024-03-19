@@ -93,8 +93,8 @@ object SwerveConstants {
 
 	// --- PathPlanner ---
 
-	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(30.0, 0.0, 0.0)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(12.0, 0.0, 0.00)
+	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(40.0, 0.0, 0.0)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(0.0, 0.0, 0.00)
 
 	// TODO: Tune.
 	val PATH_CONSTRAINTS = PathConstraints(
