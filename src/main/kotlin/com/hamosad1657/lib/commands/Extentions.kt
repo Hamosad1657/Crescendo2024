@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger
 
 infix fun Command.until(condition: () -> Boolean): Command = this.until(condition)
 infix fun Command.andThen(next: Command): Command = this.andThen(next)
+infix fun Command.andThen(next: () -> Command): Command = this.andThen(next())
 infix fun Command.finallyDo(end: (interrupted: Boolean) -> Unit): Command = this.finallyDo(end)
 infix fun Command.finallyDo(command: Command): Command = this.finallyDo { _ -> command.schedule() }
 
