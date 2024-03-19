@@ -13,7 +13,7 @@ object IntakeConstants {
 			SupplyCurrentLimit = 40.0
 		}
 
-	val BOTTOM_MOTOR_UNDER_LOAD_THRESHOLD: AngularVelocity = 3000.rpm
+	val BOTTOM_MOTOR_UNDER_LOAD_THRESHOLD: AngularVelocity = 2600.rpm
 
 	const val BOTTOM_MOTOR_OUTPUT: Volts = 12.0
 	const val TOP_MOTOR_OUTPUT: Volts = 12.0
