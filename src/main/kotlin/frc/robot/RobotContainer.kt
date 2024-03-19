@@ -99,7 +99,7 @@ object RobotContainer {
 			)
 
 			// Pathfind to amp or climb
-			cross().onTrue(Swerve.getToAmpOrClimbCommand())
+			cross().whileTrue(Swerve.getToAmpOrClimbCommand())
 
 			// --- Notes ---
 			// Collect

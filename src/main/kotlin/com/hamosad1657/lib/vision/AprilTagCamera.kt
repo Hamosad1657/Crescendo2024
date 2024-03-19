@@ -63,7 +63,7 @@ abstract class AprilTagCamera(val cameraName: String) {
 
 	fun getTag(tagID: Int) = latestResult?.targets?.find { it.fiducialId == tagID }
 	fun isTagDetected(tagID: Int) = getTag(tagID) != null
-	fun anyTagDetected(vararg tagIDs: Int) = tagIDs.any(::isTagDetected)
+	fun isAnyTagDetected(vararg tagIDs: Int) = tagIDs.any(::isTagDetected)
 
 	/**
 	 * Gets the estimated robot position from the PhotonVision camera.

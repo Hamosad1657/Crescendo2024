@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.joystickCurve
-import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.ACTION_FAILING
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.DEFAULT
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_AIM_AT_NOTE_PID_CONTROLLER
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
@@ -262,13 +263,31 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 }
 
 fun Swerve.getToAmpOrClimbCommand(): Command = withName("get to amp or climb") {
-	pathfindToInitialPoseThenFollowPathCommand(
-		when {
-			FrontCam.anyTagDetected(Blue.AMP, Red.AMP) -> "to_amp"
-			FrontCam.anyTagDetected(Blue.BACK_CLIMB, Red.BACK_CLIMB) -> "to_back_climb"
-			FrontCam.anyTagDetected(Blue.AMP_CLIMB, Red.AMP_CLIMB) -> "to_amp_climb"
-			FrontCam.anyTagDetected(Blue.SOURCE_CLIMB, Red.SOURCE_CLIMB) -> "to_source_climb"
-			else -> return@withName LEDs.setModeCommand(LEDsMode.ACTION_FAILING)
-		}
-	)
+	var pathName = "to_amp"
+	waitUntil {
+		LEDs.currentMode = ACTION_FAILING
+		FrontCam.isAnyTagDetected(
+			Blue.AMP, Red.AMP,
+			Blue.BACK_CLIMB, Red.BACK_CLIMB,
+			Blue.AMP_CLIMB, Red.AMP_CLIMB,
+			Blue.SOURCE_CLIMB, Red.SOURCE_CLIMB,
+		)
+	}.asProxy() andThen
+		LEDs.setModeCommand(DEFAULT) andThen
+		runOnce {
+			pathName = when {
+				FrontCam.isAnyTagDetected(Blue.AMP, Red.AMP) -> "to_amp"
+				FrontCam.isAnyTagDetected(Blue.BACK_CLIMB, Red.BACK_CLIMB) -> "to_back_climbing"
+				FrontCam.isAnyTagDetected(Blue.AMP_CLIMB, Red.AMP_CLIMB) -> "to_amp_climbing"
+				FrontCam.isAnyTagDetected(Blue.SOURCE_CLIMB, Red.SOURCE_CLIMB) -> "to_source_climbing"
+				else -> {
+					LEDs.currentMode = ACTION_FAILING
+					return@runOnce
+				}
+			}
+		} andThen {
+		pathfindToInitialPoseThenFollowPathCommand(pathName)
+	} finallyDo {
+		LEDs.setToDefaultMode()
+	}
 }

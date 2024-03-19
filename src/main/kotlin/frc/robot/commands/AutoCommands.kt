@@ -20,7 +20,7 @@ fun Swerve.pathfindToInitialPoseThenFollowPathCommand(pathName: String): Command
 	val path = PathPlannerPath.fromPathFile(pathName)
 	if (Robot.alliance == Alliance.Red) path.flipPath()
 
-	val initialPose = path.pathPoses.first()
+	val initialPose = path.startingDifferentialPose
 	return pathfindToPoseCommand(initialPose) andThen followPathCommand(path)
 }
 
