@@ -77,6 +77,10 @@ object LEDsSubsystem : SubsystemBase() {
 		else shootMode()
 	}
 
+	private fun teleopShootMode() {
+		ledStrip.setColor(RGBColor.MAGENTA)
+	}
+
 
 	// --- LEDs Commands Control ---
 
@@ -121,6 +125,7 @@ object LEDsSubsystem : SubsystemBase() {
 			COLLECT -> collectMode()
 			SHOOT -> shootMode()
 			DYNAMIC_SHOOT -> dynamicShootMode()
+			TELEOP_SHOOTER -> teleopShootMode()
 			DEFAULT -> defaultMode()
 			ROBOT_DISABLED -> robotDisabledMode()
 		}

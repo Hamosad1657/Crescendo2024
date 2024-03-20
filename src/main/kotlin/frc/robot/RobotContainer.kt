@@ -98,6 +98,14 @@ object RobotContainer {
 				)
 			)
 
+			cross().whileTrue(
+				Swerve.teleopDriveWithAutoAngleCommand(
+					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
+					vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+					angleSupplier = { 90.degrees },
+				)
+			)
+
 			// --- Notes ---
 			// Collect
 			L1().toggleOnTrue((
@@ -156,7 +164,7 @@ object RobotContainer {
 				Shooter.openLoopTeleop_shooterAngle {
 					(simpleDeadband((r2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND) -
 						simpleDeadband((l2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND)) * 0.3
-				}
+				} alongWith LEDs.setModeCommand(TELEOP_SHOOTER) finallyDo { LEDs.setToDefaultMode() }
 			)
 		}
 	}

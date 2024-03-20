@@ -18,5 +18,6 @@ object LEDsConstants {
 		COLLECT,
 		SHOOT,
 		DYNAMIC_SHOOT,
+		TELEOP_SHOOTER
 	}
 }
