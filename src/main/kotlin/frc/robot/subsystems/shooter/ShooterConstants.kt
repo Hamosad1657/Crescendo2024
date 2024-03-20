@@ -159,7 +159,7 @@ object ShooterConstants {
 
 		companion object {
 			// --- Collection ---
-			val COLLECT = ShooterState(175.degrees, 0.0.rpm)
+			val COLLECT = ShooterState(173.degrees, 0.0.rpm)
 			val AUTO_COLLECT = ShooterState(COLLECT.angle, 3000.rpm)
 			val COLLECT_FROM_FEEDER = ShooterState(43.degrees, 0.0.rpm)
 			val COLLECT_FROM_INSIDE_ROBOT = ShooterState(161.degrees, 0.0.rpm)
@@ -179,6 +179,7 @@ object ShooterConstants {
 			val BEFORE_CLIMB = ShooterState(50.0.degrees, 0.0.rpm)
 
 			// --- Auto ---
+			val AUTO_AT_SPEAKER = ShooterState(195.degrees, 2600.rpm)
 			val AUTO_LINE_ONE_THREE = ShooterState(176.degrees, 3500.rpm)
 			val AUTO_LINE_TWO = ShooterState(178.degrees, 3500.rpm)
 		}
