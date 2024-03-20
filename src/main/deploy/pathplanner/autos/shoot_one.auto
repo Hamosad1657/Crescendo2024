@@ -12,9 +12,21 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "move_and_shoot_amp"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "shoot_from_speaker_command"
+            "name": "aim_at_speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
           }
         }
       ]
