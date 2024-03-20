@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Launch Shuffleboard (1)" type="JarApplication" activateToolWindowBeforeRun="false">
-    <option name="JAR_PATH" value="C:\Users\Public\wpilib\2024\tools\artifacts\Shuffleboard-2024.1.1-winx64.jar" />
-    <module name="Crescendo2024.main" />
-    <method v="2" />
-  </configuration>
-</component>

@@ -3,11 +3,10 @@
 **options** - zero gyro <br>
 **POV up** - full speed swerve <br>
 **POV down** - half speed swerve <br>
-**cross** - cross lock wheels <br>
+**cross** - rotate to amp while driving <br>
 **circle** - at podium rotation <br>
 **triangle** - at stage rotation <br>
 **square** - dynamic shooting <br>
-**touchpad** - rotate to amp while driving <br>
 **L1** - collect <br>
 **R1** - load <br>
 **PS** - eject from intake <br>

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3591735914195437,
-        "y": 5.73579548108088
+        "x": 1.8333111873815688,
+        "y": 7.323120885862176
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3591735914195446,
-        "y": 5.73579548108088
+        "x": 1.8138348020468287,
+        "y": 7.673695821887493
       },
       "isLocked": false,
-      "linkedName": "0_0"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.154034886954709,
-        "y": 5.73579548108088
+        "x": 1.8333111873815688,
+        "y": 7.6542194365527525
       },
       "prevControl": {
-        "x": 4.154034886954709,
-        "y": 5.73579548108088
+        "x": 1.8430493800489387,
+        "y": 7.449717390537984
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "1_0"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -178.72696997994328,
+    "rotation": 91.68468431789628,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "calibration",
+  "folder": "alex_rakushkin",
   "previewStartingState": {
-    "rotation": -179.64413016937812,
+    "rotation": 90.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

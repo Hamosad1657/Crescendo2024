@@ -15,11 +15,17 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Robot
 import frc.robot.RobotContainer
 import frc.robot.joystickCurve
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.ACTION_FAILING
+import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.DEFAULT
 import frc.robot.subsystems.shooter.DynamicShooting
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_AIM_AT_NOTE_PID_CONTROLLER
 import frc.robot.subsystems.swerve.SwerveConstants.CHASSIS_ANGLE_PID_CONTROLLER
+import frc.robot.vision.AprilTagVision.FrontCam
+import frc.robot.vision.AprilTagsIDs.Blue
+import frc.robot.vision.AprilTagsIDs.Red
 import frc.robot.vision.NoteVision
 import kotlin.math.abs
+import frc.robot.subsystems.leds.LEDsSubsystem as LEDs
 import frc.robot.subsystems.swerve.SwerveConstants as Constants
 import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
@@ -72,7 +78,7 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
 	angleSupplier: () -> Rotation2d,
-	isFieldRelative: () -> Boolean,
+	isFieldRelative: () -> Boolean = { true },
 	pidController: () -> PIDController = { CHASSIS_ANGLE_PID_CONTROLLER },
 ): Command = withName("teleop drive with auto angle") {
 	run {
@@ -97,13 +103,16 @@ fun Swerve.teleopDriveWithAutoAngleCommand(
 }
 
 /**
+ * When the command is scheduled, the angle is retrieved from [angleSupplier]
+ * and then the command periodically gets to that angle.
+ *
  * - Command has no end condition.
  * - Requirements: Swerve.
  */
-fun Swerve.getToOneAngleCommand(angle: () -> Rotation2d): Command = withName("get to angle command") {
+fun Swerve.getToOneAngleCommand(angleSupplier: () -> Rotation2d): Command = withName("get to angle command") {
 	var setpoint = 0.0.degrees
 	runOnce {
-		setpoint = angle()
+		setpoint = angleSupplier()
 	} andThen
 		run {
 			CHASSIS_ANGLE_PID_CONTROLLER.setpoint = setpoint.degrees
@@ -146,31 +155,32 @@ fun Swerve.getToAngleCommand(angle: Rotation2d): Command = withName("get to angl
 fun Swerve.aimAtSpeakerWhileDrivingCommand(
 	vxSupplier: () -> Double,
 	vySupplier: () -> Double,
-): Command = teleopDriveWithAutoAngleCommand(
-	vxSupplier,
-	vySupplier,
-	{
-		val offset = 5.degrees
+): Command = withName("aim at speaker while driving") {
+	teleopDriveWithAutoAngleCommand(
+		vxSupplier,
+		vySupplier,
+		{
+			val offset = 5.degrees
 
+			val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
+			val angleSetpoint = robotToGoal.angle.degrees
+
+			SmartDashboard.putBoolean("is chassis at angle setpoint", DynamicShooting.inChassisAngleTolerance)
+
+			mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
+		},
+		{ true },
+	)
+}
+
+fun Swerve.aimAtSpeaker() = withName("aim at speaker") {
+	getToAngleCommand {
 		val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
 		val angleSetpoint = robotToGoal.angle.degrees
 
-		SmartDashboard.putBoolean("is chassis at angle setpoint", DynamicShooting.inChassisAngleTolerance)
-
+		val offset = 3.degrees
 		mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
-	},
-	{ true },
-)
-
-fun Swerve.aimAtSpeaker(flipGoal: Boolean) = getToAngleCommand {
-	val offset = (3).degrees
-
-	val robotToGoal = robotPose.translation - DynamicShooting.speakerPosition
-	val angleSetpoint = robotToGoal.angle.degrees
-
-	SmartDashboard.putNumber("is chassis at angle setpoint", DynamicShooting.CHASSIS_ANGLE_TOLERANCE)
-
-	mapRange(angleSetpoint, 0.0, 360.0, -180.0, 180.0).degrees minus offset
+	}
 }
 
 /**
@@ -192,10 +202,6 @@ fun Swerve.aimAtGoalWhileDrivingCommand(
 		},
 		isFieldRelative,
 	)
-}
-
-fun Swerve.rotateToAmpCommand(): Command = withName("rotate to amp") {
-	getToAngleCommand(90.degrees)
 }
 
 /**
@@ -253,5 +259,35 @@ fun Swerve.aimAtNoteWhileDrivingCommand(
 			isFieldRelative = true,
 			useClosedLoopDrive = false,
 		)
+	}
+}
+
+fun Swerve.getToAmpOrClimbCommand(): Command = withName("get to amp or climb") {
+	var pathName = "to_amp"
+	waitUntil {
+		LEDs.currentMode = ACTION_FAILING
+		FrontCam.isAnyTagDetected(
+			Blue.AMP, Red.AMP,
+			Blue.BACK_CLIMB, Red.BACK_CLIMB,
+			Blue.AMP_CLIMB, Red.AMP_CLIMB,
+			Blue.SOURCE_CLIMB, Red.SOURCE_CLIMB,
+		)
+	}.asProxy() andThen
+		LEDs.setModeCommand(DEFAULT) andThen
+		runOnce {
+			pathName = when {
+				FrontCam.isAnyTagDetected(Blue.AMP, Red.AMP) -> "to_amp"
+				FrontCam.isAnyTagDetected(Blue.BACK_CLIMB, Red.BACK_CLIMB) -> "to_back_climbing"
+				FrontCam.isAnyTagDetected(Blue.AMP_CLIMB, Red.AMP_CLIMB) -> "to_amp_climbing"
+				FrontCam.isAnyTagDetected(Blue.SOURCE_CLIMB, Red.SOURCE_CLIMB) -> "to_source_climbing"
+				else -> {
+					LEDs.currentMode = ACTION_FAILING
+					return@runOnce
+				}
+			}
+		} andThen {
+		pathfindToInitialPoseThenFollowPathCommand(pathName)
+	} finallyDo {
+		LEDs.setToDefaultMode()
 	}
 }

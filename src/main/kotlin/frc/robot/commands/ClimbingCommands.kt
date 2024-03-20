@@ -3,9 +3,8 @@ package frc.robot.commands
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.units.PercentOutput
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.stabilizers.StabilizersConstants
+import frc.robot.subsystems.climbing.ClimbingConstants as Constants
 import frc.robot.subsystems.climbing.ClimbingSubsystem as Climbing
-import frc.robot.subsystems.stabilizers.StabilizersSubsystem as Stabilizers
 
 /**
  * [output] is assumed -1 to 1, will come from joysticks.
@@ -30,27 +29,13 @@ fun Climbing.openLoopTeleopCommand(
 ): Command =
 	withName("climbing open loop teleop") {
 		run {
-			setLeft(leftOutput())
-			setRight(rightOutput())
+			setLeft(climbSpeed(leftOutput()))
+			setRight(climbSpeed(rightOutput()))
 		} finallyDo {
 			stopMotors()
 		}
 	}
 
-fun Stabilizers.openCommand(): Command =
-	withName("open stabilizers") {
-		run {
-			set(StabilizersConstants.OPEN_STABILIZERS_OUTPUT)
-		} withTimeout StabilizersConstants.OPEN_CLOSE_DURATION
-	} finallyDo {
-		set(0.0)
-	}
-
-fun Stabilizers.closeCommand(): Command =
-	withName("close stabilizers") {
-		run {
-			set(StabilizersConstants.CLOSE_STABILIZERS_OUTPUT)
-		} withTimeout StabilizersConstants.OPEN_CLOSE_DURATION
-	} finallyDo {
-		set(0.0)
-	}
+private fun climbSpeed(output: PercentOutput) =
+	if (output > 0.0) output * Constants.OPEN_CLIMBING_OUTPUT
+	else output * Constants.CLOSE_CLIMBING_OUTPUT

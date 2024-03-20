@@ -6,8 +6,6 @@ import com.hamosad1657.lib.units.PercentOutput
 object ClimbingConstants {
 	const val SMART_CURRENT_LIMIT: Amps = 40
 
-	const val CLOSE_CLIMBING_OUTPUT: PercentOutput = 0.8
-	const val OPEN_CLIMBING_OUTPUT: PercentOutput = -0.8
-
-	const val KEEP_CLOSED_OUTPUT: PercentOutput = 0.0 // 0.01
+	const val OPEN_CLIMBING_OUTPUT: PercentOutput = 0.8
+	const val CLOSE_CLIMBING_OUTPUT: PercentOutput = 0.5
 }

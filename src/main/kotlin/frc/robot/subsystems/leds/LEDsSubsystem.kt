@@ -1,127 +1,81 @@
 package frc.robot.subsystems.leds
 
 import com.hamosad1657.lib.commands.*
-import com.hamosad1657.lib.units.Seconds
-import edu.wpi.first.wpilibj.AddressableLED
-import edu.wpi.first.wpilibj.AddressableLEDBuffer
+import com.hamosad1657.lib.leds.LEDStrip
+import com.hamosad1657.lib.leds.RGBColor
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Robot
-import frc.robot.RobotMap
-import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.leds.LEDsConstants.ACTION_FINISHED_MODE_TIMEOUT
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
-import frc.robot.subsystems.leds.LEDsConstants.RGBColor
-import frc.robot.subsystems.shooter.ShooterSubsystem
-import frc.robot.subsystems.swerve.SwerveSubsystem
+import frc.robot.RobotMap.LEDs as LEDsMap
+import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.leds.LEDsConstants as Constants
+import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
+import frc.robot.subsystems.swerve.SwerveSubsystem as Swerve
 
 object LEDsSubsystem : SubsystemBase() {
 	// --- LEDs ---
 
-	private val ledsBuffer = AddressableLEDBuffer(Constants.LENGTH)
-	private val ledStrip = AddressableLED(RobotMap.Leds.PWM_PORT).apply {
-		setLength(Constants.LENGTH)
-		setData(ledsBuffer)
-		start()
-	}
+	private val ledStrip = LEDStrip(Constants.LENGTH, LEDsMap.PWM_PORT)
 
 
 	// --- LEDs State ---
 
 	var currentMode: LEDsMode = ROBOT_DISABLED
 
-	private var currentColor = RGBColor.LEDS_OFF
-
-	private val blinkTimer = Timer()
 	private val actionFinishedModeExitTimer = Timer()
 	private val collectWithNoteTimer = Timer()
 
 	private var hasCollectedNote = false
 
 
-	// --- State Getters ---
+	// --- Modes Periodic Functions ---
 
-	val areLedsOn: Boolean
-		get() =
-			(ledsBuffer.getRed(0) != 0) ||
-				(ledsBuffer.getGreen(0) != 0) ||
-				(ledsBuffer.getBlue(0) != 0)
-
-
-	// --- LEDs Control ---
-
-	private fun setColor(color: RGBColor) {
-		for (i in 0..<Constants.LENGTH) {
-			ledsBuffer.setRGB(i, color.red, color.green, color.blue)
-		}
-		ledStrip.setData(ledsBuffer)
-
-		if (color != RGBColor.LEDS_OFF) currentColor = color
+	private fun defaultMode() {
+		ledStrip.setColor(LEDStrip.LEDS_OFF)
 	}
 
-	private fun toggleLEDs() {
-		setColor(
-			if (areLedsOn) RGBColor.LEDS_OFF
-			else currentColor
+	private fun robotDisabledMode() {
+		ledStrip.setColor(
+			if (Robot.alliance == Alliance.Blue) RGBColor.BLUE
+			else RGBColor.RED
 		)
 	}
 
-	/** Should be called periodically. */
-	private fun blink(blinkTime: Seconds) {
-		blinkTimer.start()
-		if (blinkTimer.hasElapsed(blinkTime)) {
-			toggleLEDs()
-			blinkTimer.restart()
-		}
+	private fun actionFinishedMode() {
+		ledStrip.blink(Constants.ACTION_FINISHED_MODE_BLINK_TIME)
 	}
 
-
-	// --- Modes Periodic Functions ---
-
-	private fun actionFinishedMode() {
-		blink(Constants.ACTION_FINISHED_MODE_BLINK_TIME)
+	private fun actionFailingMode() {
+		ledStrip.currentColor = RGBColor.ORANGE
+		ledStrip.blink(Constants.ACTION_FAILING_BLINK_TIME)
 	}
 
 	private fun collectMode() {
-		if (IntakeSubsystem.isCollectingNote &&
-			collectWithNoteTimer.hasElapsed(Constants.WAIT_WITH_NOTE_DELAY)
-		) {
+		val delayPassed = collectWithNoteTimer.hasElapsed(Constants.WAIT_WITH_NOTE_DELAY)
+		if (Intake.isCollectingNote && delayPassed)
 			hasCollectedNote = true
-		}
 
-		setColor(
+		ledStrip.setColor(
 			if (hasCollectedNote) RGBColor.GREEN
 			else RGBColor.YELLOW
 		)
 	}
 
 	private fun shootMode() {
-		setColor(
-			if (ShooterSubsystem.isWithinTolerance) RGBColor.GREEN
+		ledStrip.setColor(
+			if (Shooter.isWithinTolerance) RGBColor.GREEN
 			else RGBColor.YELLOW
 		)
 	}
 
 	private fun dynamicShootMode() {
-		if (!SwerveSubsystem.isInVisionRange) {
-			currentColor = RGBColor.ORANGE
-			blink(0.1)
-		} else shootMode()
-	}
-
-	private fun defaultMode() {
-		setColor(RGBColor.LEDS_OFF)
-	}
-
-	private fun robotDisabledMode() {
-		setColor(
-			if (Robot.alliance == Alliance.Blue) RGBColor.BLUE
-			else RGBColor.RED
-		)
+		if (!Swerve.isInVisionRange) actionFailingMode()
+		else shootMode()
 	}
 
 
@@ -133,7 +87,7 @@ object LEDsSubsystem : SubsystemBase() {
 			if (interrupted) {
 				DEFAULT
 			} else {
-				setColor(RGBColor.GREEN)
+				ledStrip.setColor(RGBColor.GREEN)
 				ACTION_FINISHED
 			}
 	}
@@ -164,6 +118,7 @@ object LEDsSubsystem : SubsystemBase() {
 				}
 			}
 
+			ACTION_FAILING -> actionFailingMode()
 			COLLECT -> collectMode()
 			SHOOT -> shootMode()
 			DYNAMIC_SHOOT -> dynamicShootMode()

@@ -34,7 +34,7 @@ object ShooterConstants {
 	const val ANGLE_MOTOR_TO_CANCODER_GEAR_RATIO = (66.0 / 32.0) * 4 * 4
 
 	const val SHOOTER_VOLTAGE_NEUTRAL_DEADBAND: Volts = 0.5
-	const val SHOOTER_RAMP_RATE_SEC = 0.25
+	const val SHOOTER_RAMP_RATE_SEC = 0.3
 
 
 	// --- Constants ---
@@ -106,8 +106,8 @@ object ShooterConstants {
 	// --- PID Gains ---
 
 	val SHOOTER_PID_GAINS = PIDGains(
-		0.00004, 0.0, 0.0,
-		kFF = { setpointRpm -> 0.0018 * setpointRpm },
+		0.000015, 0.0, 0.0,
+		kFF = { setpointRpm -> 0.00184 * setpointRpm },
 	)
 
 	val ANGLE_PID_GAINS = PIDGains(

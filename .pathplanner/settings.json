@@ -3,9 +3,10 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "to_middle",
+    "alex_rakushkin",
     "basic_auto",
     "calibration",
+    "to_middle",
     "trap_auto"
   ],
   "autoFolders": [],
