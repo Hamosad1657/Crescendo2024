@@ -17,5 +17,5 @@ object LoaderConstants {
 	const val TRAP_EJECT_OUTPUT: Volts = -12.0
 
 	/** Time between when loading started to when the note is inside of the Amp. */
-	const val AMP_EJECT_DURATION: Seconds = 2.0
+	const val AMP_EJECT_DURATION: Seconds = 4.0
 }
