@@ -131,7 +131,7 @@ object SwerveConstants {
 	val DRIVE_MOTOR_CONFIG =
 		TalonFXConfiguration().apply {
 			CurrentLimits.apply {
-				SupplyCurrentLimit = 40.0
+				SupplyCurrentLimit = 45.0
 				SupplyCurrentLimitEnable = true
 				StatorCurrentLimitEnable = false
 			}
