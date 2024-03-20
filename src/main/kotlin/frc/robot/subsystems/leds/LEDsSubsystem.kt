@@ -42,7 +42,7 @@ object LEDsSubsystem : SubsystemBase() {
 	}
 
 	private fun robotDisabledMode() {
-		if (!Robot.isTesting && (Robot.alliance != DriverStation.getAlliance().getOrNull())) {
+		if (Robot.isCompetition && (Robot.alliance != DriverStation.getAlliance().getOrNull())) {
 			return actionFailingMode()
 		}
 		ledStrip.currentColor = if (Robot.alliance == Blue) RGBColor.BLUE else RGBColor.RED

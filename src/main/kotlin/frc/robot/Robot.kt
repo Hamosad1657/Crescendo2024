@@ -37,6 +37,7 @@ object Robot : TimedRobot() {
 			.also { SmartDashboard.putString("Telemetry", it.name) }
 
 	val isTesting = telemetryLevel == Telemetry.Testing
+	val isCompetition = telemetryLevel == Telemetry.Competition
 
 	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
