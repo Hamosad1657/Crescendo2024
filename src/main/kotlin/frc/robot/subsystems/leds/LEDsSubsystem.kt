@@ -40,10 +40,9 @@ object LEDsSubsystem : SubsystemBase() {
 	}
 
 	private fun robotDisabledMode() {
-		ledStrip.setColor(
-			if (Robot.alliance == Alliance.Blue) RGBColor.BLUE
-			else RGBColor.RED
-		)
+		ledStrip.currentColor = if (Robot.alliance == Alliance.Blue) RGBColor.BLUE else RGBColor.RED
+		if (Robot.isTesting) ledStrip.apply { setColorAlternating(currentColor) }
+		else ledStrip.apply { setColor(currentColor) }
 	}
 
 	private fun actionFinishedMode() {
