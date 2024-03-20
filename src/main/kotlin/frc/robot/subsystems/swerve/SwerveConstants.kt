@@ -133,6 +133,7 @@ object SwerveConstants {
 			CurrentLimits.apply {
 				SupplyCurrentLimit = 40.0
 				SupplyCurrentLimitEnable = true
+				StatorCurrentLimitEnable = false
 			}
 			ClosedLoopRamps.apply {
 				VoltageClosedLoopRampPeriod = 0.25
