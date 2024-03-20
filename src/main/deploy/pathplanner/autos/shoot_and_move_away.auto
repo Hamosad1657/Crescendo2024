@@ -18,7 +18,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
@@ -28,6 +28,30 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "collect_with_timeout_command"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right_middle_to_shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aim_at_speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
           }
         }
       ]
