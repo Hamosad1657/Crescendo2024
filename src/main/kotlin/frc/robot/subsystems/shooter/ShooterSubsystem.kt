@@ -156,9 +156,6 @@ object ShooterSubsystem : SubsystemBase() {
 	val isWithinAngleToleranceToAmp
 		get() = (ShooterState.TO_AMP.angle - currentAngle).absoluteValue.rotations <= Constants.AMP_ANGLE_TOLERANCE.rotations
 
-	val isTryingToTrap
-		get() = (currentAngleSetpoint.degrees - ShooterState.TO_TRAP.angle.degrees).absoluteValue < 1.0
-
 	private fun angleMotorDirectionTo(setpoint: Rotation2d): AngleMotorDirection =
 		if (setpoint.rotations - currentAngle.rotations > 0.0) TOWARDS_MAX else TOWARDS_MIN
 

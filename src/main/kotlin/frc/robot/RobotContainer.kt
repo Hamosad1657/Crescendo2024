@@ -123,7 +123,7 @@ object RobotContainer {
 			)
 
 			// Load
-			R1().toggleOnTrue(Loader.loadToShooterAmpOrTrapCommand() finallyDo LEDs::actionFinished)
+			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand() finallyDo LEDs::actionFinished)
 
 			// Dynamic shooting
 			square().whileTrue(
@@ -155,9 +155,8 @@ object RobotContainer {
 			create().toggleOnTrue(setShooterState(ShooterState.AT_STAGE))
 
 			// Amp & Trap
-			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP))
+			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP) finallyDo Loader.runOnce(Loader::stopMotors))
 			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
-			L1().toggleOnTrue(setShooterState(ShooterState.TO_TRAP))
 
 			// Sweep
 			R1().toggleOnTrue(
