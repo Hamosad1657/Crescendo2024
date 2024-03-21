@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7128326996619087,
+      "y": 6.712138520263079
+    },
+    "rotation": -119.98163936884929
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move_and_shoot_amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aim_at_speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp_to_wall"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
