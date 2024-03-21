@@ -51,6 +51,7 @@ object RobotContainer {
 
 	private var swerveTeleopMultiplier = 1.0
 	private var swerveIsFieldRelative = true
+	private const val SWERVE_AIM_AMP_MULTIPLIER = 0.7
 
 	init {
 		Swerve
@@ -92,8 +93,8 @@ object RobotContainer {
 			// Maintain angle for amp while driving
 			R3().whileTrue(
 				Swerve.teleopDriveWithAutoAngleCommand(
-					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
-					vySupplier = { controllerA.leftX * swerveTeleopMultiplier },
+					vxSupplier = { controllerA.leftY * SWERVE_AIM_AMP_MULTIPLIER },
+					vySupplier = { controllerA.leftX * SWERVE_AIM_AMP_MULTIPLIER },
 					angleSupplier = { 90.degrees },
 				)
 			)
