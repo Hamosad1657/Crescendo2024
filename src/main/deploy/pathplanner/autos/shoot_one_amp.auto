@@ -2,15 +2,40 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9922066615511936,
-      "y": 6.726465390103555
+      "x": 0.7128326996619087,
+      "y": 6.712138520263079
     },
-    "rotation": -125.7889734591833
+    "rotation": -119.98163936884929
   },
   "command": {
     "type": "sequential",
     "data": {
-      "commands": []
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move_and_shoot_amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aim_at_speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot_command"
+          }
+        }
+      ]
     }
   },
   "folder": null,
