@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shoot_from_speaker_command"
