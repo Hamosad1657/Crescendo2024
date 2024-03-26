@@ -18,19 +18,25 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "left_to_left_collection"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "left_to_left_collection"
+                  "name": "aim_at_speaker"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "collect_command"
+                  "name": "collect_with_timeout_command"
                 }
               }
             ]

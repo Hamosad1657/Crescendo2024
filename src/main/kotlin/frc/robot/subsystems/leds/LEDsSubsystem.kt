@@ -3,7 +3,8 @@ package frc.robot.subsystems.leds
 import com.hamosad1657.lib.commands.*
 import com.hamosad1657.lib.leds.LEDStrip
 import com.hamosad1657.lib.leds.RGBColor
-import edu.wpi.first.wpilibj.DriverStation.Alliance
+import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance.Blue
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -11,6 +12,7 @@ import frc.robot.Robot
 import frc.robot.subsystems.leds.LEDsConstants.ACTION_FINISHED_MODE_TIMEOUT
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode
 import frc.robot.subsystems.leds.LEDsConstants.LEDsMode.*
+import kotlin.jvm.optionals.getOrNull
 import frc.robot.RobotMap.LEDs as LEDsMap
 import frc.robot.subsystems.intake.IntakeSubsystem as Intake
 import frc.robot.subsystems.leds.LEDsConstants as Constants
@@ -40,10 +42,12 @@ object LEDsSubsystem : SubsystemBase() {
 	}
 
 	private fun robotDisabledMode() {
-		ledStrip.setColor(
-			if (Robot.alliance == Alliance.Blue) RGBColor.BLUE
-			else RGBColor.RED
-		)
+		if (Robot.isCompetition && (Robot.alliance != DriverStation.getAlliance().getOrNull())) {
+			return actionFailingMode()
+		}
+		ledStrip.currentColor = if (Robot.alliance == Blue) RGBColor.BLUE else RGBColor.RED
+		if (Robot.isTesting) ledStrip.apply { setColorAlternating(currentColor) }
+		else ledStrip.apply { setColor(currentColor) }
 	}
 
 	private fun actionFinishedMode() {
@@ -76,6 +80,10 @@ object LEDsSubsystem : SubsystemBase() {
 	private fun dynamicShootMode() {
 		if (!Swerve.isInVisionRange) actionFailingMode()
 		else shootMode()
+	}
+
+	private fun teleopShootMode() {
+		ledStrip.setColor(RGBColor.MAGENTA)
 	}
 
 
@@ -122,6 +130,7 @@ object LEDsSubsystem : SubsystemBase() {
 			COLLECT -> collectMode()
 			SHOOT -> shootMode()
 			DYNAMIC_SHOOT -> dynamicShootMode()
+			TELEOP_SHOOTER -> teleopShootMode()
 			DEFAULT -> defaultMode()
 			ROBOT_DISABLED -> robotDisabledMode()
 		}

@@ -51,6 +51,7 @@ object RobotContainer {
 
 	private var swerveTeleopMultiplier = 1.0
 	private var swerveIsFieldRelative = true
+	private const val SWERVE_AIM_AMP_MULTIPLIER = 0.7
 
 	init {
 		Swerve
@@ -90,6 +91,14 @@ object RobotContainer {
 			)
 
 			// Maintain angle for amp while driving
+			R3().whileTrue(
+				Swerve.teleopDriveWithAutoAngleCommand(
+					vxSupplier = { controllerA.leftY * SWERVE_AIM_AMP_MULTIPLIER },
+					vySupplier = { controllerA.leftX * SWERVE_AIM_AMP_MULTIPLIER },
+					angleSupplier = { 90.degrees },
+				)
+			)
+
 			cross().whileTrue(
 				Swerve.teleopDriveWithAutoAngleCommand(
 					vxSupplier = { controllerA.leftY * swerveTeleopMultiplier },
@@ -115,7 +124,7 @@ object RobotContainer {
 			)
 
 			// Load
-			R1().toggleOnTrue(Loader.loadToShooterAmpOrTrapCommand() finallyDo LEDs::actionFinished)
+			R1().toggleOnTrue(Loader.loadToShooterOrAmpCommand() finallyDo LEDs::actionFinished)
 
 			// Dynamic shooting
 			square().whileTrue(
@@ -147,16 +156,15 @@ object RobotContainer {
 			create().toggleOnTrue(setShooterState(ShooterState.AT_STAGE))
 
 			// Amp & Trap
-			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP))
+			triangle().toggleOnTrue(setShooterState(ShooterState.TO_AMP) finallyDo Loader.runOnce(Loader::stopMotors))
 			square().toggleOnTrue(setShooterState(ShooterState.BEFORE_CLIMB))
-			L1().toggleOnTrue(setShooterState(ShooterState.TO_TRAP))
 
 			// Sweep
 			R1().toggleOnTrue(
 				Shooter.openLoopTeleop_shooterAngle {
 					(simpleDeadband((r2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND) -
 						simpleDeadband((l2Axis + 1.0) * SHOOTER_TELEOP_MULTIPLIER, JOYSTICK_DEADBAND)) * 0.3
-				}
+				} alongWith LEDs.setModeCommand(TELEOP_SHOOTER) finallyDo { LEDs.setToDefaultMode() }
 			)
 		}
 	}

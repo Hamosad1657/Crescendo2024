@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.65,
-      "y": 4.39
+      "x": 0.7128326996619087,
+      "y": 6.712138520263079
     },
-    "rotation": 120.0
+    "rotation": -119.98163936884929
   },
   "command": {
     "type": "sequential",
@@ -14,32 +14,25 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 7.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move_and_shoot_amp"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot_from_speaker_command"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "right_to_centerline"
-                }
-              }
-            ]
+            "name": "aim_at_speaker"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "collect_with_timeout_command"
+            "name": "shoot_command"
           }
         }
       ]

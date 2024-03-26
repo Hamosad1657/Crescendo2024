@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4983337652326076,
-        "y": 4.1432784688893785
+        "x": 1.959270375783334,
+        "y": 4.3267146918238
       },
       "isLocked": false,
       "linkedName": null
@@ -53,6 +53,23 @@
               "type": "named",
               "data": {
                 "name": "collect_command"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "aim",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "aim_at_note_command"
               }
             }
           ]

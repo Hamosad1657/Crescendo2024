@@ -81,7 +81,7 @@ object SwerveConstants {
 
 	/** Feedback from gyro, setpoint from anywhere. */
 	val CHASSIS_ANGLE_PID_CONTROLLER =
-		PIDController(0.24, 0.0, 0.0).apply {
+		PIDController(0.25, 0.0, 0.005).apply {
 			enableContinuousInput(-180.0, 180.0)
 		}
 
@@ -94,7 +94,7 @@ object SwerveConstants {
 	// --- PathPlanner ---
 
 	private val PATH_TRANSLATION_CONSTANTS = PIDConstants(40.0, 0.0, 0.0)
-	private val PATH_ROTATION_CONSTANTS = PIDConstants(0.0, 0.0, 0.00)
+	private val PATH_ROTATION_CONSTANTS = PIDConstants(25.0, 0.0, 0.00)
 
 	// TODO: Tune.
 	val PATH_CONSTRAINTS = PathConstraints(
@@ -131,8 +131,9 @@ object SwerveConstants {
 	val DRIVE_MOTOR_CONFIG =
 		TalonFXConfiguration().apply {
 			CurrentLimits.apply {
-				SupplyCurrentLimit = 40.0
+				SupplyCurrentLimit = 45.0
 				SupplyCurrentLimitEnable = true
+				StatorCurrentLimitEnable = false
 			}
 			ClosedLoopRamps.apply {
 				VoltageClosedLoopRampPeriod = 0.25

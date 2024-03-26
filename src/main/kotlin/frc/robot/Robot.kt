@@ -33,10 +33,11 @@ import frc.robot.subsystems.shooter.ShooterSubsystem as Shooter
  */
 object Robot : TimedRobot() {
 	val telemetryLevel =
-		Telemetry.Testing
+		Telemetry.Competition
 			.also { SmartDashboard.putString("Telemetry", it.name) }
 
 	val isTesting = telemetryLevel == Telemetry.Testing
+	val isCompetition = telemetryLevel == Telemetry.Competition
 
 	/** This value is changed in [RobotContainer] using a [SendableChooser]. */
 	var alliance = Alliance.Blue
