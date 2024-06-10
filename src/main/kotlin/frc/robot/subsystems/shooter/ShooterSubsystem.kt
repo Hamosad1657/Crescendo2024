@@ -90,11 +90,11 @@ object ShooterSubsystem : SubsystemBase() {
 	private val maxAngleLimitSwitch = DigitalInput(ShooterAngleMap.MAX_ANGLE_LIMIT_CHANNEL)
 
 	private val shooterPIDController = shooterMainMotor.pidController.apply {
-		setP(SHOOTER_PID_GAINS.kP)
-		setI(SHOOTER_PID_GAINS.kI)
-		setD(SHOOTER_PID_GAINS.kD)
+		p = SHOOTER_PID_GAINS.kP
+		i = SHOOTER_PID_GAINS.kI
+		d = SHOOTER_PID_GAINS.kD
 	}
-	private val shooterEncoder = shooterMainMotor.getEncoder()
+	private val shooterEncoder = shooterMainMotor.encoder
 
 
 	// --- Motors Configuration ---
@@ -248,7 +248,7 @@ object ShooterSubsystem : SubsystemBase() {
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */
 	fun increaseVelocitySetpointBy(velocity: AngularVelocity) {
-		setVelocity(this.currentVelocity + velocity)
+		setVelocity(currentVelocity + velocity)
 	}
 
 	/** To be used in testing or in manual overrides. For normal operation use setShooterState. */

@@ -33,7 +33,7 @@ object RobotMap {
 
 	object Loader {
 		const val MOTOR_ID = 22
-		const val BEAM_BREAK_CHANNEL = 2
+		const val BEAM_BREAK_CHANNEL = 0
 	}
 
 	object Swerve {

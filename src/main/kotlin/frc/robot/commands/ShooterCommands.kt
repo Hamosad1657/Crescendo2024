@@ -59,18 +59,6 @@ fun Shooter.dynamicShootingCommand() = withName("dynamic shooting") {
 }
 
 /**
- * - Command has no end condition.
- * - Requirements: Shooter.
- */
-fun Shooter.getToAngleCommand(angle: Rotation2d): Command = withName("get to shooter state") {
-	run {
-		setAngle(angle)
-	} finallyDo {
-		stopShooterMotors()
-	}
-}
-
-/**
  * Maintains [ShooterConstants.ShooterState.AUTO_COLLECT].
  * - Requirements: Shooter.
  */

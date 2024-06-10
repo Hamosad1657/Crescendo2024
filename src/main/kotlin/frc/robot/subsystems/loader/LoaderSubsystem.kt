@@ -22,7 +22,7 @@ object LoaderSubsystem : SubsystemBase() {
 	}
 
 	//	private val beamBreak = DigitalInput(LoaderMap.BEAM_BREAK_CHANNEL)
-	private val beamBreak = AnalogInput(0)
+	private val beamBreak = AnalogInput(LoaderMap.BEAM_BREAK_CHANNEL)
 
 
 	// --- Motors Configuration ---
@@ -38,7 +38,7 @@ object LoaderSubsystem : SubsystemBase() {
 
 	/** Beam-break is positioned between loader and shooter. */
 //	val isNoteDetected get() = !beamBreak.get()
-	val isNoteDetected get() = beamBreak.voltage < 0.4
+	val isNoteDetected get() = beamBreak.voltage < Constants.NOTE_DETECTED_THRESHOLD
 
 	val isRunning get() = abs(motor.get()) > 0.0
 
